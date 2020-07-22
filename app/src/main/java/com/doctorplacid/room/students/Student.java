@@ -4,8 +4,12 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+import androidx.room.Relation;
 
+import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.groups.Group;
+
+import java.util.List;
 
 
 @Entity(tableName = "students_table",
@@ -13,7 +17,7 @@ import com.doctorplacid.room.groups.Group;
                 entity = Group.class, parentColumns = "id", childColumns = "group_id"))
 public class Student {
 
-    @ColumnInfo(name = "student_id")
+    @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     private int studentId;
 

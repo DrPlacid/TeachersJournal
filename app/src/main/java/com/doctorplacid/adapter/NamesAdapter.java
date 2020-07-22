@@ -11,13 +11,14 @@ import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
 import com.doctorplacid.holder.NameHolder;
 import com.doctorplacid.room.students.Student;
+import com.doctorplacid.room.students.StudentWithGrades;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NamesAdapter extends RecyclerView.Adapter<NameHolder> {
 
-    private List<Student> studentNames = new ArrayList<>();
+    private List<StudentWithGrades> students = new ArrayList<>();
 
     private ITableActivityListener iGlobalListener;
 
@@ -35,20 +36,20 @@ public class NamesAdapter extends RecyclerView.Adapter<NameHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull NameHolder holder, int position) {
-        holder.setText(studentNames.get(position));
+        holder.setText(students.get(position).getStudent());
     }
 
     @Override
     public int getItemCount() {
-        return studentNames.size();
+        return students.size();
     }
 
-    public void setItems(List<Student> students) {
-        this.studentNames = students;
+    public void setItems(List<StudentWithGrades> studentsWithGrades) {
+        this.students = studentsWithGrades;
         notifyDataSetChanged();
     }
 
     public Student getItemAt(int position) {
-        return studentNames.get(position);
+        return students.get(position).getStudent();
     }
 }

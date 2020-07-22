@@ -16,36 +16,20 @@ import java.util.concurrent.ExecutionException;
 public class StudentsRepository {
 
     private StudentDAO studentDAO;
-    private GradeRepository gradeRepository;
 
     public StudentsRepository(Application application) {
         TeachersDatabase database = TeachersDatabase.getInstance(application);
         studentDAO = database.studentDAO();
-        gradeRepository = new GradeRepository(application);
     }
 
-    public void insert(Student student, int lessons) {
-        AsyncTask asyncTask = new StudentInsertAsyncTask(studentDAO).execute(student);
-        int newId = 0;
-        String name = student.getName();
-        AsyncTask getNewId = new GetNewIdAsyncTask(studentDAO).execute(name);
+    public boolean insert(Student student, int lessons) {
         try {
-            newId = (int) getNewId.get();
+            return new StudentInsertAsyncTask(studentDAO).execute(student).get();
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            return false;
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            return false;
         }
-
-        /*
-        List<Grade> grades = new ArrayList<>();
-
-        for (int i = 1; i < lessons; i++)
-            grades.add(new Grade(newId));
-
-         */
-
-        gradeRepository.insert(newId);
     }
 
     public void update(Student student) {
@@ -56,11 +40,11 @@ public class StudentsRepository {
         new StudentsRepository.StudentDeleteAsyncTask(studentDAO).execute(student);
     }
 
-    public LiveData<List<Student>> retrieveAll(int groupId) {
-        return studentDAO.retrieveAll(groupId);
+    public LiveData<List<StudentWithGrades>> retrieveAll(int groupId) {
+        return studentDAO.getStudentsWithGrades(groupId);
     }
 
-    private static class StudentInsertAsyncTask extends AsyncTask<Student, Void, Void> {
+    private static class StudentInsertAsyncTask extends AsyncTask<Student, Void, Boolean> {
         private StudentDAO studentDAO;
 
 
@@ -69,9 +53,9 @@ public class StudentsRepository {
         }
 
         @Override
-        protected Void doInBackground(Student... students) {
-            studentDAO.insert(students[0]);
-            return null;
+        protected Boolean doInBackground(Student... students) {
+            StudentWithGrades studentWithGrades = new StudentWithGrades(students[0]);
+            return studentDAO.insertNewStudentWithGrades(studentWithGrades);
         }
 
     }
@@ -102,21 +86,6 @@ public class StudentsRepository {
             studentDAO.delete(students[0]);
             return null;
         }
-    }
-
-    private static class GetNewIdAsyncTask extends AsyncTask<String, Void, Integer> {
-        private StudentDAO studentDAO;
-
-
-        public GetNewIdAsyncTask(StudentDAO studentDAO) {
-            this.studentDAO = studentDAO;
-        }
-
-        @Override
-        protected Integer doInBackground(String... strings) {
-            return studentDAO.getIdByName(strings[0]).getStudentId();
-        }
-
     }
 
 }

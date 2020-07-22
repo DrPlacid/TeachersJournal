@@ -10,13 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.doctorplacid.R;
 import com.doctorplacid.holder.SumHolder;
 import com.doctorplacid.room.students.Student;
+import com.doctorplacid.room.students.StudentWithGrades;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SumsAdapter extends RecyclerView.Adapter<SumHolder> {
 
-    List<Student> studentList = new ArrayList<>();
+    List<StudentWithGrades> students = new ArrayList<>();
 
     @NonNull
     @Override
@@ -28,17 +29,17 @@ public class SumsAdapter extends RecyclerView.Adapter<SumHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull SumHolder holder, int position) {
-        Student student = studentList.get(position);
+        Student student = students.get(position).getStudent();
         holder.SetText(student);
     }
 
     @Override
     public int getItemCount() {
-        return studentList.size();
+        return students.size();
     }
 
-    public void setItems(List<Student> list) {
-        this.studentList = list;
+    public void setItems(List<StudentWithGrades> studentsWithGrades) {
+        this.students = studentsWithGrades;
         notifyDataSetChanged();
     }
 }

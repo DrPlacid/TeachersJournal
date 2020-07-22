@@ -9,7 +9,7 @@ import com.doctorplacid.room.students.Student;
 
 @Entity(tableName = "grades_table",
         foreignKeys = @ForeignKey(onDelete = ForeignKey.CASCADE,
-                entity = Student.class, parentColumns = "student_id", childColumns = "grade_id"))
+                entity = Student.class, parentColumns = "id", childColumns = "student_id"))
 public class Grade {
 
     @PrimaryKey(autoGenerate = true)
@@ -28,6 +28,7 @@ public class Grade {
         this.amount = 0;
         this.presence = true;
     }
+
 
     public void setAmount(int amount) {
         this.amount = amount;

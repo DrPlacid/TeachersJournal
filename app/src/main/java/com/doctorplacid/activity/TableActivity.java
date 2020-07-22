@@ -22,6 +22,7 @@ import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.adapter.LessonsAdapter;
 import com.doctorplacid.adapter.NamesAdapter;
+import com.doctorplacid.room.students.StudentWithGrades;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     private LessonsAdapter lessonsAdapter;
     private GradesAdapter gradesAdapter;
 
-    LiveData<List<Student>> namesList;
+    LiveData<List<StudentWithGrades>> namesList;
 
     private FloatingActionButton fabAdd;
 
@@ -59,7 +60,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         initStudents();
         initLessons();
-        initGrades();
 
         fabAdd = findViewById(R.id.fab_add_table);
         fabAdd.setOnClickListener(v -> openAddDialog());
@@ -68,10 +68,13 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     private void initStudents() {
         RecyclerView names = findViewById(R.id.names);
         RecyclerView sums = findViewById(R.id.sums);
+        RecyclerView grades = findViewById(R.id.grades);
 
         names.setLayoutManager(new LinearLayoutManager(TableActivity.this));
         sums.setLayoutManager(new LinearLayoutManager(TableActivity.this));
+        grades.setLayoutManager(new LinearLayoutManager(TableActivity.this));
 
+        grades.setHasFixedSize(true);
         names.setHasFixedSize(true);
         sums.setHasFixedSize(true);
 
@@ -81,10 +84,15 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         names.setAdapter(namesAdapter);
         sums.setAdapter(sumsAdapter);
 
+        gradesAdapter = new GradesAdapter();
+        grades.setAdapter(gradesAdapter);
+
         namesList = teachersViewModel.getAllStudents();
+
         namesList.observe(TableActivity.this, list -> {
             namesAdapter.setItems(list);
             sumsAdapter.setItems(list);
+            gradesAdapter.setItems(list);
         });
     }
 
@@ -101,19 +109,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         final LiveData<List<Lesson>> lessonsList = teachersViewModel.getAllDates();
         lessonsList.observe(TableActivity.this, list -> lessonsAdapter.setItems(list));
-    }
-
-    private void initGrades() {
-        RecyclerView grades = findViewById(R.id.grades);
-
-        grades.setLayoutManager(new LinearLayoutManager(TableActivity.this));
-        grades.setHasFixedSize(true);
-
-        gradesAdapter = new GradesAdapter();
-        grades.setAdapter(gradesAdapter);
-
-        final LiveData<List<Grade>> namesList = teachersViewModel.getGrades(0);
-        namesList.observe(TableActivity.this, list -> gradesAdapter.setItems(list));
     }
 
     @Override

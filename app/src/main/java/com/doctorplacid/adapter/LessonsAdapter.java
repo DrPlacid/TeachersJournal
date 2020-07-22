@@ -17,7 +17,7 @@ import java.util.List;
 
 public class LessonsAdapter extends RecyclerView.Adapter<LessonHolder> {
 
-    private List<Lesson> datesList = new ArrayList<>();
+    private List<Lesson> lessonsList = new ArrayList<>();
     private ITableActivityListener listener;
 
     private int groupId;
@@ -39,23 +39,23 @@ public class LessonsAdapter extends RecyclerView.Adapter<LessonHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull LessonHolder holder, int position) {
-        Lesson lesson = datesList.get(position);
+        Lesson lesson = lessonsList.get(position);
         holder.setText(lesson);
     }
 
     @Override
     public int getItemCount() {
-        return datesList.size();
+        return lessonsList.size();
     }
 
     public void setItems(List<Lesson> lessonsList) {
-        this.datesList = lessonsList;
+        this.lessonsList = lessonsList;
             for(int i = 0; i < lessons; i++)
-                datesList.add(new Lesson("", groupId));
+                this.lessonsList.add(new Lesson("", groupId));
         notifyDataSetChanged();
     }
 
     public Lesson getItemAt(int position) {
-        return datesList.get(position);
+        return lessonsList.get(position);
     }
 }

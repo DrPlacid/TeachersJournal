@@ -11,10 +11,7 @@ import java.util.List;
 
 @Dao
 public interface GradeDAO {
-
-    @Insert
-    void insert(Grade grade);
-
+/*
     @Update
     void update(Grade grade);
 
@@ -23,5 +20,7 @@ public interface GradeDAO {
 
     @Query("SELECT * FROM grades_table")
     LiveData<List<Grade>> retrieveByStudentId();
+
+ */
 
 }

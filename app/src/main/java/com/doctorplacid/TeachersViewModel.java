@@ -13,6 +13,7 @@ import com.doctorplacid.room.lessons.LessonRepository;
 import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.groups.GroupsRepository;
 import com.doctorplacid.room.students.Student;
+import com.doctorplacid.room.students.StudentWithGrades;
 import com.doctorplacid.room.students.StudentsRepository;
 
 import java.util.List;
@@ -22,19 +23,16 @@ public class TeachersViewModel extends AndroidViewModel {
     private GroupsRepository groupsRepository;
     private StudentsRepository studentsRepository;
     private LessonRepository lessonRepository;
-    private GradeRepository gradeRepository;
 
     private LiveData<List<Group>> groupsList;
-    private LiveData<List<Student>> studentsList;
+    private LiveData<List<StudentWithGrades>> studentsList;
     private LiveData<List<Lesson>> lessonsList;
-    private LiveData<List<Grade>> gradesList;
 
     public TeachersViewModel(@NonNull Application application) {
         super(application);
         groupsRepository = new GroupsRepository(application);
         studentsRepository = new StudentsRepository(application);
         lessonRepository = new LessonRepository(application);
-        gradeRepository = new GradeRepository(application);
 
         groupsList = groupsRepository.retrieveAll();
     }
@@ -66,8 +64,8 @@ public class TeachersViewModel extends AndroidViewModel {
 
 
 
-    public void insertStudent(Student student, int lessons) {
-        studentsRepository.insert(student, lessons);
+    public boolean insertStudent(Student student, int lessons) {
+        return studentsRepository.insert(student, lessons);
     }
 
     public void updateStudent(Student student) {
@@ -78,7 +76,7 @@ public class TeachersViewModel extends AndroidViewModel {
         studentsRepository.delete(student);
     }
 
-    public LiveData<List<Student>> getAllStudents(){
+    public LiveData<List<StudentWithGrades>> getAllStudents(){
         return studentsList;
     }
 
@@ -96,10 +94,5 @@ public class TeachersViewModel extends AndroidViewModel {
         return lessonsList;
     }
 
-
-
-    public LiveData<List<Grade>> getGrades(int studentId) {
-        return gradeRepository.retrieveByStudentId(studentId);
-    }
 
 }

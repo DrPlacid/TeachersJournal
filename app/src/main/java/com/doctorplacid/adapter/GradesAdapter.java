@@ -16,6 +16,7 @@ import com.doctorplacid.TeachersViewModel;
 import com.doctorplacid.holder.RowGradesHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.Student;
+import com.doctorplacid.room.students.StudentWithGrades;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class GradesAdapter extends RecyclerView.Adapter<RowGradesHolder> {
 
     private static final String TAG = "GRADES_ADAPTER";
 
-    private List<Grade> studentList = new ArrayList<>();
+    private List<StudentWithGrades> studentsWithGrades = new ArrayList<>();
 
     @NonNull
     @Override
@@ -36,17 +37,17 @@ public class GradesAdapter extends RecyclerView.Adapter<RowGradesHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RowGradesHolder holder, int position) {
-        Grade grade = studentList.get(position);
+        Grade grade = studentsWithGrades.get(position).getGrades().get(0);
         holder.setList(grade);
     }
 
     @Override
     public int getItemCount() {
-        return studentList.size();
+        return studentsWithGrades.size();
     }
 
-    public void setItems(List<Grade> studentList) {
-        this.studentList = studentList;
+    public void setItems(List<StudentWithGrades> studentsWithGrades) {
+        this.studentsWithGrades = studentsWithGrades;
         notifyDataSetChanged();
     }
 }

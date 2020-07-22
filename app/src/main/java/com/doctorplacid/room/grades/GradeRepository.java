@@ -7,10 +7,11 @@ import androidx.lifecycle.LiveData;
 
 import com.doctorplacid.room.TeachersDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GradeRepository {
-
+/*
     private GradeDAO gradeDAO;
 
     public GradeRepository(Application application) {
@@ -30,24 +31,18 @@ public class GradeRepository {
         new GradeRepository.GradeDeleteAsyncTask(gradeDAO).execute(grade);
     }
 
-    public LiveData<List<Grade>> retrieveByStudentId(int studentId) {
-        return gradeDAO.retrieveByStudentId();
-    }
 
     private static class GradeInsertAsyncTask extends AsyncTask<Integer, Void, Void> {
         private GradeDAO gradeDAO;
+        private List<Grade> grades;
 
         public GradeInsertAsyncTask(GradeDAO gradeDAO) {
             this.gradeDAO = gradeDAO;
+            grades = new ArrayList<>();
         }
 
         @Override
         protected Void doInBackground(Integer... integers) {
-            final int id = integers[0];
-            Grade grade = new Grade(id);
-            grade.setAmount(11);
-            gradeDAO.insert(grade);
-            //gradeDAO.insert(new Grade(id));
             return null;
         }
     }
@@ -79,4 +74,6 @@ public class GradeRepository {
             return null;
         }
     }
+
+ */
 }
