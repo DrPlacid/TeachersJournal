@@ -64,8 +64,8 @@ public class TeachersViewModel extends AndroidViewModel {
 
 
 
-    public boolean insertStudent(Student student, int lessons) {
-        return studentsRepository.insert(student, lessons);
+    public void insertStudent(Student student, int lessons) {
+        studentsRepository.insert(student, lessons);
     }
 
     public void updateStudent(Student student) {

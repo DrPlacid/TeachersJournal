@@ -23,15 +23,17 @@ public abstract class StudentDAO {
     @Insert
     abstract void insert(List<Grade> grades);
 
-    public boolean insertNewStudentWithGrades(StudentWithGrades studentWithGrades) {
+    public void insertNewStudentWithGrades(StudentWithGrades studentWithGrades, int lessons) {
         int id = (int) insert(studentWithGrades.getStudent());
 
         List<Grade> grades = new ArrayList<>();
-        for (int i = 0; i < 100; i++)
-            grades.add(new Grade(id));
+        for (int i = 0; i < lessons; i++) {
+            Grade grade = new Grade(id);
+            grade.setAmount(11);
+            grades.add(grade);
+        }
 
         insert(grades);
-        return true;
     }
 
     @Update

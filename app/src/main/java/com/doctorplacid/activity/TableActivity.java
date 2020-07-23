@@ -1,5 +1,6 @@
 package com.doctorplacid.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
@@ -16,7 +17,6 @@ import com.doctorplacid.adapter.GradesAdapter;
 import com.doctorplacid.adapter.SumsAdapter;
 import com.doctorplacid.dialog.DialogAddStudent;
 import com.doctorplacid.dialog.DialogDeleteStudent;
-import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
@@ -41,8 +41,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     private LessonsAdapter lessonsAdapter;
     private GradesAdapter gradesAdapter;
 
-    LiveData<List<StudentWithGrades>> namesList;
-
     private FloatingActionButton fabAdd;
 
     @Override
@@ -58,58 +56,67 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         thisGroup = teachersViewModel.retrieveGroup(GROUP_ID);
         teachersViewModel.initData(GROUP_ID);
 
-        initStudents();
-        initLessons();
+        init();
 
         fabAdd = findViewById(R.id.fab_add_table);
         fabAdd.setOnClickListener(v -> openAddDialog());
     }
 
-    private void initStudents() {
+    private void init() {
         RecyclerView names = findViewById(R.id.names);
         RecyclerView sums = findViewById(R.id.sums);
         RecyclerView grades = findViewById(R.id.grades);
+        RecyclerView lessons = findViewById(R.id.lessons);
 
         names.setLayoutManager(new LinearLayoutManager(TableActivity.this));
         sums.setLayoutManager(new LinearLayoutManager(TableActivity.this));
         grades.setLayoutManager(new LinearLayoutManager(TableActivity.this));
+        lessons.setLayoutManager(new LinearLayoutManager(TableActivity.this,
+                LinearLayoutManager.HORIZONTAL, false));
 
         grades.setHasFixedSize(true);
         names.setHasFixedSize(true);
         sums.setHasFixedSize(true);
+        lessons.setHasFixedSize(true);
 
         namesAdapter = new NamesAdapter(this);
         SumsAdapter sumsAdapter = new SumsAdapter();
+        lessonsAdapter = new LessonsAdapter(this, GROUP_ID, thisGroup.getLessons());
 
         names.setAdapter(namesAdapter);
         sums.setAdapter(sumsAdapter);
+        lessons.setAdapter(lessonsAdapter);
 
-        gradesAdapter = new GradesAdapter();
+        gradesAdapter = new GradesAdapter(TableActivity.this);
         grades.setAdapter(gradesAdapter);
 
-        namesList = teachersViewModel.getAllStudents();
+        final LiveData<List<StudentWithGrades>> namesList = teachersViewModel.getAllStudents();
+        final LiveData<List<Lesson>> lessonsList = teachersViewModel.getAllDates();
 
         namesList.observe(TableActivity.this, list -> {
             namesAdapter.setItems(list);
             sumsAdapter.setItems(list);
             gradesAdapter.setItems(list);
         });
-    }
-
-    private void initLessons() {
-        int lessons = thisGroup.getLessons();
-        RecyclerView dates = findViewById(R.id.lessons);
-
-        dates.setLayoutManager(new LinearLayoutManager(TableActivity.this,
-                LinearLayoutManager.HORIZONTAL, false));
-        dates.setHasFixedSize(true);
-
-        lessonsAdapter = new LessonsAdapter(this, GROUP_ID, lessons);
-        dates.setAdapter(lessonsAdapter);
-
-        final LiveData<List<Lesson>> lessonsList = teachersViewModel.getAllDates();
         lessonsList.observe(TableActivity.this, list -> lessonsAdapter.setItems(list));
+
+        names.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                grades.scrollBy(dx, dy);
+            }
+        });
+
+        lessons.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                gradesAdapter.scrollAllItems(dx, dy);
+            }
+        });
     }
+
 
     @Override
     public void addStudent(String name) {

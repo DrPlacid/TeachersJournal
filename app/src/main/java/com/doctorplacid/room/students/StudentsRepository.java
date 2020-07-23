@@ -22,14 +22,8 @@ public class StudentsRepository {
         studentDAO = database.studentDAO();
     }
 
-    public boolean insert(Student student, int lessons) {
-        try {
-            return new StudentInsertAsyncTask(studentDAO).execute(student).get();
-        } catch (ExecutionException e) {
-            return false;
-        } catch (InterruptedException e) {
-            return false;
-        }
+    public void insert(Student student, int lessons) {
+        new StudentInsertAsyncTask(studentDAO, lessons).execute(student);
     }
 
     public void update(Student student) {
@@ -44,18 +38,21 @@ public class StudentsRepository {
         return studentDAO.getStudentsWithGrades(groupId);
     }
 
-    private static class StudentInsertAsyncTask extends AsyncTask<Student, Void, Boolean> {
+    private static class StudentInsertAsyncTask extends AsyncTask<Student, Void, Void> {
         private StudentDAO studentDAO;
+        private int lessons;
 
 
-        public StudentInsertAsyncTask(StudentDAO studentDAO) {
+        public StudentInsertAsyncTask(StudentDAO studentDAO, int lessons) {
             this.studentDAO = studentDAO;
+            this.lessons = lessons;
         }
 
         @Override
-        protected Boolean doInBackground(Student... students) {
+        protected Void doInBackground(Student... students) {
             StudentWithGrades studentWithGrades = new StudentWithGrades(students[0]);
-            return studentDAO.insertNewStudentWithGrades(studentWithGrades);
+            studentDAO.insertNewStudentWithGrades(studentWithGrades, lessons);
+            return null;
         }
 
     }
