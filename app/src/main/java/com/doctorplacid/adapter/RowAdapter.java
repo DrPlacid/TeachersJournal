@@ -1,44 +1,78 @@
 package com.doctorplacid.adapter;
 
+
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.R;
-import com.doctorplacid.holder.CellHolder;
+import com.doctorplacid.holder.RowHolder;
 import com.doctorplacid.room.grades.Grade;
+import com.doctorplacid.room.students.StudentWithGrades;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class RowAdapter extends RecyclerView.Adapter<CellHolder> {
+public class RowAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
 
-    private List<Grade> grades = new ArrayList<>();
+    private Set<RowHolder> holderSet = new HashSet<>();
+    private Context context;
+
+    public RowAdapter(Context context) {
+        super(DIFF_CALLBACK);
+        this.context = context;
+    }
+
+    private static final DiffUtil.ItemCallback<StudentWithGrades> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<StudentWithGrades>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+                    return oldItem.getStudent().getStudentId() == newItem.getStudent().getStudentId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+                    List<Grade> grades1 = oldItem.getGrades();
+                    List<Grade> grades2 = newItem.getGrades();
+                    if (grades1.size() != grades2.size()) return false;
+
+                    for(int i = 0; i < grades1.size(); i++)
+                        if (grades1.get(i).getGradeId() != grades2.get(i).getGradeId()) return false;
+
+                    return true;
+                }
+            };
+
 
     @NonNull
     @Override
-    public CellHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_cell, parent, false);
-        return new CellHolder(itemView);
+                .inflate(R.layout.layout_row,parent, false);
+        RowHolder holder = new RowHolder(itemView, context);
+        holderSet.add(holder);
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CellHolder holder, int position) {
-        Grade grade = grades.get(position);
-        holder.setText(grade);
+    public void onBindViewHolder(@NonNull RowHolder holder, int position) {
+        StudentWithGrades studentWithGrades = getItem(position);
+        holder.setList(studentWithGrades);
     }
 
-    @Override
-    public int getItemCount() {
-        return grades.size();
+    public void scrollAllItems(int dx, int dy) {
+        for (RowHolder holder : holderSet) {
+            holder.scroll(dx, dy);
+        }
     }
 
-    public void setItems(List<Grade> grades) {
-        this.grades = grades;
-        notifyDataSetChanged();
+    public StudentWithGrades getItemAt(int position) {
+        return getItem(position);
     }
 }
