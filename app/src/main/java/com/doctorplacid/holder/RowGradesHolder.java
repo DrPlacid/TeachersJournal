@@ -25,7 +25,8 @@ public class RowGradesHolder extends RecyclerView.ViewHolder {
         isScrollEnabled = false;
         recyclerView = itemView.findViewById(R.id.RecyclerViewRow);
 
-        LinearLayoutManager manager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false ){
+        LinearLayoutManager manager =
+                new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false ) {
             @Override
             public boolean canScrollHorizontally() {
                 return isScrollEnabled;

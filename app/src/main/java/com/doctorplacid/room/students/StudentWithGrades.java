@@ -1,5 +1,6 @@
 package com.doctorplacid.room.students;
 
+import androidx.annotation.Nullable;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
@@ -21,6 +22,10 @@ public class StudentWithGrades {
 
     public void setGrades(List<Grade> grades) {
         this.grades = grades;
+        int sum = 0;
+        for (Grade grade : grades)
+            sum += grade.getAmount();
+        this.student.setSum(sum);
     }
 
     public Student getStudent() {
@@ -30,4 +35,5 @@ public class StudentWithGrades {
     public List<Grade> getGrades() {
         return grades;
     }
+
 }

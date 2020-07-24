@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivityList
         teachersViewModel = ViewModelProviders.of(MainActivity.this).get(TeachersViewModel.class);
         final LiveData<List<Group>> list = teachersViewModel.getAllGroups();
 
-        list.observe(MainActivity.this, groups -> adapter.setItems(groups));
+        list.observe(MainActivity.this, groups -> adapter.submitList(groups));
 
         FloatingActionButton fabAddGroup = findViewById(R.id.fab_add_main);
         fabAddGroup.setOnClickListener(view -> openAddDialog(DataType.GROUP));

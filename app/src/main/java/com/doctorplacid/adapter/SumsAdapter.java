@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.doctorplacid.R;
@@ -15,9 +17,24 @@ import com.doctorplacid.room.students.StudentWithGrades;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SumsAdapter extends RecyclerView.Adapter<SumHolder> {
+public class SumsAdapter extends ListAdapter<StudentWithGrades, SumHolder> {
 
-    List<StudentWithGrades> students = new ArrayList<>();
+
+    public SumsAdapter() {
+        super(DIFF_CALLBACK);
+    }
+
+    private static final DiffUtil.ItemCallback<StudentWithGrades> DIFF_CALLBACK = new DiffUtil.ItemCallback<StudentWithGrades>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+            return oldItem.getStudent().getStudentId() == newItem.getStudent().getStudentId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+            return oldItem.getStudent().getSum() == newItem.getStudent().getSum();
+        }
+    };
 
     @NonNull
     @Override
@@ -29,17 +46,8 @@ public class SumsAdapter extends RecyclerView.Adapter<SumHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull SumHolder holder, int position) {
-        Student student = students.get(position).getStudent();
+        Student student = getItem(position).getStudent();
         holder.SetText(student);
     }
 
-    @Override
-    public int getItemCount() {
-        return students.size();
-    }
-
-    public void setItems(List<StudentWithGrades> studentsWithGrades) {
-        this.students = studentsWithGrades;
-        notifyDataSetChanged();
-    }
 }

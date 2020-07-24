@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.doctorplacid.room.grades.Grade;
-import com.doctorplacid.room.grades.GradeRepository;
 import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.lessons.LessonRepository;
 import com.doctorplacid.room.groups.Group;
@@ -24,8 +22,8 @@ public class TeachersViewModel extends AndroidViewModel {
     private StudentsRepository studentsRepository;
     private LessonRepository lessonRepository;
 
+    private LiveData<List<StudentWithGrades>> studentsWithGradesList;
     private LiveData<List<Group>> groupsList;
-    private LiveData<List<StudentWithGrades>> studentsList;
     private LiveData<List<Lesson>> lessonsList;
 
     public TeachersViewModel(@NonNull Application application) {
@@ -38,7 +36,7 @@ public class TeachersViewModel extends AndroidViewModel {
     }
 
     public void initData(int groupId) {
-        studentsList = studentsRepository.retrieveAll(groupId);
+        studentsWithGradesList = studentsRepository.retrieveAll(groupId);
         lessonsList = lessonRepository.retrieveAll(groupId);
     }
 
@@ -77,7 +75,7 @@ public class TeachersViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<StudentWithGrades>> getAllStudents(){
-        return studentsList;
+        return studentsWithGradesList;
     }
 
 

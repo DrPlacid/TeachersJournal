@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.doctorplacid.R;
@@ -19,17 +21,36 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GradesAdapter extends RecyclerView.Adapter<RowGradesHolder> {
+public class GradesAdapter extends ListAdapter<StudentWithGrades, RowGradesHolder> {
 
     private Set<RowGradesHolder> holderSet = new HashSet<>();
-    private int dx;
-    private int dy;
     private Context context;
-    private List<StudentWithGrades> studentsWithGrades = new ArrayList<>();
 
     public GradesAdapter(Context context) {
+        super(DIFF_CALLBACK);
         this.context = context;
     }
+
+    private static final DiffUtil.ItemCallback<StudentWithGrades> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<StudentWithGrades>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+                    return oldItem.getStudent().getStudentId() == newItem.getStudent().getStudentId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+                    List<Grade> grades1 = oldItem.getGrades();
+                    List<Grade> grades2 = newItem.getGrades();
+                    if (grades1.size() != grades2.size()) return false;
+
+                    for(int i = 0; i < grades1.size(); i++)
+                        if (grades1.get(i).getGradeId() != grades2.get(i).getGradeId()) return false;
+
+                    return true;
+                }
+            };
+
 
     @NonNull
     @Override
@@ -43,19 +64,8 @@ public class GradesAdapter extends RecyclerView.Adapter<RowGradesHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RowGradesHolder holder, int position) {
-        List <Grade> grades = studentsWithGrades.get(position).getGrades();
+        List <Grade> grades = getItem(position).getGrades();
         holder.setList(grades);
-        holder.scroll(dx, dy);
-    }
-
-    @Override
-    public int getItemCount() {
-        return studentsWithGrades.size();
-    }
-
-    public void setItems(List<StudentWithGrades> studentsWithGrades) {
-        this.studentsWithGrades = studentsWithGrades;
-        notifyDataSetChanged();
     }
 
     public void scrollAllItems(int dx, int dy) {

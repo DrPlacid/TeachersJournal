@@ -30,13 +30,13 @@ import java.util.List;
 public class TableActivity extends AppCompatActivity implements ITableActivityListener {
 
     private TeachersViewModel teachersViewModel;
+    boolean canScroll = false;
 
     private static int GROUP_ID;
 
     private static Group thisGroup;
     private static Student tempStudent;
 
-    TextView tv;
     private NamesAdapter namesAdapter;
     private LessonsAdapter lessonsAdapter;
     private GradesAdapter gradesAdapter;
@@ -50,8 +50,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         GROUP_ID = getIntent().getExtras().getInt("ID");
 
         teachersViewModel = ViewModelProviders.of(TableActivity.this).get(TeachersViewModel.class);
-
-        tv = findViewById(R.id.textView2);
 
         thisGroup = teachersViewModel.retrieveGroup(GROUP_ID);
         teachersViewModel.initData(GROUP_ID);
@@ -70,7 +68,12 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         names.setLayoutManager(new LinearLayoutManager(TableActivity.this));
         sums.setLayoutManager(new LinearLayoutManager(TableActivity.this));
-        grades.setLayoutManager(new LinearLayoutManager(TableActivity.this));
+        grades.setLayoutManager(new LinearLayoutManager(TableActivity.this) {
+            @Override
+            public boolean canScrollVertically() {
+                return canScroll;
+            }
+        });
         lessons.setLayoutManager(new LinearLayoutManager(TableActivity.this,
                 LinearLayoutManager.HORIZONTAL, false));
 
@@ -94,17 +97,23 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         final LiveData<List<Lesson>> lessonsList = teachersViewModel.getAllDates();
 
         namesList.observe(TableActivity.this, list -> {
-            namesAdapter.setItems(list);
-            sumsAdapter.setItems(list);
-            gradesAdapter.setItems(list);
+            namesAdapter.submitList(list);
+            sumsAdapter.submitList(list);
+            gradesAdapter.submitList(list);
         });
-        lessonsList.observe(TableActivity.this, list -> lessonsAdapter.setItems(list));
+
+        lessonsList.observe(TableActivity.this, list ->
+                lessonsAdapter.setItems(list)
+        );
 
         names.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                canScroll = true;
                 grades.scrollBy(dx, dy);
+                canScroll = false;
+
             }
         });
 
@@ -116,7 +125,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
             }
         });
     }
-
 
     @Override
     public void addStudent(String name) {

@@ -5,7 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
@@ -13,43 +14,45 @@ import com.doctorplacid.holder.NameHolder;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.room.students.StudentWithGrades;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class NamesAdapter extends RecyclerView.Adapter<NameHolder> {
+public class NamesAdapter extends ListAdapter<StudentWithGrades, NameHolder> {
 
-    private List<StudentWithGrades> students = new ArrayList<>();
+    private ITableActivityListener Listener;
 
-    private ITableActivityListener iGlobalListener;
-
-    public NamesAdapter(ITableActivityListener iGlobalListener) {
-        this.iGlobalListener = iGlobalListener;
+    public NamesAdapter(ITableActivityListener listener) {
+        super(DIFF_CALLBACK);
+        this.Listener = listener;
     }
+
+    private static final DiffUtil.ItemCallback<StudentWithGrades> DIFF_CALLBACK = new DiffUtil.ItemCallback<StudentWithGrades>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+            return oldItem.getStudent().getStudentId() == newItem.getStudent().getStudentId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+            return oldItem.getStudent().getName().equals(newItem.getStudent().getName());
+        }
+    };
+
 
     @NonNull
     @Override
     public NameHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_row_header, parent, false);
-        return new NameHolder(itemView, iGlobalListener);
+        return new NameHolder(itemView, Listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NameHolder holder, int position) {
-        holder.setText(students.get(position).getStudent());
+        Student student = getItem(position).getStudent();
+        holder.setText(student);
     }
 
-    @Override
-    public int getItemCount() {
-        return students.size();
-    }
-
-    public void setItems(List<StudentWithGrades> studentsWithGrades) {
-        this.students = studentsWithGrades;
-        notifyDataSetChanged();
-    }
 
     public Student getItemAt(int position) {
-        return students.get(position).getStudent();
+        return getItem(position).getStudent();
     }
 }

@@ -24,10 +24,7 @@ public class GroupsRepository {
     public Group retrieve(int id) {
         try {
             return new GroupRetrieveAsyncTask(groupDAO).execute(id).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            return null;
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             return null;
         }

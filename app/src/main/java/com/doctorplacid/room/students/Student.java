@@ -3,6 +3,7 @@ package com.doctorplacid.room.students;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 
@@ -23,6 +24,7 @@ public class Student {
 
     private String name;
 
+    @Ignore
     private int sum;
 
     @ColumnInfo(name = "group_id")
