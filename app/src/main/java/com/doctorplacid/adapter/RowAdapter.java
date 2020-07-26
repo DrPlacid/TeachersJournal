@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
+import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
 import com.doctorplacid.holder.CellHolder;
 import com.doctorplacid.room.grades.Grade;
@@ -16,11 +17,11 @@ import com.doctorplacid.room.grades.Grade;
 
 public class RowAdapter extends ListAdapter<Grade, CellHolder> {
 
-    private Context context;
+    private ITableActivityListener listener;
 
-    public RowAdapter(Context context) {
+    public RowAdapter(ITableActivityListener listener) {
         super(DIFF_CALLBACK);
-        this.context = context;
+        this.listener = listener;
     }
 
     public static final DiffUtil.ItemCallback<Grade> DIFF_CALLBACK = new DiffUtil.ItemCallback<Grade>() {
@@ -31,8 +32,7 @@ public class RowAdapter extends ListAdapter<Grade, CellHolder> {
 
         @Override
         public boolean areContentsTheSame(@NonNull Grade oldItem, @NonNull Grade newItem) {
-            return (oldItem.getAmount() == newItem.getAmount()
-                    && oldItem.isPresence() == newItem.isPresence());
+            return (oldItem.getAmount() == newItem.getAmount() && oldItem.isPresence() == newItem.isPresence());
         }
     };
 
@@ -41,7 +41,7 @@ public class RowAdapter extends ListAdapter<Grade, CellHolder> {
     public CellHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_cell, parent, false);
-        return new CellHolder(itemView, context);
+        return new CellHolder(itemView, listener);
     }
 
     @Override
@@ -49,4 +49,6 @@ public class RowAdapter extends ListAdapter<Grade, CellHolder> {
         Grade grade = getItem(position);
         holder.setGrade(grade);
     }
+
+
 }

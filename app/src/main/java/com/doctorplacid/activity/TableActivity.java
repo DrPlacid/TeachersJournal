@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
@@ -33,7 +35,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     private TeachersViewModel teachersViewModel;
 
     private static int GROUP_ID;
-    private boolean gradeEdited = false;
+    public static boolean edited = false;
 
     private static Group thisGroup;
     private static Student tempStudent;
@@ -43,7 +45,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     private RecyclerView.OnScrollListener scrollListener;
 
     private FloatingActionButton fabAdd;
-    private FloatingActionButton fabOk;
     private RecyclerView lessons;
 
     @Override
@@ -62,8 +63,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         fabAdd = findViewById(R.id.fab_add_student);
         fabAdd.setOnClickListener(v -> openAddDialog());
-
-        fabOk = findViewById(R.id.fab_ok);
     }
 
     private void init() {
@@ -131,18 +130,24 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     }
 
     @Override
-    public void onGradeEdited(CellHolder holder) {
-        if(!gradeEdited) {
-            gradeEdited = true;
-            holder.showEditText();
+    public void onGradeEdited(CellHolder holder, EditText editText) {
+            edited = true;
+            editText.requestFocus();
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.showSoftInput(editText, 0);
+            FloatingActionButton fabOk = findViewById(R.id.fab_ok);
             fabOk.setVisibility(View.VISIBLE);
             fabOk.setOnClickListener(view -> {
-                Grade grade = holder.showTextView();
+                Grade temp = holder.updateGrade();
+                teachersViewModel.updateGrade(temp);
+                holder.setGrade(temp);
                 fabOk.setVisibility(View.INVISIBLE);
-                gradeEdited = false;
-                teachersViewModel.updateGrade(grade);
+                if (getCurrentFocus() != null) {
+                    inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(), 0);
+                }
+                editText.clearFocus();
+                edited = false;
             });
-        }
     }
 
 

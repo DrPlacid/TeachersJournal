@@ -1,9 +1,11 @@
 package com.doctorplacid.holder;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,50 +18,57 @@ import com.doctorplacid.R;
 
 public class CellHolder extends RecyclerView.ViewHolder {
 
+    private static final int DIRECTION_LEFT = -1;
+    private static final int DIRECTION_RIGHT = 1;
+
     private TextView textView;
     private EditText editText;
+    private HorizontalScrollView scrollView;
+    private LinearLayout linearLayout;
 
     private Grade grade;
 
-    public CellHolder(@NonNull View itemView, Context context) {
+    public CellHolder(@NonNull View itemView, ITableActivityListener listener) {
         super(itemView);
         textView = itemView.findViewById(R.id.gradeTextView);
         editText = itemView.findViewById(R.id.gradeEditText);
-        ITableActivityListener listener = (ITableActivityListener) context;
+        scrollView = itemView.findViewById(R.id.scrollCell);
+        linearLayout = itemView.findViewById(R.id.linear);
 
-        textView.setOnClickListener(view -> listener.onGradeEdited(CellHolder.this));
+        textView.setOnClickListener(view -> {
+            if (!TableActivity.edited) {
+                listener.onGradeEdited(this, editText);
+                focusOnView(CellHolder.DIRECTION_RIGHT);
+            }
+        });
     }
 
     public void setGrade(Grade grade) {
         this.grade = grade;
-        setText();
-    }
-
-    public Grade getGrade() {
-        return grade;
-    }
-
-    public void setText() {
         textView.setText(String.valueOf(grade.getAmount()));
     }
 
-    public EditText showEditText() {
-        textView.setVisibility(View.INVISIBLE);
+
+    public Grade updateGrade() {
+        String newAmount = editText.getText().toString().trim();
+        if (newAmount.length() > 0) {
+            int amount = Integer.parseInt(newAmount);
+            grade.setAmount(amount);
+            focusOnView(CellHolder.DIRECTION_LEFT);
+        }
+        return grade;
+    }
+
+    private void focusOnView(int direction) {
+        new Handler().post(() -> {
+            int vLeft = linearLayout.getLeft();
+            int vRight = linearLayout.getRight();
+            int sWidth = scrollView.getWidth();
+            scrollView.smoothScrollTo(direction*(vLeft + vRight - sWidth), 0);
+        });
         String text = String.valueOf(grade.getAmount());
         editText.setText(text);
         editText.setSelection(text.length());
-        editText.setVisibility(View.VISIBLE);
-        return editText;
-    }
-
-    public Grade showTextView() {
-        String text = editText.getText().toString().trim();
-        int amount = Integer.parseInt(text);
-        editText.setVisibility(View.INVISIBLE);
-        grade.setAmount(amount);
-        textView.setVisibility(View.VISIBLE);
-        setText();
-        return grade;
     }
 
 }

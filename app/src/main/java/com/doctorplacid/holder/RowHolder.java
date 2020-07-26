@@ -20,14 +20,12 @@ public class RowHolder extends RecyclerView.ViewHolder {
     private TextView name;
     private TextView sum;
     private RecyclerView recyclerView;
-    private Context context;
 
     RecyclerView.OnScrollListener scrollListener;
     private ITableActivityListener listener;
 
     public RowHolder(@NonNull View itemView, Context context, TableAdapter adapter) {
         super(itemView);
-        this.context = context;
         listener = (ITableActivityListener) context;
         name = itemView.findViewById(R.id.nameTextView);
         sum = itemView.findViewById(R.id.sumTextView);
@@ -59,7 +57,7 @@ public class RowHolder extends RecyclerView.ViewHolder {
         name.setText(nameText);
         sum.setText(sumText);
 
-        RowAdapter adapter = new RowAdapter(context);
+        RowAdapter adapter = new RowAdapter(listener);
         recyclerView.setAdapter(adapter);
         adapter.submitList(studentWithGrades.getGrades());
     }

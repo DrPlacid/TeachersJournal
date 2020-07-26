@@ -4,24 +4,38 @@
     android:layout_width="@dimen/row_height"
     android:layout_height="@dimen/row_height">
 
-    <EditText
-        android:id="@+id/gradeEditText"
-        android:layout_width="match_parent"
+    <HorizontalScrollView
+        android:id="@+id/scrollCell"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:ems="10"
-        android:gravity="center"
-        android:visibility="invisible"
-        android:inputType="number" />
+        android:scrollbarSize="0dp">
 
-    <TextView
-        android:id="@+id/gradeTextView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:visibility="visible"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"/>
+        <LinearLayout
+            android:id="@+id/linear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/gradeTextView"
+                android:layout_width="@dimen/row_height"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <EditText
+                android:id="@+id/gradeEditText"
+                android:layout_width="@dimen/row_height"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:inputType="number"
+                android:digits="1234567890"
+                android:maxLength="2"/>
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
 </androidx.cardview.widget.CardView>

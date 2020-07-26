@@ -101,7 +101,7 @@ public class GroupsRepository {
 
         @Override
         protected Void doInBackground(Group... groups) {
-            groupDAO.deleteGroup(groups[0]);
+            groupDAO.delete(groups[0]);
             return null;
         }
     }

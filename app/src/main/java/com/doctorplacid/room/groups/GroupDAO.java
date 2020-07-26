@@ -44,14 +44,6 @@ public abstract class GroupDAO {
     @Delete
     abstract void delete(Group group);
 
-    void deleteGroup(Group group) {
-        deleteRelatedLessons();
-        delete(group);
-    }
-
-    @Query("DELETE FROM lessons_table")
-    abstract void deleteRelatedLessons();
-
     @Query("SELECT * FROM group_table WHERE id = :id")
     abstract Group retrieve(int id);
 
