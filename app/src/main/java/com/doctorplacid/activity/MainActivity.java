@@ -46,10 +46,10 @@ public class MainActivity extends AppCompatActivity implements IMainActivityList
         adapter = new GroupsAdapter(this);
         recyclerView.setAdapter(adapter);
 
-        teachersViewModel = ViewModelProviders.of(MainActivity.this).get(TeachersViewModel.class);
+        teachersViewModel = ViewModelProviders.of(this).get(TeachersViewModel.class);
         final LiveData<List<Group>> list = teachersViewModel.getAllGroups();
 
-        list.observe(MainActivity.this, groups -> adapter.submitList(groups));
+        list.observe(this, groups -> adapter.submitList(groups));
 
         FloatingActionButton fabAddGroup = findViewById(R.id.fab_add_main);
         fabAddGroup.setOnClickListener(view -> openAddDialog(DataType.GROUP));
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivityList
                 .get(position)
                 .getId();
 
-        Intent intent = new Intent(MainActivity.this, TableActivity.class);
+        Intent intent = new Intent(this, TableActivity.class);
         intent.putExtra("ID", id);
         startActivity(intent);
     }

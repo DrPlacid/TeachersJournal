@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.doctorplacid.room.grades.Grade;
+import com.doctorplacid.room.grades.GradeRepository;
 import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.lessons.LessonRepository;
 import com.doctorplacid.room.groups.Group;
@@ -21,6 +23,7 @@ public class TeachersViewModel extends AndroidViewModel {
     private GroupsRepository groupsRepository;
     private StudentsRepository studentsRepository;
     private LessonRepository lessonRepository;
+    private GradeRepository gradeRepository;
 
     private LiveData<List<StudentWithGrades>> studentsWithGradesList;
     private LiveData<List<Group>> groupsList;
@@ -31,6 +34,7 @@ public class TeachersViewModel extends AndroidViewModel {
         groupsRepository = new GroupsRepository(application);
         studentsRepository = new StudentsRepository(application);
         lessonRepository = new LessonRepository(application);
+        gradeRepository = new GradeRepository(application);
 
         groupsList = groupsRepository.retrieveAll();
     }
@@ -62,8 +66,8 @@ public class TeachersViewModel extends AndroidViewModel {
 
 
 
-    public void insertStudent(Student student, int lessons) {
-        studentsRepository.insert(student, lessons);
+    public void insertStudent(Student student, Group group) {
+        studentsRepository.insert(student, group);
     }
 
     public void updateStudent(Student student) {
@@ -79,17 +83,20 @@ public class TeachersViewModel extends AndroidViewModel {
     }
 
 
-
-    public void insertDate(Lesson lesson) {
-        lessonRepository.insert(lesson);
+    public void updateLesson(Lesson lesson) {
+        lessonRepository.update(lesson);
     }
 
     public void deleteDate(Lesson lesson) {
         lessonRepository.delete(lesson);
     }
 
-    public LiveData<List<Lesson>> getAllDates() {
+    public LiveData<List<Lesson>> getAllLessons() {
         return lessonsList;
+    }
+
+    public void updateGrade(Grade grade) {
+        gradeRepository.update(grade);
     }
 
 

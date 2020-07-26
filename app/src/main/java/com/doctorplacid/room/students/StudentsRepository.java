@@ -2,12 +2,14 @@ package com.doctorplacid.room.students;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.doctorplacid.room.TeachersDatabase;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.grades.GradeRepository;
+import com.doctorplacid.room.groups.Group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +24,8 @@ public class StudentsRepository {
         studentDAO = database.studentDAO();
     }
 
-    public void insert(Student student, int lessons) {
-        new StudentInsertAsyncTask(studentDAO, lessons).execute(student);
+    public void insert(Student student, Group group) {
+        new StudentInsertAsyncTask(studentDAO, group).execute(student);
     }
 
     public void update(Student student) {
@@ -40,18 +42,18 @@ public class StudentsRepository {
 
     private static class StudentInsertAsyncTask extends AsyncTask<Student, Void, Void> {
         private StudentDAO studentDAO;
-        private int lessons;
+        private Group group;
 
 
-        public StudentInsertAsyncTask(StudentDAO studentDAO, int lessons) {
+        public StudentInsertAsyncTask(StudentDAO studentDAO, Group group) {
             this.studentDAO = studentDAO;
-            this.lessons = lessons;
+            this.group = group;
         }
 
         @Override
         protected Void doInBackground(Student... students) {
             StudentWithGrades studentWithGrades = new StudentWithGrades(students[0]);
-            studentDAO.insertNewStudentWithGrades(studentWithGrades, lessons);
+            studentDAO.insertNewStudentWithGrades(studentWithGrades, group);
             return null;
         }
 

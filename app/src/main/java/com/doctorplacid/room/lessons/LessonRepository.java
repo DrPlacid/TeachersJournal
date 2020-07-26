@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import com.doctorplacid.room.TeachersDatabase;
-import com.doctorplacid.room.students.Student;
 
 import java.util.List;
 
@@ -19,8 +18,8 @@ public class LessonRepository {
         lessonDAO = database.dateDAO();
     }
 
-    public void insert(Lesson lesson) {
-        new LessonRepository.DateInsertAsyncTask(lessonDAO).execute(lesson);
+    public void update(Lesson lesson) {
+        new DateUpdateAsyncTask(lessonDAO).execute(lesson);
     }
 
     public void delete(Lesson lesson) {
@@ -31,16 +30,16 @@ public class LessonRepository {
         return lessonDAO.retrieveAll(groupId);
     }
 
-    private static class DateInsertAsyncTask extends AsyncTask<Lesson, Void, Void> {
+    private static class DateUpdateAsyncTask extends AsyncTask<Lesson, Void, Void> {
         private LessonDAO lessonDAO;
 
-        public DateInsertAsyncTask(LessonDAO lessonDAO) {
+        public DateUpdateAsyncTask(LessonDAO lessonDAO) {
             this.lessonDAO = lessonDAO;
         }
 
         @Override
         protected Void doInBackground(Lesson... lessons) {
-            lessonDAO.insert(lessons[0]);
+            lessonDAO.update(lessons[0]);
             return null;
         }
     }

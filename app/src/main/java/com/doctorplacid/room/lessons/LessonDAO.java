@@ -5,19 +5,20 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
 @Dao
 public interface LessonDAO {
 
-    @Insert
-    void insert(Lesson lesson);
+    @Update
+    void update(Lesson lesson);
 
     @Delete
     void delete(Lesson lesson);
 
-    @Query("SELECT * FROM lessons_table WHERE group_id = :groupId")
+    @Query("SELECT * FROM lessons_table WHERE group_id = :groupId ORDER BY id ")
     LiveData<List<Lesson>> retrieveAll(int groupId);
 
 }

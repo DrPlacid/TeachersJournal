@@ -73,7 +73,7 @@ public class GroupsRepository {
 
         @Override
         protected Void doInBackground(Group... groups) {
-            groupDAO.insert(groups[0]);
+            groupDAO.insertNewGroup(groups[0]);
             return null;
         }
     }
@@ -101,7 +101,7 @@ public class GroupsRepository {
 
         @Override
         protected Void doInBackground(Group... groups) {
-            groupDAO.delete(groups[0]);
+            groupDAO.deleteGroup(groups[0]);
             return null;
         }
     }

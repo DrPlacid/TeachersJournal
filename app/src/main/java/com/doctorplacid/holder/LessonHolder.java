@@ -14,6 +14,7 @@ import com.doctorplacid.room.lessons.Lesson;
 public class LessonHolder extends RecyclerView.ViewHolder {
 
     private TextView dateTextView;
+    private Lesson lesson;
 
     public LessonHolder(@NonNull View itemView, @NonNull ITableActivityListener listener) {
         super(itemView);
@@ -21,7 +22,8 @@ public class LessonHolder extends RecyclerView.ViewHolder {
         dateTextView.setOnClickListener(view -> {
             TableCalendar tableCalendar = new TableCalendar();
             String currentDate = tableCalendar.getDateTwoLines();
-            listener.addDate(currentDate);
+            lesson.setDate(currentDate);
+            listener.addDate(lesson);
         });
         dateTextView.setOnLongClickListener(view -> {
             int position = getAdapterPosition();
@@ -31,7 +33,8 @@ public class LessonHolder extends RecyclerView.ViewHolder {
     }
 
     public void setText(Lesson lesson) {
-        dateTextView.setText(lesson.getDate());
+        this.lesson = lesson;
+        dateTextView.setText(String.valueOf(lesson.getId()));
     }
 
 }

@@ -47,12 +47,22 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_table"
+        android:id="@+id/fab_add_student"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:src="@drawable/ic_add_24px"
         android:layout_margin="16dp"
+        app:fabSize="normal"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_done_24px"
+        android:layout_margin="16dp"
+        android:visibility="invisible"
         app:fabSize="normal"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

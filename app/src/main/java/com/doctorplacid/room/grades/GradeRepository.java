@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GradeRepository {
-/*
+
     private GradeDAO gradeDAO;
 
     public GradeRepository(Application application) {
@@ -75,5 +75,4 @@ public class GradeRepository {
         }
     }
 
- */
 }

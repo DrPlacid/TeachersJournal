@@ -2,11 +2,11 @@ package com.doctorplacid.holder;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
-import com.doctorplacid.adapter.GradesAdapter;
+import com.doctorplacid.adapter.RowAdapter;
+import com.doctorplacid.adapter.TableAdapter;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,28 +20,32 @@ public class RowHolder extends RecyclerView.ViewHolder {
     private TextView name;
     private TextView sum;
     private RecyclerView recyclerView;
+    private Context context;
 
+    RecyclerView.OnScrollListener scrollListener;
     private ITableActivityListener listener;
 
-    private boolean isScrollEnabled;
-
-    public RowHolder(@NonNull View itemView, Context context) {
+    public RowHolder(@NonNull View itemView, Context context, TableAdapter adapter) {
         super(itemView);
+        this.context = context;
         listener = (ITableActivityListener) context;
-        isScrollEnabled = false;
         name = itemView.findViewById(R.id.nameTextView);
         sum = itemView.findViewById(R.id.sumTextView);
         recyclerView = itemView.findViewById(R.id.RecyclerViewRow);
 
-        LinearLayoutManager manager =
-                new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false ) {
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false ));
+        recyclerView.setHasFixedSize(true);
+
+        scrollListener = new RecyclerView.OnScrollListener() {
             @Override
-            public boolean canScrollHorizontally() {
-                return isScrollEnabled;
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                adapter.scrollAllItems(dx, dy, RowHolder.this);
             }
         };
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setHasFixedSize(true);
+
+        recyclerView.addOnScrollListener(scrollListener);
 
         name.setOnLongClickListener(view -> {
             listener.openDeleteDialog(getAdapterPosition());
@@ -55,15 +59,15 @@ public class RowHolder extends RecyclerView.ViewHolder {
         name.setText(nameText);
         sum.setText(sumText);
 
-        GradesAdapter adapter = new GradesAdapter();
+        RowAdapter adapter = new RowAdapter(context);
         recyclerView.setAdapter(adapter);
-        adapter.setItems(studentWithGrades.getGrades());
+        adapter.submitList(studentWithGrades.getGrades());
     }
 
     public void scroll(int dx, int dy) {
-        this.isScrollEnabled = true;
+        recyclerView.removeOnScrollListener(scrollListener);
         recyclerView.scrollBy(dx, dy);
-        this.isScrollEnabled = false;
+        recyclerView.addOnScrollListener(scrollListener);
     }
 
 }

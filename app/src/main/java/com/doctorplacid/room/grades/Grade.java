@@ -25,7 +25,6 @@ public class Grade {
 
     public Grade(int studentId) {
         this.studentId = studentId;
-        this.amount = 0;
         this.presence = true;
     }
 

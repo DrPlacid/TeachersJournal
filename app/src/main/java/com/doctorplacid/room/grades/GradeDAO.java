@@ -11,16 +11,11 @@ import java.util.List;
 
 @Dao
 public interface GradeDAO {
-/*
+
     @Update
     void update(Grade grade);
 
     @Delete
     void delete(Grade grade);
-
-    @Query("SELECT * FROM grades_table")
-    LiveData<List<Grade>> retrieveByStudentId();
-
- */
 
 }

@@ -20,9 +20,13 @@ public class Lesson {
     @ColumnInfo(name = "group_id")
     private int groupId;
 
-    public Lesson(String date, int groupId) {
-        this.date = date;
+    public Lesson(int groupId) {
         this.groupId = groupId;
+        this.date = "";
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public void setId(int id) {
