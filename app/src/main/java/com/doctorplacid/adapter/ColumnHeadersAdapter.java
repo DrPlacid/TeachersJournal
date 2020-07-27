@@ -1,5 +1,6 @@
 package com.doctorplacid.adapter;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +20,9 @@ public class ColumnHeadersAdapter extends ListAdapter<Lesson, LessonHolder> {
 
     private ITableActivityListener listener;
 
-    public ColumnHeadersAdapter(@NonNull ITableActivityListener listener) {
+    public ColumnHeadersAdapter(Context context) {
         super(DIFF_CALLBACK);
-        this.listener = listener;
+        this.listener = (ITableActivityListener) context;
     }
 
     public static final DiffUtil.ItemCallback<Lesson> DIFF_CALLBACK = new DiffUtil.ItemCallback<Lesson>() {

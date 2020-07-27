@@ -80,7 +80,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         columnHeadersAdapter = new ColumnHeadersAdapter(this);
         lessons.setAdapter(columnHeadersAdapter);
 
-        tableAdapter = new TableAdapter(this, lessons);
+        tableAdapter = new TableAdapter(this);
         grades.setAdapter(tableAdapter);
 
         final LiveData<List<StudentWithGrades>> namesList = teachersViewModel.getAllStudents();

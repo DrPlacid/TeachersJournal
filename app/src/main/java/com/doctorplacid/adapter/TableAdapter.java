@@ -25,13 +25,11 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
 
     public static Set<RowHolder> holderSet = new HashSet<>();
     private Context context;
-    private RecyclerView topRecycler;
 
 
-    public TableAdapter(Context context, RecyclerView topRecycler) {
+    public TableAdapter(Context context) {
         super(DIFF_CALLBACK);
         this.context = context;
-        this.topRecycler = topRecycler;
     }
 
     private static final DiffUtil.ItemCallback<StudentWithGrades> DIFF_CALLBACK =

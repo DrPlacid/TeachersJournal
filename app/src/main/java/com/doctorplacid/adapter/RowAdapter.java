@@ -50,5 +50,4 @@ public class RowAdapter extends ListAdapter<Grade, CellHolder> {
         holder.setGrade(grade);
     }
 
-
 }

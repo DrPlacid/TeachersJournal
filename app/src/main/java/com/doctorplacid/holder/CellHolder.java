@@ -56,7 +56,7 @@ public class CellHolder extends RecyclerView.ViewHolder {
             grade.setAmount(amount);
             focusOnView(CellHolder.DIRECTION_LEFT);
         }
-        return grade;
+        return this.grade;
     }
 
     private void focusOnView(int direction) {

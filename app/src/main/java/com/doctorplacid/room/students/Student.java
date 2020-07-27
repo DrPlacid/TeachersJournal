@@ -24,9 +24,6 @@ public class Student {
 
     private String name;
 
-    @Ignore
-    private int sum;
-
     @ColumnInfo(name = "group_id")
     private int groupId;
 
@@ -49,14 +46,6 @@ public class Student {
 
     public int getGroupId() {
         return groupId;
-    }
-
-    public int getSum() {
-        return sum;
-    }
-
-    public void setSum(int sum) {
-        this.sum = sum;
     }
 
 }

@@ -22,10 +22,6 @@ public class StudentWithGrades {
 
     public void setGrades(List<Grade> grades) {
         this.grades = grades;
-        int sum = 0;
-        for (Grade grade : grades)
-            sum += grade.getAmount();
-        this.student.setSum(sum);
     }
 
     public Student getStudent() {
