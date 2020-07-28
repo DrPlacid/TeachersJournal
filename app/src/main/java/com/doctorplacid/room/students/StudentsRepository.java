@@ -52,8 +52,7 @@ public class StudentsRepository {
 
         @Override
         protected Void doInBackground(Student... students) {
-            StudentWithGrades studentWithGrades = new StudentWithGrades(students[0]);
-            studentDAO.insertNewStudentWithGrades(studentWithGrades, group);
+            studentDAO.insertNewStudentWithGrades(students[0], group);
             return null;
         }
 

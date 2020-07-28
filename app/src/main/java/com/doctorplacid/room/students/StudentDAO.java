@@ -26,8 +26,8 @@ public abstract class StudentDAO {
     abstract void insertGrades(List<Grade> grades);
 
 
-    public void insertNewStudentWithGrades(StudentWithGrades studentWithGrades, Group group) {
-        int id = (int) insertGrades(studentWithGrades.getStudent());
+    public void insertNewStudentWithGrades(Student student, Group group) {
+        int id = (int) insertGrades(student);
         List<Grade> grades = new ArrayList<>();
 
         for (int i = 0; i < group.getLessons(); i++) {

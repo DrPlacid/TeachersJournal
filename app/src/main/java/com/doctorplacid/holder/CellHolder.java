@@ -37,8 +37,8 @@ public class CellHolder extends RecyclerView.ViewHolder {
 
         textView.setOnClickListener(view -> {
             if (!TableActivity.edited) {
-                listener.onGradeEdited(this, editText);
                 focusOnView(CellHolder.DIRECTION_RIGHT);
+                listener.onGradeEdited(this, editText);
             }
         });
     }
@@ -56,18 +56,17 @@ public class CellHolder extends RecyclerView.ViewHolder {
             grade.setAmount(amount);
             focusOnView(CellHolder.DIRECTION_LEFT);
         }
-        return this.grade;
+        return grade;
     }
 
     private void focusOnView(int direction) {
-        new Handler().post(() -> {
-            int vLeft = linearLayout.getLeft();
-            int vRight = linearLayout.getRight();
-            int sWidth = scrollView.getWidth();
-            scrollView.smoothScrollTo(direction*(vLeft + vRight - sWidth), 0);
-        });
         String text = String.valueOf(grade.getAmount());
         editText.setText(text);
+        int vLeft = linearLayout.getLeft();
+        int vRight = linearLayout.getRight();
+        int sWidth = scrollView.getWidth();
+        scrollView.scrollTo(direction*(vLeft + vRight - sWidth), 0);
+
         editText.setSelection(text.length());
     }
 

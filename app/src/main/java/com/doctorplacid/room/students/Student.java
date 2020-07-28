@@ -47,5 +47,4 @@ public class Student {
     public int getGroupId() {
         return groupId;
     }
-
 }

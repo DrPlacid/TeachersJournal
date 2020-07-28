@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -45,7 +46,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     private RecyclerView.OnScrollListener scrollListener;
 
     private FloatingActionButton fabAdd;
-    private RecyclerView lessons;
+    private RecyclerView topRow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,35 +60,10 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         teachersViewModel.initData(GROUP_ID);
 
-        init();
+        onCreateTable();
 
         fabAdd = findViewById(R.id.fab_add_student);
         fabAdd.setOnClickListener(v -> openAddDialog());
-    }
-
-    private void init() {
-        RecyclerView grades = findViewById(R.id.grades);
-        lessons = findViewById(R.id.lessons);
-
-        grades.setLayoutManager(new LinearLayoutManager(this));
-
-        lessons.setLayoutManager(new LinearLayoutManager(this,
-                LinearLayoutManager.HORIZONTAL, false));
-
-        grades.setHasFixedSize(true);
-        lessons.setHasFixedSize(true);
-
-        columnHeadersAdapter = new ColumnHeadersAdapter(this);
-        lessons.setAdapter(columnHeadersAdapter);
-
-        tableAdapter = new TableAdapter(this);
-        grades.setAdapter(tableAdapter);
-
-        final LiveData<List<StudentWithGrades>> namesList = teachersViewModel.getAllStudents();
-        namesList.observe(this, list -> tableAdapter.submitList(list));
-
-        final LiveData<List<Lesson>> lessonsList = teachersViewModel.getAllLessons();
-        lessonsList.observe(this, list -> columnHeadersAdapter.submitList(list));
 
         scrollListener = new RecyclerView.OnScrollListener() {
             @Override
@@ -96,14 +72,41 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
                 tableAdapter.scrollAllItems(dx, dy);
             }
         };
+        topRow.addOnScrollListener(scrollListener);
+    }
 
-        lessons.addOnScrollListener(scrollListener);
+    private void onCreateTable() {
+        RecyclerView table = findViewById(R.id.grades);
+        topRow = findViewById(R.id.lessons);
+
+        table.setLayoutManager(new LinearLayoutManager(this));
+
+        topRow.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.HORIZONTAL, false));
+
+        table.setHasFixedSize(true);
+        topRow.setHasFixedSize(true);
+
+        columnHeadersAdapter = new ColumnHeadersAdapter(this);
+        topRow.setAdapter(columnHeadersAdapter);
+
+        tableAdapter = new TableAdapter(this);
+        table.setAdapter(tableAdapter);
+
+        final LiveData<List<StudentWithGrades>> namesList = teachersViewModel.getAllStudents();
+        namesList.observe(this, list -> tableAdapter.submitList(list));
+
+        final LiveData<List<Lesson>> lessonsList = teachersViewModel.getAllLessons();
+        lessonsList.observe(this, list -> columnHeadersAdapter.submitList(list));
+
+        SimpleItemAnimator itemAnimator = (SimpleItemAnimator) table.getItemAnimator();
+        itemAnimator.setSupportsChangeAnimations(false);
     }
 
     public void scroll(int dx, int dy) {
-        lessons.removeOnScrollListener(scrollListener);
-        lessons.scrollBy(dx, dy);
-        lessons.addOnScrollListener(scrollListener);
+        topRow.removeOnScrollListener(scrollListener);
+        topRow.scrollBy(dx, dy);
+        topRow.addOnScrollListener(scrollListener);
     }
 
     @Override
@@ -140,7 +143,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
             fabOk.setOnClickListener(view -> {
                 Grade temp = holder.updateGrade();
                 teachersViewModel.updateGrade(temp);
-                holder.setGrade(temp);
                 fabOk.setVisibility(View.INVISIBLE);
                 if (getCurrentFocus() != null) {
                     inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(), 0);

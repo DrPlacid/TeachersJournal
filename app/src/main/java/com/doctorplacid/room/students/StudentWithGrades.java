@@ -16,11 +16,8 @@ public class StudentWithGrades {
     @Relation(parentColumn = "id", entityColumn = "student_id")
     private List<Grade> grades;
 
-    public StudentWithGrades(Student student) {
+    public StudentWithGrades(Student student, List<Grade> grades) {
         this.student = student;
-    }
-
-    public void setGrades(List<Grade> grades) {
         this.grades = grades;
     }
 

@@ -41,14 +41,8 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
 
                 @Override
                 public boolean areContentsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
-                    List<Grade> grades1 = oldItem.getGrades();
-                    List<Grade> grades2 = newItem.getGrades();
-                    if (grades1.size() != grades2.size()) return false;
-
-                    for(int i = 0; i < grades1.size(); i++)
-                        if (grades1.get(i).getGradeId() != grades2.get(i).getGradeId()) return false;
-
-                    return true;
+                    return (oldItem.getStudent().getName().equals(newItem.getStudent().getName()) &&
+                            oldItem.getGrades().equals(newItem.getGrades()));
                 }
             };
 
