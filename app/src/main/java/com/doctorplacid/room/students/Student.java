@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 
@@ -15,17 +16,17 @@ import java.util.List;
 
 @Entity(tableName = "students_table",
         foreignKeys = @ForeignKey(onDelete = ForeignKey.CASCADE,
-                entity = Group.class, parentColumns = "id", childColumns = "group_id"))
+                entity = Group.class, parentColumns = "id", childColumns = "group_id"), indices = {@Index("group_id")})
 public class Student {
 
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     private int studentId;
 
-    private String name;
-
     @ColumnInfo(name = "group_id")
     private int groupId;
+
+    private String name;
 
     public Student(String name, int groupId) {
         this.name = name;

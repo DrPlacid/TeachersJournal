@@ -3,13 +3,14 @@ package com.doctorplacid.room.grades;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.doctorplacid.room.students.Student;
 
 @Entity(tableName = "grades_table",
         foreignKeys = @ForeignKey(onDelete = ForeignKey.CASCADE,
-                entity = Student.class, parentColumns = "id", childColumns = "student_id"))
+                entity = Student.class, parentColumns = "id", childColumns = "student_id"), indices = @Index("student_id"))
 public class Grade {
 
     @PrimaryKey(autoGenerate = true)
@@ -28,6 +29,12 @@ public class Grade {
         this.presence = true;
     }
 
+    public Grade(Grade other, int amount) {
+        this.studentId = other.getStudentId();
+        this.gradeId = other.getGradeId();
+        this.presence = other.isPresence();
+        this.amount = amount;
+    }
 
     public void setAmount(int amount) {
         this.amount = amount;

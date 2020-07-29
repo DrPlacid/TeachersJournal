@@ -1,7 +1,5 @@
 package com.doctorplacid.holder;
 
-import android.content.Context;
-import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -36,8 +34,9 @@ public class CellHolder extends RecyclerView.ViewHolder {
         linearLayout = itemView.findViewById(R.id.linear);
 
         textView.setOnClickListener(view -> {
-            if (!TableActivity.edited) {
-                focusOnView(CellHolder.DIRECTION_RIGHT);
+            if (!TableActivity.currentlyEdited) {
+                String text = String.valueOf(grade.getAmount());
+                switchView(CellHolder.DIRECTION_RIGHT, text);
                 listener.onGradeEdited(this, editText);
             }
         });
@@ -53,14 +52,14 @@ public class CellHolder extends RecyclerView.ViewHolder {
         String newAmount = editText.getText().toString().trim();
         if (newAmount.length() > 0) {
             int amount = Integer.parseInt(newAmount);
-            grade.setAmount(amount);
-            focusOnView(CellHolder.DIRECTION_LEFT);
+            Grade newGrade = new Grade(grade, amount);
+            switchView(CellHolder.DIRECTION_LEFT, "");
+            return newGrade;
         }
         return grade;
     }
 
-    private void focusOnView(int direction) {
-        String text = String.valueOf(grade.getAmount());
+    private void switchView(int direction, String text) {
         editText.setText(text);
         int vLeft = linearLayout.getLeft();
         int vRight = linearLayout.getRight();

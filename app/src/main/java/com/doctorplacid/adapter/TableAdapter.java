@@ -9,16 +9,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.doctorplacid.R;
 import com.doctorplacid.activity.TableActivity;
 import com.doctorplacid.holder.RowHolder;
-import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
@@ -41,11 +38,14 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
 
                 @Override
                 public boolean areContentsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
-                    return (oldItem.getStudent().getName().equals(newItem.getStudent().getName()) &&
-                            oldItem.getGrades().equals(newItem.getGrades()));
+                    for(int i = 0; i < oldItem.getGrades().size(); i++) {
+                        if (oldItem.getGrades().get(i).getAmount() != newItem.getGrades().get(i).getAmount()) {
+                            return false;
+                        }
+                    }
+                    return true;
                 }
             };
-
 
     @NonNull
     @Override
@@ -77,8 +77,6 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
         for (RowHolder holder : holderSet)
             holder.scroll(dx, dy);
     }
-
-
 
     public StudentWithGrades getItemAt(int position) {
         return getItem(position);

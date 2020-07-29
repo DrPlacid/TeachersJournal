@@ -5,7 +5,6 @@ import com.doctorplacid.R;
 import com.doctorplacid.adapter.RowAdapter;
 import com.doctorplacid.adapter.TableAdapter;
 import com.doctorplacid.room.grades.Grade;
-import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import android.content.Context;
@@ -16,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,8 +24,9 @@ public class RowHolder extends RecyclerView.ViewHolder {
     private TextView sumTextView;
     private RecyclerView recyclerView;
 
-    RecyclerView.OnScrollListener scrollListener;
+    private RecyclerView.OnScrollListener scrollListener;
     private ITableActivityListener listener;
+    private RowAdapter adapter;
 
     public RowHolder(@NonNull View itemView, Context context, TableAdapter adapter) {
         super(itemView);
@@ -67,7 +66,7 @@ public class RowHolder extends RecyclerView.ViewHolder {
         sumTextView.setText(String.valueOf(sum));
         nameTextView.setText(nameText);
 
-        RowAdapter adapter = new RowAdapter(listener);
+        adapter = new RowAdapter(listener);
         recyclerView.setAdapter(adapter);
         adapter.submitList(grades);
     }

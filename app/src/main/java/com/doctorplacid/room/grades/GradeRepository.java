@@ -3,8 +3,6 @@ package com.doctorplacid.room.grades;
 import android.app.Application;
 import android.os.AsyncTask;
 
-import androidx.lifecycle.LiveData;
-
 import com.doctorplacid.room.TeachersDatabase;
 
 import java.util.ArrayList;

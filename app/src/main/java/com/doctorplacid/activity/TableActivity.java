@@ -2,11 +2,9 @@ package com.doctorplacid.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -26,17 +24,14 @@ import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.adapter.ColumnHeadersAdapter;
-import com.doctorplacid.room.students.StudentWithGrades;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.List;
 
 public class TableActivity extends AppCompatActivity implements ITableActivityListener {
 
     private TeachersViewModel teachersViewModel;
 
     private static int GROUP_ID;
-    public static boolean edited = false;
+    public static boolean currentlyEdited = false;
 
     private static Group thisGroup;
     private static Student tempStudent;
@@ -93,14 +88,13 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         tableAdapter = new TableAdapter(this);
         table.setAdapter(tableAdapter);
 
-        final LiveData<List<StudentWithGrades>> namesList = teachersViewModel.getAllStudents();
-        namesList.observe(this, list -> tableAdapter.submitList(list));
+        teachersViewModel
+                .getAllStudents()
+                .observe(this, list -> tableAdapter.submitList(list));
 
-        final LiveData<List<Lesson>> lessonsList = teachersViewModel.getAllLessons();
-        lessonsList.observe(this, list -> columnHeadersAdapter.submitList(list));
-
-        SimpleItemAnimator itemAnimator = (SimpleItemAnimator) table.getItemAnimator();
-        itemAnimator.setSupportsChangeAnimations(false);
+        teachersViewModel
+                .getAllLessons()
+                .observe(this, list -> columnHeadersAdapter.submitList(list));
     }
 
     public void scroll(int dx, int dy) {
@@ -134,21 +128,25 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
     @Override
     public void onGradeEdited(CellHolder holder, EditText editText) {
-            edited = true;
+            currentlyEdited = true;
+
             editText.requestFocus();
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.showSoftInput(editText, 0);
+
             FloatingActionButton fabOk = findViewById(R.id.fab_ok);
             fabOk.setVisibility(View.VISIBLE);
             fabOk.setOnClickListener(view -> {
                 Grade temp = holder.updateGrade();
-                teachersViewModel.updateGrade(temp);
                 fabOk.setVisibility(View.INVISIBLE);
-                if (getCurrentFocus() != null) {
+                if (getCurrentFocus() != null)
                     inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(), 0);
-                }
+
                 editText.clearFocus();
-                edited = false;
+                if (temp != null)
+                    teachersViewModel.updateGrade(temp);
+
+                currentlyEdited = false;
             });
     }
 

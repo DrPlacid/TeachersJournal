@@ -1,6 +1,6 @@
 package com.doctorplacid.adapter;
 
-import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +27,13 @@ public class RowAdapter extends ListAdapter<Grade, CellHolder> {
     public static final DiffUtil.ItemCallback<Grade> DIFF_CALLBACK = new DiffUtil.ItemCallback<Grade>() {
         @Override
         public boolean areItemsTheSame(@NonNull Grade oldItem, @NonNull Grade newItem) {
-            return oldItem.getGradeId() == newItem.getGradeId();
+            return oldItem.getGradeId() == newItem.getGradeId()
+                    && oldItem.getStudentId() == newItem.getStudentId();
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull Grade oldItem, @NonNull Grade newItem) {
-            return (oldItem.getAmount() == newItem.getAmount() && oldItem.isPresence() == newItem.isPresence());
+            return oldItem.getAmount() == newItem.getAmount();
         }
     };
 

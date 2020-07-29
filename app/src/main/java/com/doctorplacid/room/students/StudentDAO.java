@@ -7,6 +7,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.doctorplacid.room.grades.Grade;
@@ -46,6 +47,7 @@ public abstract class StudentDAO {
     @Delete
     abstract void delete(Student student);
 
+    @Transaction
     @Query("SELECT * FROM students_table WHERE group_id = :groupId ORDER BY name")
     abstract LiveData<List<StudentWithGrades>> getStudentsWithGrades(int groupId);
 
