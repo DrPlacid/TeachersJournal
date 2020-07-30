@@ -20,28 +20,26 @@ import com.doctorplacid.dialog.DialogAddStudent;
 import com.doctorplacid.dialog.DialogDeleteStudent;
 import com.doctorplacid.holder.CellHolder;
 import com.doctorplacid.room.grades.Grade;
-import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.adapter.ColumnHeadersAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class TableActivity extends AppCompatActivity implements ITableActivityListener {
 
-    private TeachersViewModel teachersViewModel;
+public class TableActivity extends AppCompatActivity implements ITableActivityListener {
 
     private static int GROUP_ID;
     public static boolean currentlyEdited = false;
 
-    private static Group thisGroup;
     private static Student tempStudent;
 
     private ColumnHeadersAdapter columnHeadersAdapter;
     private TableAdapter tableAdapter;
     private RecyclerView.OnScrollListener scrollListener;
+    private TeachersViewModel teachersViewModel;
 
-    private FloatingActionButton fabAdd;
     private RecyclerView topRow;
+    private RecyclerView table;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,33 +49,19 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         teachersViewModel = ViewModelProviders.of(this).get(TeachersViewModel.class);
 
-        thisGroup = teachersViewModel.retrieveGroup(GROUP_ID);
-
-        teachersViewModel.initData(GROUP_ID);
-
         onCreateTable();
 
-        fabAdd = findViewById(R.id.fab_add_student);
+        FloatingActionButton fabAdd = findViewById(R.id.fab_add_student);
         fabAdd.setOnClickListener(v -> openAddDialog());
-
-        scrollListener = new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                tableAdapter.scrollAllItems(dx, dy);
-            }
-        };
-        topRow.addOnScrollListener(scrollListener);
     }
 
     private void onCreateTable() {
-        RecyclerView table = findViewById(R.id.grades);
+        teachersViewModel.initData(GROUP_ID);
+        table = findViewById(R.id.grades);
         topRow = findViewById(R.id.lessons);
 
         table.setLayoutManager(new LinearLayoutManager(this));
-
-        topRow.setLayoutManager(new LinearLayoutManager(this,
-                LinearLayoutManager.HORIZONTAL, false));
+        topRow.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         table.setHasFixedSize(true);
         topRow.setHasFixedSize(true);
@@ -95,6 +79,15 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         teachersViewModel
                 .getAllLessons()
                 .observe(this, list -> columnHeadersAdapter.submitList(list));
+
+        scrollListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                tableAdapter.scrollAllItems(dx, dy);
+            }
+        };
+        topRow.addOnScrollListener(scrollListener);
     }
 
     public void scroll(int dx, int dy) {
@@ -106,7 +99,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     @Override
     public void addStudent(String name) {
         Student student = new Student(name, GROUP_ID);
-        teachersViewModel.insertStudent(student, thisGroup);
+        teachersViewModel.insertStudent(student, teachersViewModel.retrieveGroup(GROUP_ID));
     }
 
     @Override
@@ -127,7 +120,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     }
 
     @Override
-    public void onGradeEdited(CellHolder holder, EditText editText) {
+    public void onGradeAmountEdited(CellHolder holder, EditText editText) {
             currentlyEdited = true;
 
             editText.requestFocus();
@@ -137,7 +130,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
             FloatingActionButton fabOk = findViewById(R.id.fab_ok);
             fabOk.setVisibility(View.VISIBLE);
             fabOk.setOnClickListener(view -> {
-                Grade temp = holder.updateGrade();
+                Grade temp = holder.updateGradeAmount();
                 fabOk.setVisibility(View.INVISIBLE);
                 if (getCurrentFocus() != null)
                     inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(), 0);
@@ -148,6 +141,11 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
                 currentlyEdited = false;
             });
+    }
+
+    @Override
+    public void onGradePresenceEdited(Grade grade) {
+        teachersViewModel.updateGrade(grade);
     }
 
 

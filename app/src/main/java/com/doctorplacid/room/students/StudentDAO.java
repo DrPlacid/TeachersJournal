@@ -21,22 +21,18 @@ import java.util.List;
 public abstract class StudentDAO {
 
     @Insert
-    abstract long insertGrades(Student student);
+    abstract long insertStudent(Student student);
 
     @Insert
     abstract void insertGrades(List<Grade> grades);
 
-
     public void insertNewStudentWithGrades(Student student, Group group) {
-        int id = (int) insertGrades(student);
         List<Grade> grades = new ArrayList<>();
 
-        for (int i = 0; i < group.getLessons(); i++) {
-            Grade grade = new Grade(id);
-            grade.setAmount(11);
-            grades.add(grade);
-            Log.i("INSERTGRADE", i + " inserted" + " size is" + grades.size());
-        }
+        int id = (int) insertStudent(student);
+
+        for (int i = 0; i < group.getLessons(); i++)
+            grades.add(new Grade(id));
 
         insertGrades(grades);
     }

@@ -7,15 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.R;
 import com.doctorplacid.activity.TableActivity;
 import com.doctorplacid.holder.RowHolder;
+import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
@@ -38,12 +41,21 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
 
                 @Override
                 public boolean areContentsTheSame(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+                    return oldItem.getGrades().equals(newItem.getGrades());
+                }
+
+                @Nullable
+                @Override
+                public Object getChangePayload(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
                     for(int i = 0; i < oldItem.getGrades().size(); i++) {
-                        if (oldItem.getGrades().get(i).getAmount() != newItem.getGrades().get(i).getAmount()) {
-                            return false;
-                        }
+                        int amountOld = oldItem.getGrades().get(i).getAmount();
+                        int amountNew = newItem.getGrades().get(i).getAmount();
+                        boolean presenceOld = oldItem.getGrades().get(i).isPresent();
+                        boolean presenceNew = newItem.getGrades().get(i).isPresent();
+
+                        if (amountOld != amountNew || presenceOld != presenceNew) return 1;
                     }
-                    return true;
+                    return 0;
                 }
             };
 
@@ -55,6 +67,23 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
         RowHolder holder = new RowHolder(itemView, context, this);
         holderSet.add(holder);
         return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RowHolder holder, int position, @NonNull List<Object> payloads) {
+        if(payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            List<Grade> grades = getItem(position).getGrades();
+            for (Object data : payloads) {
+                switch ((int) data) {
+                    case 1:
+                        holder.submitList(grades);
+                    case 0:
+                        break;
+                }
+            }
+        }
     }
 
     @Override
