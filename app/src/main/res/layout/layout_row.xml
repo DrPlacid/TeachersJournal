@@ -14,7 +14,8 @@
             android:id="@+id/nameTextView"
             android:layout_width="@dimen/row_header_width"
             android:layout_height="match_parent"
-            android:background="@color/colorAccent"/>
+            android:background="@color/colorAccent"
+            android:elevation="15dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/RecyclerViewRow"
@@ -28,7 +29,8 @@
             android:id="@+id/sumTextView"
             android:layout_width="@dimen/row_height"
             android:layout_height="@dimen/row_height"
-            android:background="@color/colorAccent"/>
+            android:background="@color/colorAccent"
+            android:elevation="15dp"/>
 
     </LinearLayout>
 

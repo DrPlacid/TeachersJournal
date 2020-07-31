@@ -47,4 +47,7 @@ public abstract class StudentDAO {
     @Query("SELECT * FROM students_table WHERE group_id = :groupId ORDER BY name")
     abstract LiveData<List<StudentWithGrades>> getStudentsWithGrades(int groupId);
 
+    @Query("SELECT id FROM students_table WHERE group_id = :groupId")
+    abstract List<Integer> getIds(int groupId);
+
 }

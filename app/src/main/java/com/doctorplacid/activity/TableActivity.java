@@ -9,8 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
@@ -28,8 +33,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class TableActivity extends AppCompatActivity implements ITableActivityListener {
 
+    private static final int ADD_LESSON_BUTTON_ANIMATION_TIME = 200;
+
     private static int GROUP_ID;
     public static boolean currentlyEdited = false;
+    public static boolean addLessonsButtonShown = false;
 
     private static Student tempStudent;
 
@@ -40,6 +48,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
     private RecyclerView topRow;
     private RecyclerView table;
+    private FrameLayout littleExpandableLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,20 +57,34 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         GROUP_ID = getIntent().getExtras().getInt("ID");
 
         teachersViewModel = ViewModelProviders.of(this).get(TeachersViewModel.class);
+        littleExpandableLayout = findViewById(R.id.buttonFrame);
 
-        onCreateTable();
+        initTable();
 
         FloatingActionButton fabAdd = findViewById(R.id.fab_add_student);
         fabAdd.setOnClickListener(v -> openAddDialog());
     }
 
-    private void onCreateTable() {
+    private void initTable() {
         teachersViewModel.initData(GROUP_ID);
         table = findViewById(R.id.grades);
         topRow = findViewById(R.id.lessons);
 
         table.setLayoutManager(new LinearLayoutManager(this));
-        topRow.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        LinearLayoutManager torRowManager
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false) {
+            @Override
+            public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
+                int scrollRange = super.scrollHorizontallyBy(dx, recycler, state);
+                int overscroll = dx - scrollRange;
+                if (overscroll > 0) {
+                    expandButton();
+                }
+                return scrollRange;
+            }
+        };
+
+        topRow.setLayoutManager(torRowManager);
 
         table.setHasFixedSize(true);
         topRow.setHasFixedSize(true);
@@ -85,6 +108,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 tableAdapter.scrollAllItems(dx, dy);
+                if(dx < 0) collapseButton();
             }
         };
         topRow.addOnScrollListener(scrollListener);
@@ -162,6 +186,67 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         dialogDelete.show(getSupportFragmentManager(), "Delete student dialog");
     }
 
+    @Override
+    public void expandButton() {
+        if (addLessonsButtonShown) return;
+        int matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(((View) littleExpandableLayout.getParent()).getWidth(), View.MeasureSpec.EXACTLY);
+        int wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        littleExpandableLayout.measure(wrapContentMeasureSpec, matchParentMeasureSpec);
+        final int targetWidth = littleExpandableLayout.getMeasuredWidth();
+
+        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+        littleExpandableLayout.getLayoutParams().width = 1;
+        littleExpandableLayout.setVisibility(View.VISIBLE);
+        Animation a = new Animation()
+        {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                littleExpandableLayout.getLayoutParams().width = interpolatedTime == 1
+                        ? FrameLayout.LayoutParams.WRAP_CONTENT
+                        : (int)(targetWidth * interpolatedTime);
+                littleExpandableLayout.requestLayout();
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // Expansion speed of 1dp/ms
+        a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
+        littleExpandableLayout.startAnimation(a);
+        addLessonsButtonShown = true;
+    }
+
+    @Override
+    public void collapseButton() {
+        if (!addLessonsButtonShown) return;
+        final int initialWidth = littleExpandableLayout.getMeasuredWidth();
+
+        Animation a = new Animation()
+        {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if(interpolatedTime == 1){
+                    littleExpandableLayout.setVisibility(View.GONE);
+                }else{
+                    littleExpandableLayout.getLayoutParams().width = initialWidth - (int)(initialWidth * interpolatedTime);
+                    littleExpandableLayout.requestLayout();
+                }
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // Collapse speed of 1dp/ms
+        a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
+        littleExpandableLayout.startAnimation(a);
+        addLessonsButtonShown = false;
+    }
 
 
 }

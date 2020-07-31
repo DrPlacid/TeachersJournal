@@ -12,32 +12,66 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/top_row_height"
-            android:orientation="horizontal">
+            android:layout_height="@dimen/top_row_height">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="@dimen/row_header_width"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/top_row_height"
-                android:text="TextView" />
+                android:orientation="horizontal">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/lessons"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:overScrollMode="never"
-                tools:listitem="@layout/layout_column_header"/>
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="@dimen/row_header_width"
+                    android:layout_height="@dimen/top_row_height"
+                    android:text="TextView"
+                    android:background="@color/colorAccent"
+                    android:elevation="15dp"/>
 
-            <TextView
-                android:id="@+id/textViewSum"
-                android:layout_width="@dimen/row_height"
-                android:layout_height="@dimen/top_row_height"
-                android:text="E" />
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/top_row_height"
+                    android:layout_weight="1">
 
-        </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/lessons"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:overScrollMode="never"
+                        tools:listitem="@layout/layout_column_header"/>
+
+                    <FrameLayout
+                        android:id="@+id/buttonFrame"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/top_row_height"
+                        android:layout_alignParentEnd="true">
+
+                        <Button
+                            android:id="@+id/buttonAddLesson"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="bottom|end"
+                            android:background="@color/colorAccentWeak"
+                            android:elevation="5dp"
+                            android:text="+" />
+
+                    </FrameLayout>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/textViewSum"
+                    android:layout_width="@dimen/row_height"
+                    android:layout_height="@dimen/top_row_height"
+                    android:text="E"
+                    android:background="@color/colorAccent"
+                    android:elevation="15dp"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/grades"

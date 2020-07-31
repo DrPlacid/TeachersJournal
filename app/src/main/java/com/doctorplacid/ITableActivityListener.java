@@ -21,5 +21,8 @@ public interface ITableActivityListener {
 
     void onGradeAmountEdited(CellHolder holder, EditText editText);
     void onGradePresenceEdited(Grade grade);
+
+    void expandButton();
+    void collapseButton();
 }
 

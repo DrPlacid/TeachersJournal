@@ -41,4 +41,5 @@ public class Group {
     public void setLessons(int lessons) {
         this.lessons = lessons;
     }
+
 }

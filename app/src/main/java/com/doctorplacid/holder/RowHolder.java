@@ -37,8 +37,20 @@ public class RowHolder extends RecyclerView.ViewHolder {
         sumTextView = itemView.findViewById(R.id.sumTextView);
         recyclerView = itemView.findViewById(R.id.RecyclerViewRow);
 
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false ));
+        LinearLayoutManager manager
+                = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false ){
+            @Override
+            public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
+                int scrollRange = super.scrollHorizontallyBy(dx, recycler, state);
+                int overscroll = dx - scrollRange;
+                if (overscroll > 0) {
+                    listener.expandButton();
+                }
+                return scrollRange;
+            }
+        };
+
+        recyclerView.setLayoutManager(manager);
         recyclerView.setHasFixedSize(true);
 
         scrollListener = new RecyclerView.OnScrollListener() {
@@ -46,6 +58,7 @@ public class RowHolder extends RecyclerView.ViewHolder {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 adapter.scrollAllItems(dx, dy, RowHolder.this);
+                if(dx < 0) listener.collapseButton();
             }
         };
 
@@ -60,25 +73,18 @@ public class RowHolder extends RecyclerView.ViewHolder {
     public void setList(StudentWithGrades studentWithGrades) {
         List<Grade> grades = studentWithGrades.getGrades();
         String nameText = studentWithGrades.getStudent().getName();
-
-        int sum = 0;
-        for (Grade grade : grades)
-            sum += grade.getAmount();
-
-        sumTextView.setText(String.valueOf(sum));
         nameTextView.setText(nameText);
-
         adapter = new RowAdapter(listener);
         recyclerView.setAdapter(adapter);
         submitList(grades);
     }
 
     public void submitList(List<Grade> grades){
-        List<Integer> list = new ArrayList<>();
+        int sum = 0;
         for (Grade grade : grades)
-            list.add(grade.getAmount());
+            sum += grade.getAmount();
 
-        Log.i("ROWADAPTER", list + "");
+        sumTextView.setText(String.valueOf(sum));
         adapter.submitList(grades);
     }
 
