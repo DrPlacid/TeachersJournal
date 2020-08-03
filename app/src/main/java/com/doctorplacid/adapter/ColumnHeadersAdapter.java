@@ -49,8 +49,6 @@ public class ColumnHeadersAdapter extends ListAdapter<Lesson, LessonHolder> {
     @Override
     public void onBindViewHolder(@NonNull LessonHolder holder, int position) {
         Lesson lesson = getItem(position);
-        int size = getCurrentList().size();
-        Log.i("ADAPTER", "size" + size);
         holder.setText(lesson);
     }
 

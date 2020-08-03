@@ -95,10 +95,4 @@ public class MainActivity extends AppCompatActivity implements IMainActivityList
                 .show();
         tempGroup = null;
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i("MAINACTIVITY", "activity destroyed");
-    }
 }

@@ -12,6 +12,9 @@ import java.util.List;
 @Dao
 public interface LessonDAO {
 
+    @Insert
+    void insert(Lesson lesson);
+
     @Update
     void update(Lesson lesson);
 

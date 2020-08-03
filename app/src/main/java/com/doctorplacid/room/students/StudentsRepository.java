@@ -2,16 +2,12 @@ package com.doctorplacid.room.students;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.doctorplacid.room.TeachersDatabase;
-import com.doctorplacid.room.grades.Grade;
-import com.doctorplacid.room.grades.GradeRepository;
 import com.doctorplacid.room.groups.Group;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -28,8 +24,8 @@ public class StudentsRepository {
         new StudentInsertAsyncTask(studentDAO, group).execute(student);
     }
 
-    public void update(Student student) {
-        new StudentsRepository.StudentUpdateAsyncTask(studentDAO).execute(student);
+    public List<Integer> getIds(int groupId) throws ExecutionException, InterruptedException {
+        return new StudentGetIdsAsyncTask(studentDAO).execute(groupId).get();
     }
 
     public void delete(Student student) {
@@ -58,17 +54,16 @@ public class StudentsRepository {
 
     }
 
-    private static class StudentUpdateAsyncTask extends AsyncTask<Student, Void, Void> {
+    private static class StudentGetIdsAsyncTask extends AsyncTask<Integer, Void, List<Integer>> {
         private StudentDAO studentDAO;
 
-        public StudentUpdateAsyncTask(StudentDAO studentDAO) {
+        public StudentGetIdsAsyncTask(StudentDAO studentDAO) {
             this.studentDAO = studentDAO;
         }
 
         @Override
-        protected Void doInBackground(Student... students) {
-            studentDAO.update(students[0]);
-            return null;
+        protected List<Integer> doInBackground(Integer... integers) {
+            return studentDAO.getIds(integers[0]);
         }
     }
 

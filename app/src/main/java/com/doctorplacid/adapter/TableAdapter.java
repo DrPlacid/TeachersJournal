@@ -2,6 +2,7 @@ package com.doctorplacid.adapter;
 
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +24,7 @@ import java.util.Set;
 
 public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
 
-    public static Set<RowHolder> holderSet = new HashSet<>();
     private Context context;
-
 
     public TableAdapter(Context context) {
         super(DIFF_CALLBACK);
@@ -44,9 +43,9 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
                     return oldItem.getGrades().equals(newItem.getGrades());
                 }
 
-                @Nullable
                 @Override
                 public Object getChangePayload(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
+                    if (oldItem.getGrades().size() != newItem.getGrades().size()) return 2;
                     for(int i = 0; i < oldItem.getGrades().size(); i++) {
                         int amountOld = oldItem.getGrades().get(i).getAmount();
                         int amountNew = newItem.getGrades().get(i).getAmount();
@@ -64,9 +63,7 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
     public RowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_row,parent, false);
-        RowHolder holder = new RowHolder(itemView, context, this);
-        holderSet.add(holder);
-        return holder;
+        return new RowHolder(itemView, context);
     }
 
     @Override
@@ -77,8 +74,12 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
             List<Grade> grades = getItem(position).getGrades();
             for (Object data : payloads) {
                 switch ((int) data) {
+                    case 2:
+                        onBindViewHolder(holder, position);
+                        break;
                     case 1:
                         holder.submitList(grades);
+                        break;
                     case 0:
                         break;
                 }
@@ -90,21 +91,6 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
     public void onBindViewHolder(@NonNull RowHolder holder, int position) {
         StudentWithGrades studentWithGrades = getItem(position);
         holder.setList(studentWithGrades);
-    }
-
-    public void scrollAllItems(int dx, int dy, RowHolder scrolledHolder) {
-        holderSet.remove(scrolledHolder);
-        for (RowHolder holder : holderSet)
-            holder.scroll(dx, dy);
-
-        holderSet.add(scrolledHolder);
-
-        ((TableActivity) context).scroll(dx, dy);
-    }
-
-    public void scrollAllItems(int dx, int dy) {
-        for (RowHolder holder : holderSet)
-            holder.scroll(dx, dy);
     }
 
     public StudentWithGrades getItemAt(int position) {

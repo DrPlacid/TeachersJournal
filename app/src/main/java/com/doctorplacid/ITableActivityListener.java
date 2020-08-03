@@ -20,7 +20,7 @@ public interface ITableActivityListener {
     void deleteDate(int position);
 
     void onGradeAmountEdited(CellHolder holder, EditText editText);
-    void onGradePresenceEdited(Grade grade);
+    void onGradePresenceEdited(Grade grade, int position);
 
     void expandButton();
     void collapseButton();

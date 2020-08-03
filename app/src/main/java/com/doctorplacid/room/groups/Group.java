@@ -1,9 +1,7 @@
 package com.doctorplacid.room.groups;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "group_table")
@@ -40,6 +38,10 @@ public class Group {
 
     public void setLessons(int lessons) {
         this.lessons = lessons;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

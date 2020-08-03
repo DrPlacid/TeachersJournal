@@ -16,7 +16,9 @@ import com.doctorplacid.room.students.Student;
 import com.doctorplacid.room.students.StudentWithGrades;
 import com.doctorplacid.room.students.StudentsRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class TeachersViewModel extends AndroidViewModel {
 
@@ -44,6 +46,18 @@ public class TeachersViewModel extends AndroidViewModel {
         lessonsList = lessonRepository.retrieveAll(groupId);
     }
 
+    public void insertColumn(int groupId) throws ExecutionException, InterruptedException {
+
+        List<Grade> grades = new ArrayList<>();
+
+        for(int id : studentsRepository.getIds(groupId)) {
+            grades.add(new Grade(id));
+        }
+        gradeRepository.insert(grades);
+
+        lessonRepository.insert(new Lesson(groupId));
+    }
+
     public Group retrieveGroup(int id) {
         return groupsRepository.retrieve(id);
     }
@@ -52,7 +66,7 @@ public class TeachersViewModel extends AndroidViewModel {
         groupsRepository.insert(group);
     }
 
-    public void update(Group group) {
+    public void updateGroup(Group group) {
         groupsRepository.update(group);
     }
 
@@ -64,14 +78,8 @@ public class TeachersViewModel extends AndroidViewModel {
         return groupsList;
     }
 
-
-
     public void insertStudent(Student student, Group group) {
         studentsRepository.insert(student, group);
-    }
-
-    public void updateStudent(Student student) {
-        studentsRepository.update(student);
     }
 
     public void deleteStudent(Student student) {
@@ -81,7 +89,6 @@ public class TeachersViewModel extends AndroidViewModel {
     public LiveData<List<StudentWithGrades>> getAllStudents(){
         return studentsWithGradesList;
     }
-
 
     public void updateLesson(Lesson lesson) {
         lessonRepository.update(lesson);

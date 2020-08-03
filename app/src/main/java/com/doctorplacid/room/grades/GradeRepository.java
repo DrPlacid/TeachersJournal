@@ -2,6 +2,7 @@ package com.doctorplacid.room.grades;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.doctorplacid.room.TeachersDatabase;
 
@@ -17,8 +18,8 @@ public class GradeRepository {
         gradeDAO = database.gradeDAO();
     }
 
-    public void insert(int studentId) {
-        new GradeRepository.GradeInsertAsyncTask(gradeDAO).execute(studentId);
+    public void insert(List<Grade> grades) {
+        new GradesInsertAsyncTask(gradeDAO).execute(grades);
     }
 
     public void update(Grade grade) {
@@ -30,17 +31,16 @@ public class GradeRepository {
     }
 
 
-    private static class GradeInsertAsyncTask extends AsyncTask<Integer, Void, Void> {
+    private static class GradesInsertAsyncTask extends AsyncTask<List<Grade>, Void, Void> {
         private GradeDAO gradeDAO;
-        private List<Grade> grades;
 
-        public GradeInsertAsyncTask(GradeDAO gradeDAO) {
+        public GradesInsertAsyncTask(GradeDAO gradeDAO) {
             this.gradeDAO = gradeDAO;
-            grades = new ArrayList<>();
         }
 
         @Override
-        protected Void doInBackground(Integer... integers) {
+        protected Void doInBackground(List<Grade>... grades) {
+            gradeDAO.insert(grades[0]);
             return null;
         }
     }

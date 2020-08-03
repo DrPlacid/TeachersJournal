@@ -1,6 +1,5 @@
 package com.doctorplacid.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,13 +8,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
@@ -25,15 +24,20 @@ import com.doctorplacid.dialog.DialogAddStudent;
 import com.doctorplacid.dialog.DialogDeleteStudent;
 import com.doctorplacid.holder.CellHolder;
 import com.doctorplacid.room.grades.Grade;
+import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.adapter.ColumnHeadersAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+
 
 public class TableActivity extends AppCompatActivity implements ITableActivityListener {
 
     private static final int ADD_LESSON_BUTTON_ANIMATION_TIME = 200;
+    private int lastUsed;
 
     private static int GROUP_ID;
     public static boolean currentlyEdited = false;
@@ -43,51 +47,51 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
     private ColumnHeadersAdapter columnHeadersAdapter;
     private TableAdapter tableAdapter;
-    private RecyclerView.OnScrollListener scrollListener;
     private TeachersViewModel teachersViewModel;
 
-    private RecyclerView topRow;
-    private RecyclerView table;
     private FrameLayout littleExpandableLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table);
-        GROUP_ID = getIntent().getExtras().getInt("ID");
+        GROUP_ID = Objects.requireNonNull(getIntent().getExtras()).getInt("ID");
+
 
         teachersViewModel = ViewModelProviders.of(this).get(TeachersViewModel.class);
-        littleExpandableLayout = findViewById(R.id.buttonFrame);
-
+        teachersViewModel.initData(GROUP_ID);
+        Group thisGroup = teachersViewModel.retrieveGroup(GROUP_ID);
         initTable();
 
         FloatingActionButton fabAdd = findViewById(R.id.fab_add_student);
-        fabAdd.setOnClickListener(v -> openAddDialog());
+        fabAdd.setOnClickListener(v -> {
+            openAddDialog();
+        });
+
+        littleExpandableLayout = findViewById(R.id.buttonFrame);
+        Button buttonAddColumn = findViewById(R.id.buttonAddLesson);
+        buttonAddColumn.setOnClickListener(view -> {
+            try {
+                teachersViewModel.insertColumn(GROUP_ID);
+                initTable();
+                collapseButton();
+                int lessons = thisGroup.getLessons() + 1;
+                thisGroup.setLessons(lessons);
+                teachersViewModel.updateGroup(thisGroup);
+            } catch (ExecutionException | InterruptedException e) {
+                Toast.makeText(TableActivity.this, "Unsuccessful, try again", Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
     }
 
     private void initTable() {
-        teachersViewModel.initData(GROUP_ID);
-        table = findViewById(R.id.grades);
-        topRow = findViewById(R.id.lessons);
+        RecyclerView table = findViewById(R.id.grades);
+        RecyclerView topRow = findViewById(R.id.lessons);
 
         table.setLayoutManager(new LinearLayoutManager(this));
-        LinearLayoutManager torRowManager
-                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false) {
-            @Override
-            public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                int scrollRange = super.scrollHorizontallyBy(dx, recycler, state);
-                int overscroll = dx - scrollRange;
-                if (overscroll > 0) {
-                    expandButton();
-                }
-                return scrollRange;
-            }
-        };
-
-        topRow.setLayoutManager(torRowManager);
-
-        table.setHasFixedSize(true);
-        topRow.setHasFixedSize(true);
+        topRow.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         columnHeadersAdapter = new ColumnHeadersAdapter(this);
         topRow.setAdapter(columnHeadersAdapter);
@@ -102,22 +106,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         teachersViewModel
                 .getAllLessons()
                 .observe(this, list -> columnHeadersAdapter.submitList(list));
-
-        scrollListener = new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                tableAdapter.scrollAllItems(dx, dy);
-                if(dx < 0) collapseButton();
-            }
-        };
-        topRow.addOnScrollListener(scrollListener);
-    }
-
-    public void scroll(int dx, int dy) {
-        topRow.removeOnScrollListener(scrollListener);
-        topRow.scrollBy(dx, dy);
-        topRow.addOnScrollListener(scrollListener);
     }
 
     @Override
@@ -168,8 +156,9 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     }
 
     @Override
-    public void onGradePresenceEdited(Grade grade) {
+    public void onGradePresenceEdited(Grade grade,  int position) {
         teachersViewModel.updateGrade(grade);
+        if (lastUsed < position) lastUsed = position;
     }
 
 
@@ -228,9 +217,9 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if(interpolatedTime == 1){
+                if(interpolatedTime == 1) {
                     littleExpandableLayout.setVisibility(View.GONE);
-                }else{
+                } else {
                     littleExpandableLayout.getLayoutParams().width = initialWidth - (int)(initialWidth * interpolatedTime);
                     littleExpandableLayout.requestLayout();
                 }
@@ -247,6 +236,4 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         littleExpandableLayout.startAnimation(a);
         addLessonsButtonShown = false;
     }
-
-
 }

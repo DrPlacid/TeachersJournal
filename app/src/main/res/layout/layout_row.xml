@@ -17,6 +17,7 @@
             android:background="@color/colorAccent"
             android:elevation="15dp"/>
 
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/RecyclerViewRow"
             android:layout_width="0dp"
@@ -33,5 +34,10 @@
             android:elevation="15dp"/>
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorTextReady"/>
 
 </androidx.cardview.widget.CardView>

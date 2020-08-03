@@ -18,22 +18,41 @@ public class LessonRepository {
         lessonDAO = database.dateDAO();
     }
 
+    public void insert(Lesson lesson) {
+        new LessonInsertAsyncTask(lessonDAO).execute(lesson);
+    }
+
     public void update(Lesson lesson) {
-        new DateUpdateAsyncTask(lessonDAO).execute(lesson);
+        new LessonUpdateAsyncTask(lessonDAO).execute(lesson);
     }
 
     public void delete(Lesson lesson) {
-        new LessonRepository.DateDeleteAsyncTask(lessonDAO).execute(lesson);
+        new LessonDeleteAsyncTask(lessonDAO).execute(lesson);
     }
 
     public LiveData<List<Lesson>> retrieveAll(int groupId) {
         return lessonDAO.retrieveAll(groupId);
     }
 
-    private static class DateUpdateAsyncTask extends AsyncTask<Lesson, Void, Void> {
+
+    private static class LessonInsertAsyncTask extends AsyncTask<Lesson, Void, Void> {
         private LessonDAO lessonDAO;
 
-        public DateUpdateAsyncTask(LessonDAO lessonDAO) {
+        public LessonInsertAsyncTask(LessonDAO lessonDAO) {
+            this.lessonDAO = lessonDAO;
+        }
+
+        @Override
+        protected Void doInBackground(Lesson... lessons) {
+            lessonDAO.insert(lessons[0]);
+            return null;
+        }
+    }
+
+    private static class LessonUpdateAsyncTask extends AsyncTask<Lesson, Void, Void> {
+        private LessonDAO lessonDAO;
+
+        public LessonUpdateAsyncTask(LessonDAO lessonDAO) {
             this.lessonDAO = lessonDAO;
         }
 
@@ -44,10 +63,10 @@ public class LessonRepository {
         }
     }
 
-    private static class DateDeleteAsyncTask extends AsyncTask<Lesson, Void, Void> {
+    private static class LessonDeleteAsyncTask extends AsyncTask<Lesson, Void, Void> {
         private LessonDAO lessonDAO;
 
-        public DateDeleteAsyncTask(LessonDAO lessonDAO) {
+        public LessonDeleteAsyncTask(LessonDAO lessonDAO) {
             this.lessonDAO = lessonDAO;
         }
 

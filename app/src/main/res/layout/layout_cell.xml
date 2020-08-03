@@ -4,9 +4,11 @@
     android:layout_width="@dimen/row_height"
     android:layout_height="@dimen/row_height">
 
+
+
     <HorizontalScrollView
         android:id="@+id/scrollCell"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:overScrollMode="never"
         android:scrollbarSize="0dp">
@@ -38,5 +40,11 @@
         </LinearLayout>
 
     </HorizontalScrollView>
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="@color/colorTextReady"/>
+
 
 </androidx.cardview.widget.CardView>

@@ -8,6 +8,12 @@
         android:id="@+id/dateTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:lines="2"/>
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="@color/colorTextReady"/>
 
 </androidx.cardview.widget.CardView>

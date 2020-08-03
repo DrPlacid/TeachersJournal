@@ -12,6 +12,9 @@ import java.util.List;
 @Dao
 public interface GradeDAO {
 
+    @Insert
+    void insert(List<Grade> grades);
+
     @Update
     void update(Grade grade);
 
