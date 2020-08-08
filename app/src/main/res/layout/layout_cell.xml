@@ -5,7 +5,6 @@
     android:layout_height="@dimen/row_height">
 
 
-
     <HorizontalScrollView
         android:id="@+id/scrollCell"
         android:layout_width="match_parent"

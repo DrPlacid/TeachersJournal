@@ -11,10 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.doctorplacid.DataType;
 import com.doctorplacid.IMainActivityListener;
 import com.doctorplacid.R;
-import com.doctorplacid.ITableActivityListener;
 
 public class DialogAddGroup extends AppCompatDialogFragment {
 

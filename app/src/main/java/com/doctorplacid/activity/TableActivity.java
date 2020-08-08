@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -17,12 +18,13 @@ import android.widget.FrameLayout;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
+import com.doctorplacid.TableCalendar;
 import com.doctorplacid.TeachersViewModel;
 import com.doctorplacid.adapter.TableAdapter;
-import com.doctorplacid.adapter.TableManager;
+import com.doctorplacid.TableManager;
 import com.doctorplacid.dialog.DialogAddStudent;
 import com.doctorplacid.dialog.DialogDeleteStudent;
-import com.doctorplacid.holder.CellHolder;
+import com.doctorplacid.holder.CellViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.lessons.Lesson;
@@ -32,7 +34,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-
 
 public class TableActivity extends AppCompatActivity implements ITableActivityListener {
 
@@ -49,6 +50,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     private TableAdapter tableAdapter;
     private TeachersViewModel teachersViewModel;
     private TableManager tableManager;
+    private TableCalendar calendar;
 
     private FrameLayout littleExpandableLayout;
 
@@ -65,9 +67,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         initTable();
 
         FloatingActionButton fabAdd = findViewById(R.id.fab_add_student);
-        fabAdd.setOnClickListener(v -> {
-            openAddDialog();
-        });
+        fabAdd.setOnClickListener(v -> openAddDialog());
 
         littleExpandableLayout = findViewById(R.id.buttonFrame);
         Button buttonAddColumn = findViewById(R.id.buttonAddLesson);
@@ -81,6 +81,8 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
                 teachersViewModel.updateGroup(thisGroup);
             } catch (ExecutionException | InterruptedException ignored){}
         });
+
+        calendar = new TableCalendar();
     }
 
     private void initTable() {
@@ -132,7 +134,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     }
 
     @Override
-    public void onGradeAmountEdited(CellHolder holder, EditText editText) {
+    public void onGradeAmountEdited(CellViewHolder holder, EditText editText) {
             currentlyEdited = true;
 
             editText.requestFocus();
@@ -156,8 +158,15 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     }
 
     @Override
-    public void onGradePresenceEdited(Grade grade) {
+    public void onGradePresenceEdited(Grade grade, int position) {
         teachersViewModel.updateGrade(grade);
+        Lesson lesson = columnHeadersAdapter.getItemAt(position);
+        if (("").equals(lesson.getDate())) {
+            String date = calendar.getDateTwoLines();
+            Lesson newLesson = new Lesson(lesson);
+            newLesson.setDate(date);
+            teachersViewModel.updateLesson(newLesson);
+        }
     }
 
 

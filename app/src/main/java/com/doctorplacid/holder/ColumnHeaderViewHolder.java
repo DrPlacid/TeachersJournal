@@ -11,12 +11,12 @@ import com.doctorplacid.R;
 import com.doctorplacid.TableCalendar;
 import com.doctorplacid.room.lessons.Lesson;
 
-public class LessonHolder extends RecyclerView.ViewHolder {
+public class ColumnHeaderViewHolder extends RecyclerView.ViewHolder {
 
     private TextView dateTextView;
     private Lesson lesson;
 
-    public LessonHolder(@NonNull View itemView, @NonNull ITableActivityListener listener) {
+    public ColumnHeaderViewHolder(@NonNull View itemView, @NonNull ITableActivityListener listener) {
         super(itemView);
         dateTextView = itemView.findViewById(R.id.dateTextView);
         dateTextView.setOnClickListener(view -> {
@@ -32,9 +32,9 @@ public class LessonHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void setText(Lesson lesson) {
+    public void setEntity(Lesson lesson) {
         this.lesson = lesson;
-        dateTextView.setText(String.valueOf(lesson.getId()));
+        dateTextView.setText(lesson.getDate());
     }
 
 }

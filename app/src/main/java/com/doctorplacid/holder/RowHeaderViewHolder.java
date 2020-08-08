@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 
-public class RowHolder extends RecyclerView.ViewHolder {
+public class RowHeaderViewHolder extends RecyclerView.ViewHolder {
 
     private TextView nameTextView;
     private TextView sumTextView;
@@ -27,7 +27,7 @@ public class RowHolder extends RecyclerView.ViewHolder {
     private ITableActivityListener listener;
     private RowAdapter adapter;
 
-    public RowHolder(@NonNull View itemView, Context context) {
+    public RowHeaderViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
         listener = (ITableActivityListener) context;
         nameTextView = itemView.findViewById(R.id.nameTextView);

@@ -47,7 +47,7 @@ public class GroupsAdapter extends ListAdapter<Group, GroupHolder> {
     @Override
     public void onBindViewHolder(@NonNull GroupHolder holder, int position) {
         Group tempGroup = getItem(position);
-        holder.setText(tempGroup);
+        holder.setEntity(tempGroup);
     }
 
 

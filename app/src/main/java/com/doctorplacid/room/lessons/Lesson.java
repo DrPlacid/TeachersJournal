@@ -26,6 +26,13 @@ public class Lesson {
         this.date = "";
     }
 
+    //copy constructor
+    public Lesson(Lesson lesson) {
+        this.id = lesson.getId();
+        this.date = lesson.getDate();
+        this.groupId = lesson.getGroupId();
+    }
+
     public void setDate(String date) {
         this.date = date;
     }

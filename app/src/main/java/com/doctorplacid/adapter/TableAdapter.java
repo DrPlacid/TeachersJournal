@@ -7,18 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.R;
-import com.doctorplacid.holder.RowHolder;
+import com.doctorplacid.TableManager;
+import com.doctorplacid.holder.RowHeaderViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import java.util.List;
 
-public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
+public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHolder> {
 
     private Context context;
     private TableManager tableManager;
@@ -64,17 +64,17 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
 
     @NonNull
     @Override
-    public RowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RowHeaderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_row,parent, false);
-        RowHolder holder = new RowHolder(itemView, context);
+        RowHeaderViewHolder holder = new RowHeaderViewHolder(itemView, context);
         tableManager.addRow(holder.getRecycler());
         tableManager.syncRowPosition(holder.getRecycler());
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RowHolder holder, int position, @NonNull List<Object> payloads) {
+    public void onBindViewHolder(@NonNull RowHeaderViewHolder holder, int position, @NonNull List<Object> payloads) {
         if(payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
@@ -95,7 +95,7 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RowHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RowHeaderViewHolder holder, int position) {
         StudentWithGrades studentWithGrades = getItem(position);
         holder.setList(studentWithGrades);
     }
@@ -103,7 +103,5 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHolder> {
     public StudentWithGrades getItemAt(int position) {
         return getItem(position);
     }
-
-
 
 }

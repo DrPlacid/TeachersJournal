@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.doctorplacid.DataType;
 import com.doctorplacid.IMainActivityListener;
 import com.doctorplacid.TeachersViewModel;
 import com.doctorplacid.R;
@@ -51,11 +50,11 @@ public class MainActivity extends AppCompatActivity implements IMainActivityList
         list.observe(this, groups -> adapter.submitList(groups));
 
         FloatingActionButton fabAddGroup = findViewById(R.id.fab_add_main);
-        fabAddGroup.setOnClickListener(view -> openAddDialog(DataType.GROUP));
+        fabAddGroup.setOnClickListener(view -> openAddDialog());
     }
 
     @Override
-    public void openAddDialog(DataType dataType) {
+    public void openAddDialog() {
         DialogAddGroup dialogAddGroup = new DialogAddGroup();
         dialogAddGroup.show(getSupportFragmentManager(), "Add group dialog");
     }

@@ -2,7 +2,7 @@ package com.doctorplacid;
 
 public interface IMainActivityListener {
 
-    void openAddDialog(DataType dataType);
+    void openAddDialog();
     void openDeleteDialog(int position);
 
     void startTableActivity(int position);

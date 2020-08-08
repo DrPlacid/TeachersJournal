@@ -4,7 +4,7 @@ package com.doctorplacid;
 
 import android.widget.EditText;
 
-import com.doctorplacid.holder.CellHolder;
+import com.doctorplacid.holder.CellViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.lessons.Lesson;
 
@@ -19,8 +19,8 @@ public interface ITableActivityListener {
     void addDate(Lesson lesson);
     void deleteDate(int position);
 
-    void onGradeAmountEdited(CellHolder holder, EditText editText);
-    void onGradePresenceEdited(Grade grade);
+    void onGradeAmountEdited(CellViewHolder holder, EditText editText);
+    void onGradePresenceEdited(Grade grade, int position);
 
 }
 

@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
-import com.doctorplacid.holder.LessonHolder;
+import com.doctorplacid.holder.ColumnHeaderViewHolder;
 import com.doctorplacid.room.lessons.Lesson;
 
 
-public class ColumnHeadersAdapter extends ListAdapter<Lesson, LessonHolder> {
+public class ColumnHeadersAdapter extends ListAdapter<Lesson, ColumnHeaderViewHolder> {
 
     private ITableActivityListener listener;
 
@@ -40,16 +40,16 @@ public class ColumnHeadersAdapter extends ListAdapter<Lesson, LessonHolder> {
 
     @NonNull
     @Override
-    public LessonHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ColumnHeaderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_column_header, parent, false);
-        return new LessonHolder(itemView, listener);
+        return new ColumnHeaderViewHolder(itemView, listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LessonHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ColumnHeaderViewHolder holder, int position) {
         Lesson lesson = getItem(position);
-        holder.setText(lesson);
+        holder.setEntity(lesson);
     }
 
 

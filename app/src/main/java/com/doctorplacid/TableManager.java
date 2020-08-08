@@ -1,4 +1,4 @@
-package com.doctorplacid.adapter;
+package com.doctorplacid;
 
 import android.content.Context;
 import android.view.MotionEvent;

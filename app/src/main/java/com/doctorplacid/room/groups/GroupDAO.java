@@ -31,11 +31,9 @@ public abstract class GroupDAO {
 
         for (int i = 0; i < group.getLessons(); i++) {
             lessons.add(new Lesson(id));
-            Log.i("INSERTGROUP", i + " inserted" + " size is" + lessons.size());
         }
 
         long[] ids = insertLessons(lessons);
-        Log.i("INSERTGROUP", "ids: " + Arrays.toString(ids));
     }
 
     @Update

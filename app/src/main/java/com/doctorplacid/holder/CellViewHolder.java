@@ -1,6 +1,5 @@
 package com.doctorplacid.holder;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -15,7 +14,7 @@ import com.doctorplacid.activity.TableActivity;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.R;
 
-public class CellHolder extends RecyclerView.ViewHolder {
+public class CellViewHolder extends RecyclerView.ViewHolder {
 
     private static final int DIRECTION_LEFT = -1;
     private static final int DIRECTION_RIGHT = 1;
@@ -27,7 +26,7 @@ public class CellHolder extends RecyclerView.ViewHolder {
 
     private Grade grade;
 
-    public CellHolder(@NonNull View itemView, ITableActivityListener listener) {
+    public CellViewHolder(@NonNull View itemView, ITableActivityListener listener) {
         super(itemView);
 
         textView = itemView.findViewById(R.id.gradeTextView);
@@ -39,17 +38,17 @@ public class CellHolder extends RecyclerView.ViewHolder {
             if (!TableActivity.currentlyEdited) {
                 if (!grade.isPresent()) {
                     Grade newGrade = updateGradePresence();
-                    listener.onGradePresenceEdited(newGrade);
+                    listener.onGradePresenceEdited(newGrade, getAdapterPosition());
                 } else {
                     String text = String.valueOf(grade.getAmount());
-                    switchToEdit(CellHolder.DIRECTION_RIGHT, text);
+                    switchToEdit(CellViewHolder.DIRECTION_RIGHT, text);
                     listener.onGradeAmountEdited(this, editText);
                 }
             }
         });
     }
 
-    public void setGrade(Grade grade) {
+    public void setEntity(Grade grade) {
         this.grade = grade;
         String text = grade.isPresent() ? String.valueOf(grade.getAmount()) : "";
         textView.setText(text);
@@ -68,7 +67,7 @@ public class CellHolder extends RecyclerView.ViewHolder {
             int amount = Integer.parseInt(newAmount);
             Grade newGrade = new Grade(grade);
             newGrade.setAmount(amount);
-            switchToEdit(CellHolder.DIRECTION_LEFT, "");
+            switchToEdit(CellViewHolder.DIRECTION_LEFT, "");
             return newGrade;
         }
         return grade;

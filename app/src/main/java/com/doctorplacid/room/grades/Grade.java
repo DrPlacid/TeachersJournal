@@ -3,19 +3,21 @@ package com.doctorplacid.room.grades;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
 
 @Entity(tableName = "grades_table",
-        foreignKeys = @ForeignKey(onDelete = ForeignKey.CASCADE,
-                entity = Student.class, parentColumns = "id", childColumns = "student_id"), indices = @Index("student_id"))
+        foreignKeys = {
+                @ForeignKey(onDelete = ForeignKey.CASCADE,
+                        entity = Student.class, parentColumns = "id", childColumns = "student_id"),
+        })
 public class Grade {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "grade_id")
-    private int gradeId;
+    @ColumnInfo(name = "id")
+    private int id;
 
     private int amount;
 
@@ -32,7 +34,7 @@ public class Grade {
     // copy constructor
     public Grade(Grade other) {
         this.studentId = other.getStudentId();
-        this.gradeId = other.getGradeId();
+        this.id = other.getId();
         this.present = other.isPresent();
         this.amount = other.getAmount();
     }
@@ -45,12 +47,12 @@ public class Grade {
         this.present = present;
     }
 
-    public void setGradeId(int gradeId) {
-        this.gradeId = gradeId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getGradeId() {
-        return gradeId;
+    public int getId() {
+        return id;
     }
 
     public int getAmount() {

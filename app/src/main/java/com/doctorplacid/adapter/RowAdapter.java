@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
-import com.doctorplacid.holder.CellHolder;
+import com.doctorplacid.holder.CellViewHolder;
 import com.doctorplacid.room.grades.Grade;
 
 
-public class RowAdapter extends ListAdapter<Grade, CellHolder> {
+public class RowAdapter extends ListAdapter<Grade, CellViewHolder> {
 
     private ITableActivityListener listener;
 
@@ -26,7 +26,7 @@ public class RowAdapter extends ListAdapter<Grade, CellHolder> {
     public static final DiffUtil.ItemCallback<Grade> DIFF_CALLBACK = new DiffUtil.ItemCallback<Grade>() {
         @Override
         public boolean areItemsTheSame(@NonNull Grade oldItem, @NonNull Grade newItem) {
-            return oldItem.getGradeId() == newItem.getGradeId();
+            return oldItem.getId() == newItem.getId();
         }
 
         @Override
@@ -37,16 +37,16 @@ public class RowAdapter extends ListAdapter<Grade, CellHolder> {
 
     @NonNull
     @Override
-    public CellHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CellViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_cell, parent, false);
-        return new CellHolder(itemView, listener);
+        return new CellViewHolder(itemView, listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CellHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CellViewHolder holder, int position) {
         Grade grade = getItem(position);
-        holder.setGrade(grade);
+        holder.setEntity(grade);
     }
 
 }

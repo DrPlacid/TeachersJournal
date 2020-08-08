@@ -25,7 +25,7 @@ public class GroupHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void setText(Group group) {
+    public void setEntity(Group group) {
         textView.setText(group.getName());
     }
 }
