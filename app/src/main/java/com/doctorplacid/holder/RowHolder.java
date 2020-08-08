@@ -34,10 +34,6 @@ public class RowHolder extends RecyclerView.ViewHolder {
         sumTextView = itemView.findViewById(R.id.sumTextView);
         recyclerView = itemView.findViewById(R.id.RecyclerViewRow);
 
-        LinearLayoutManager manager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,false );
-
-        recyclerView.setLayoutManager(manager);
-
         nameTextView.setOnLongClickListener(view -> {
             listener.openDeleteDialog(getAdapterPosition());
             return false;
@@ -60,6 +56,10 @@ public class RowHolder extends RecyclerView.ViewHolder {
 
         sumTextView.setText(String.valueOf(sum));
         adapter.submitList(grades);
+    }
+
+    public RecyclerView getRecycler() {
+        return recyclerView;
     }
 
 }

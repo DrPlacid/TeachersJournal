@@ -39,7 +39,7 @@ public class CellHolder extends RecyclerView.ViewHolder {
             if (!TableActivity.currentlyEdited) {
                 if (!grade.isPresent()) {
                     Grade newGrade = updateGradePresence();
-                    listener.onGradePresenceEdited(newGrade, getAdapterPosition());
+                    listener.onGradePresenceEdited(newGrade);
                 } else {
                     String text = String.valueOf(grade.getAmount());
                     switchToEdit(CellHolder.DIRECTION_RIGHT, text);

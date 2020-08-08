@@ -14,12 +14,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.doctorplacid.ITableActivityListener;
 import com.doctorplacid.R;
 import com.doctorplacid.TeachersViewModel;
 import com.doctorplacid.adapter.TableAdapter;
+import com.doctorplacid.adapter.TableManager;
 import com.doctorplacid.dialog.DialogAddStudent;
 import com.doctorplacid.dialog.DialogDeleteStudent;
 import com.doctorplacid.holder.CellHolder;
@@ -37,17 +37,18 @@ import java.util.concurrent.ExecutionException;
 public class TableActivity extends AppCompatActivity implements ITableActivityListener {
 
     private static final int ADD_LESSON_BUTTON_ANIMATION_TIME = 200;
-    private int lastUsed;
 
     private static int GROUP_ID;
     public static boolean currentlyEdited = false;
     public static boolean addLessonsButtonShown = false;
 
     private static Student tempStudent;
+    private static Group thisGroup;
 
     private ColumnHeadersAdapter columnHeadersAdapter;
     private TableAdapter tableAdapter;
     private TeachersViewModel teachersViewModel;
+    private TableManager tableManager;
 
     private FrameLayout littleExpandableLayout;
 
@@ -60,7 +61,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         teachersViewModel = ViewModelProviders.of(this).get(TeachersViewModel.class);
         teachersViewModel.initData(GROUP_ID);
-        Group thisGroup = teachersViewModel.retrieveGroup(GROUP_ID);
+        thisGroup = teachersViewModel.retrieveGroup(GROUP_ID);
         initTable();
 
         FloatingActionButton fabAdd = findViewById(R.id.fab_add_student);
@@ -78,10 +79,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
                 int lessons = thisGroup.getLessons() + 1;
                 thisGroup.setLessons(lessons);
                 teachersViewModel.updateGroup(thisGroup);
-            } catch (ExecutionException | InterruptedException e) {
-                Toast.makeText(TableActivity.this, "Unsuccessful, try again", Toast.LENGTH_SHORT)
-                        .show();
-            }
+            } catch (ExecutionException | InterruptedException ignored){}
         });
     }
 
@@ -90,13 +88,15 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         RecyclerView topRow = findViewById(R.id.lessons);
 
         table.setLayoutManager(new LinearLayoutManager(this));
-        topRow.setLayoutManager(
-                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         columnHeadersAdapter = new ColumnHeadersAdapter(this);
         topRow.setAdapter(columnHeadersAdapter);
 
-        tableAdapter = new TableAdapter(this);
+
+        tableManager = new TableManager(this);
+        tableManager.addRow(topRow);
+
+        tableAdapter = new TableAdapter(this, tableManager);
         table.setAdapter(tableAdapter);
 
         teachersViewModel
@@ -156,9 +156,8 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     }
 
     @Override
-    public void onGradePresenceEdited(Grade grade,  int position) {
+    public void onGradePresenceEdited(Grade grade) {
         teachersViewModel.updateGrade(grade);
-        if (lastUsed < position) lastUsed = position;
     }
 
 
@@ -175,7 +174,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         dialogDelete.show(getSupportFragmentManager(), "Delete student dialog");
     }
 
-    @Override
+
     public void expandButton() {
         if (addLessonsButtonShown) return;
         int matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(((View) littleExpandableLayout.getParent()).getWidth(), View.MeasureSpec.EXACTLY);
@@ -208,7 +207,6 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         addLessonsButtonShown = true;
     }
 
-    @Override
     public void collapseButton() {
         if (!addLessonsButtonShown) return;
         final int initialWidth = littleExpandableLayout.getMeasuredWidth();
@@ -235,5 +233,13 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
         littleExpandableLayout.startAnimation(a);
         addLessonsButtonShown = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        int offset = tableManager.getTopRowHorizontalOffset();
+        thisGroup.setOffset(offset);
+        teachersViewModel.updateGroup(thisGroup);
+        super.onDestroy();
     }
 }
