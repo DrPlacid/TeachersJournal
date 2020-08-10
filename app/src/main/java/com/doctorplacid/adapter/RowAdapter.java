@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
-import com.doctorplacid.ITableActivityListener;
+import com.doctorplacid.ITableListener;
 import com.doctorplacid.R;
 import com.doctorplacid.holder.CellViewHolder;
 import com.doctorplacid.room.grades.Grade;
@@ -16,9 +16,9 @@ import com.doctorplacid.room.grades.Grade;
 
 public class RowAdapter extends ListAdapter<Grade, CellViewHolder> {
 
-    private ITableActivityListener listener;
+    private ITableListener listener;
 
-    public RowAdapter(ITableActivityListener listener) {
+    public RowAdapter(ITableListener listener) {
         super(DIFF_CALLBACK);
         this.listener = listener;
     }

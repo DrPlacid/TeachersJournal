@@ -11,12 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.doctorplacid.IMainActivityListener;
+import com.doctorplacid.ITableListener;
 import com.doctorplacid.R;
 
 public class DialogAddGroup extends AppCompatDialogFragment {
 
-    IMainActivityListener listener;
+    ITableListener listener;
 
     @NonNull
     @Override
@@ -36,7 +36,7 @@ public class DialogAddGroup extends AppCompatDialogFragment {
                 .setPositiveButton("Add", (dialog, which) -> {
                     String name = nameEditText.getText().toString().toUpperCase().trim();
                     if (name.length() > 0) {
-                        listener.add(name);
+                        listener.addGroup(name);
                     }
                 });
 
@@ -47,7 +47,7 @@ public class DialogAddGroup extends AppCompatDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (IMainActivityListener) context;
+            listener = (ITableListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + "Must implement IMainActivityListener");
         }

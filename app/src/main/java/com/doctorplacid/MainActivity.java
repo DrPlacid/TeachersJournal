@@ -1,27 +1,27 @@
-package com.doctorplacid.activity;
+package com.doctorplacid;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
-import com.doctorplacid.ITableActivityListener;
-import com.doctorplacid.R;
-import com.doctorplacid.TableCalendar;
-import com.doctorplacid.TeachersViewModel;
+import com.doctorplacid.adapter.GroupsAdapter;
 import com.doctorplacid.adapter.TableAdapter;
-import com.doctorplacid.TableManager;
+import com.doctorplacid.dialog.DialogAddGroup;
 import com.doctorplacid.dialog.DialogAddStudent;
 import com.doctorplacid.dialog.DialogDeleteStudent;
 import com.doctorplacid.holder.CellViewHolder;
@@ -31,61 +31,68 @@ import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.adapter.ColumnHeadersAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-public class TableActivity extends AppCompatActivity implements ITableActivityListener {
+public class MainActivity extends AppCompatActivity implements ITableListener {
 
-    private static final int ADD_LESSON_BUTTON_ANIMATION_TIME = 200;
+    private static final int ADD_LESSON_BUTTON_ANIMATION_TIME = 400;
 
-    private static int GROUP_ID;
+    private static int currentGroupId;
     public static boolean currentlyEdited = false;
     public static boolean addLessonsButtonShown = false;
 
     private static Student tempStudent;
     private static Group thisGroup;
+    private static Group tempGroup;
 
     private ColumnHeadersAdapter columnHeadersAdapter;
     private TableAdapter tableAdapter;
     private TeachersViewModel teachersViewModel;
-    private TableManager tableManager;
     private TableCalendar calendar;
 
-    private FrameLayout littleExpandableLayout;
+    private DrawerLayout drawer;
+    private FrameLayout topRightCornerExpandableLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_table);
-        GROUP_ID = Objects.requireNonNull(getIntent().getExtras()).getInt("ID");
+        setContentView(R.layout.activity_main);
+        getLastUsedId();
+
+        topRightCornerExpandableLayout = findViewById(R.id.buttonFrame);
 
 
         teachersViewModel = ViewModelProviders.of(this).get(TeachersViewModel.class);
-        teachersViewModel.initData(GROUP_ID);
-        thisGroup = teachersViewModel.retrieveGroup(GROUP_ID);
-        initTable();
 
-        FloatingActionButton fabAdd = findViewById(R.id.fab_add_student);
-        fabAdd.setOnClickListener(v -> openAddDialog());
-
-        littleExpandableLayout = findViewById(R.id.buttonFrame);
-        Button buttonAddColumn = findViewById(R.id.buttonAddLesson);
-        buttonAddColumn.setOnClickListener(view -> {
-            try {
-                teachersViewModel.insertColumn(GROUP_ID);
-                initTable();
-                collapseButton();
-                int lessons = thisGroup.getLessons() + 1;
-                thisGroup.setLessons(lessons);
-                teachersViewModel.updateGroup(thisGroup);
-            } catch (ExecutionException | InterruptedException ignored){}
-        });
-
-        calendar = new TableCalendar();
+        initNavigationPanelItems();
+        if (currentGroupId != -1) {
+            initTable();
+        }
     }
 
-    private void initTable() {
+    private void initNavigationPanelItems() {
+        drawer = findViewById(R.id.drawer);
+
+        RecyclerView groupsRecyclerView = findViewById(R.id.groupsRecyclerView);
+        groupsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        GroupsAdapter groupsAdapter = new GroupsAdapter(this);
+        groupsRecyclerView.setAdapter(groupsAdapter);
+
+        teachersViewModel
+                .getAllGroups()
+                .observe(this, list -> groupsAdapter.submitList(list));
+
+
+        FloatingActionButton fabAddGroup = findViewById(R.id.buttonAddGroup);
+        fabAddGroup.setOnClickListener(view -> openAddGroupDialog());
+    }
+
+    public void initTable() {
+        teachersViewModel.initData(currentGroupId);
+        thisGroup = teachersViewModel.retrieveGroup(currentGroupId);
+
         RecyclerView table = findViewById(R.id.grades);
         RecyclerView topRow = findViewById(R.id.lessons);
 
@@ -95,7 +102,7 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         topRow.setAdapter(columnHeadersAdapter);
 
 
-        tableManager = new TableManager(this);
+        TableManager tableManager = new TableManager(this);
         tableManager.addRow(topRow);
 
         tableAdapter = new TableAdapter(this, tableManager);
@@ -108,12 +115,31 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         teachersViewModel
                 .getAllLessons()
                 .observe(this, list -> columnHeadersAdapter.submitList(list));
+
+        FloatingActionButton fabAddStudent = findViewById(R.id.fab_add_student);
+        fabAddStudent.setOnClickListener(view -> openAddStudentDialog());
+
+        FloatingActionButton buttonAddColumn = findViewById(R.id.buttonAddLesson);
+        buttonAddColumn.setOnClickListener(view -> onNewColumnAdded());
+
+        ImageButton menu = findViewById(R.id.buttonOpenNavigationMenu);
+        menu.setOnClickListener(view -> drawer.openDrawer(GravityCompat.START));
+
+        calendar = new TableCalendar();
+
+        saveLastUsedId();
     }
 
     @Override
     public void addStudent(String name) {
-        Student student = new Student(name, GROUP_ID);
-        teachersViewModel.insertStudent(student, teachersViewModel.retrieveGroup(GROUP_ID));
+        Student student = new Student(name, currentGroupId);
+        teachersViewModel.insertStudent(student, teachersViewModel.retrieveGroup(currentGroupId));
+    }
+
+    @Override
+    public void addGroup(String groupName) {
+        Group group = new Group(groupName);
+        teachersViewModel.insertGroup(group);
     }
 
     @Override
@@ -123,15 +149,11 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
     }
 
     @Override
-    public void addDate(Lesson lesson) {
-        teachersViewModel.updateLesson(lesson);
+    public void deleteGroup() {
+        teachersViewModel.deleteGroup(tempGroup);
+        tempGroup = null;
     }
 
-    @Override
-    public void deleteDate(int position) {
-        Lesson lesson = columnHeadersAdapter.getItemAt(position);
-        teachersViewModel.deleteDate(lesson);
-    }
 
     @Override
     public void onGradeAmountEdited(CellViewHolder holder, EditText editText) {
@@ -169,11 +191,36 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         }
     }
 
+    private void onNewColumnAdded() {
+        try {
+            teachersViewModel.insertColumn(currentGroupId);
+            initTable();
+            collapseButton();
+            int lessons = thisGroup.getLessons() + 1;
+            thisGroup.setLessons(lessons);
+            teachersViewModel.updateGroup(thisGroup);
+        } catch (ExecutionException | InterruptedException e){
+            Toast.makeText(this, "New column not inserted", Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
 
-    @Override
-    public void openAddDialog() {
+
+    public void openAddStudentDialog() {
         DialogAddStudent dialogAddStudent = new DialogAddStudent();
         dialogAddStudent.show(getSupportFragmentManager(), "Add student dialog");
+    }
+
+    public void openAddGroupDialog() {
+        DialogAddGroup dialogAddGroup = new DialogAddGroup();
+        dialogAddGroup.show(getSupportFragmentManager(), "Add group dialog");
+    }
+
+    @Override
+    public void onPreInitTable(int groupId) {
+        currentGroupId = groupId;
+        initTable();
+        drawer.closeDrawer(GravityCompat.START);
     }
 
     @Override
@@ -183,25 +230,24 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
         dialogDelete.show(getSupportFragmentManager(), "Delete student dialog");
     }
 
-
     public void expandButton() {
         if (addLessonsButtonShown) return;
-        int matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(((View) littleExpandableLayout.getParent()).getWidth(), View.MeasureSpec.EXACTLY);
-        int wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        littleExpandableLayout.measure(wrapContentMeasureSpec, matchParentMeasureSpec);
-        final int targetWidth = littleExpandableLayout.getMeasuredWidth();
+        int parentWidth = View.MeasureSpec.makeMeasureSpec(((View) topRightCornerExpandableLayout.getParent()).getWidth(), View.MeasureSpec.EXACTLY);
+        int parentHeight = View.MeasureSpec.makeMeasureSpec(((View) topRightCornerExpandableLayout.getParent()).getHeight(), View.MeasureSpec.EXACTLY);
+        topRightCornerExpandableLayout.measure(parentWidth, parentHeight);
+        final int targetWidth = topRightCornerExpandableLayout.getMeasuredWidth();
 
         // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-        littleExpandableLayout.getLayoutParams().width = 1;
-        littleExpandableLayout.setVisibility(View.VISIBLE);
+        topRightCornerExpandableLayout.getLayoutParams().width = 1;
+        topRightCornerExpandableLayout.setVisibility(View.VISIBLE);
         Animation a = new Animation()
         {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
-                littleExpandableLayout.getLayoutParams().width = interpolatedTime == 1
+                topRightCornerExpandableLayout.getLayoutParams().width = interpolatedTime == 1
                         ? FrameLayout.LayoutParams.WRAP_CONTENT
                         : (int)(targetWidth * interpolatedTime);
-                littleExpandableLayout.requestLayout();
+                topRightCornerExpandableLayout.requestLayout();
             }
 
             @Override
@@ -212,23 +258,23 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         // Expansion speed of 1dp/ms
         a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
-        littleExpandableLayout.startAnimation(a);
+        topRightCornerExpandableLayout.startAnimation(a);
         addLessonsButtonShown = true;
     }
 
     public void collapseButton() {
         if (!addLessonsButtonShown) return;
-        final int initialWidth = littleExpandableLayout.getMeasuredWidth();
+        final int initialWidth = topRightCornerExpandableLayout.getMeasuredWidth();
 
         Animation a = new Animation()
         {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
                 if(interpolatedTime == 1) {
-                    littleExpandableLayout.setVisibility(View.GONE);
+                    topRightCornerExpandableLayout.setVisibility(View.GONE);
                 } else {
-                    littleExpandableLayout.getLayoutParams().width = initialWidth - (int)(initialWidth * interpolatedTime);
-                    littleExpandableLayout.requestLayout();
+                    topRightCornerExpandableLayout.getLayoutParams().width = initialWidth - (int)(initialWidth * interpolatedTime);
+                    topRightCornerExpandableLayout.requestLayout();
                 }
             }
 
@@ -240,15 +286,22 @@ public class TableActivity extends AppCompatActivity implements ITableActivityLi
 
         // Collapse speed of 1dp/ms
         a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
-        littleExpandableLayout.startAnimation(a);
+        topRightCornerExpandableLayout.startAnimation(a);
         addLessonsButtonShown = false;
     }
 
-    @Override
-    protected void onDestroy() {
-        int offset = tableManager.getTopRowHorizontalOffset();
-        thisGroup.setOffset(offset);
-        teachersViewModel.updateGroup(thisGroup);
-        super.onDestroy();
+
+    void getLastUsedId() {
+        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        currentGroupId = sPref.getInt("LAST_USED", -1);
     }
+
+    void saveLastUsedId() {
+        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putInt("LAST_USED", currentGroupId);
+        ed.apply();
+    }
+
+
 }

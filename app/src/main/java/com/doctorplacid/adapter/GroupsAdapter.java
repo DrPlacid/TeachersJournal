@@ -1,5 +1,7 @@
 package com.doctorplacid.adapter;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,22 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
-import com.doctorplacid.IMainActivityListener;
+import com.doctorplacid.ITableListener;
 import com.doctorplacid.R;
-import com.doctorplacid.holder.GroupHolder;
+import com.doctorplacid.holder.GroupItemViewHolder;
 import com.doctorplacid.room.groups.Group;
 
+public class GroupsAdapter extends ListAdapter<Group, GroupItemViewHolder> {
 
-public class GroupsAdapter extends ListAdapter<Group, GroupHolder> {
+    ITableListener listener;
 
-    private IMainActivityListener listener;
-
-    public GroupsAdapter(IMainActivityListener listener) {
+    public GroupsAdapter(Context context) {
         super(DIFF_CALLBACK);
-        this.listener = listener;
+        this.listener = (ITableListener) context;
     }
 
-    private static final DiffUtil.ItemCallback<Group> DIFF_CALLBACK = new DiffUtil.ItemCallback<Group>() {
+    public static final DiffUtil.ItemCallback<Group> DIFF_CALLBACK = new DiffUtil.ItemCallback<Group>() {
         @Override
         public boolean areItemsTheSame(@NonNull Group oldItem, @NonNull Group newItem) {
             return oldItem.getId() == newItem.getId();
@@ -35,23 +36,18 @@ public class GroupsAdapter extends ListAdapter<Group, GroupHolder> {
         }
     };
 
-
     @NonNull
     @Override
-    public GroupHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GroupItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_group, parent, false);
-        return new GroupHolder(itemView, listener);
+                .inflate(R.layout.layout_group_item, parent, false);
+        return new GroupItemViewHolder(itemView, listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull GroupHolder holder, int position) {
-        Group tempGroup = getItem(position);
-        holder.setEntity(tempGroup);
+    public void onBindViewHolder(@NonNull GroupItemViewHolder holder, int position) {
+        Group group = getItem(position);
+        holder.setData(group);
     }
 
-
-    public Group getItemAt(int position) {
-        return getItem(position);
-    }
 }

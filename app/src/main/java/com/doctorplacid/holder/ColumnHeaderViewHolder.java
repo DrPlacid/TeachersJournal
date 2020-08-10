@@ -6,9 +6,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.doctorplacid.ITableActivityListener;
+import com.doctorplacid.ITableListener;
 import com.doctorplacid.R;
-import com.doctorplacid.TableCalendar;
 import com.doctorplacid.room.lessons.Lesson;
 
 public class ColumnHeaderViewHolder extends RecyclerView.ViewHolder {
@@ -16,20 +15,9 @@ public class ColumnHeaderViewHolder extends RecyclerView.ViewHolder {
     private TextView dateTextView;
     private Lesson lesson;
 
-    public ColumnHeaderViewHolder(@NonNull View itemView, @NonNull ITableActivityListener listener) {
+    public ColumnHeaderViewHolder(@NonNull View itemView, @NonNull ITableListener listener) {
         super(itemView);
         dateTextView = itemView.findViewById(R.id.dateTextView);
-        dateTextView.setOnClickListener(view -> {
-            TableCalendar tableCalendar = new TableCalendar();
-            String currentDate = tableCalendar.getDateTwoLines();
-            lesson.setDate(currentDate);
-            listener.addDate(lesson);
-        });
-        dateTextView.setOnLongClickListener(view -> {
-            int position = getAdapterPosition();
-            listener.deleteDate(position);
-            return false;
-        });
     }
 
     public void setEntity(Lesson lesson) {

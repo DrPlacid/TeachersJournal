@@ -8,16 +8,17 @@ import com.doctorplacid.holder.CellViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.lessons.Lesson;
 
-public interface ITableActivityListener {
+public interface ITableListener {
 
-    void openAddDialog();
+    void onPreInitTable(int groupId);
+
     void openDeleteDialog(int position);
 
     void addStudent(String name);
     void deleteStudent();
 
-    void addDate(Lesson lesson);
-    void deleteDate(int position);
+    void addGroup(String name);
+    void deleteGroup();
 
     void onGradeAmountEdited(CellViewHolder holder, EditText editText);
     void onGradePresenceEdited(Grade grade, int position);

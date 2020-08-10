@@ -1,9 +1,8 @@
 package com.doctorplacid.holder;
 
-import com.doctorplacid.ITableActivityListener;
+import com.doctorplacid.ITableListener;
 import com.doctorplacid.R;
 import com.doctorplacid.adapter.RowAdapter;
-import com.doctorplacid.adapter.TableAdapter;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.StudentWithGrades;
 
@@ -12,7 +11,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -24,12 +22,12 @@ public class RowHeaderViewHolder extends RecyclerView.ViewHolder {
     private TextView sumTextView;
     private RecyclerView recyclerView;
 
-    private ITableActivityListener listener;
+    private ITableListener listener;
     private RowAdapter adapter;
 
     public RowHeaderViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
-        listener = (ITableActivityListener) context;
+        listener = (ITableListener) context;
         nameTextView = itemView.findViewById(R.id.nameTextView);
         sumTextView = itemView.findViewById(R.id.sumTextView);
         recyclerView = itemView.findViewById(R.id.RecyclerViewRow);

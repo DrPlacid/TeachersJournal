@@ -1,44 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinator"
+    android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MainActivity">
+    tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:textAlignment="center"
-            android:textSize="30dp"
-            android:text="List of groups" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/groupsRecyclerView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            android:overScrollMode="never"
-            tools:listitem="@layout/layout_group"/>
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/top_row_height"
+                android:elevation="15dp">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_add_24px"
-        android:layout_margin="16dp"
-        app:fabSize="normal"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/top_row_height"
+                    android:orientation="horizontal">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    <LinearLayout
+                        android:layout_width="@dimen/row_header_width"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/buttonOpenNavigationMenu"
+                            android:layout_width="@dimen/cell_dimens"
+                            android:layout_height="match_parent"
+                            android:background="@color/colorAccent"
+                            android:gravity="center"
+                            android:src="@drawable/ic_menu_24px" />
+
+                        <TextView
+                            android:id="@+id/textViewGroupName"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/colorAccent" />
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/lessons"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:overScrollMode="never"
+                        tools:listitem="@layout/layout_column_header" />
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/cell_dimens"
+                        android:layout_height="@dimen/top_row_height"
+                        android:background="@color/colorAccent">
+
+                        <TextView
+                            android:id="@+id/textViewSum"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="E" />
+
+                        <FrameLayout
+                            android:id="@+id/buttonFrame"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/top_row_height"
+                            android:layout_alignParentEnd="true"
+                            android:background="@color/colorTransparentBackground">
+
+                            <FrameLayout
+                                android:layout_width="@dimen/cell_dimens"
+                                android:layout_height="@dimen/top_row_height"
+                                android:background="@color/colorTransparentBackground">
+
+                                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                                    android:id="@+id/buttonAddLesson"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_add_24px"
+                                    app:fabSize="mini" />
+
+                            </FrameLayout>
+
+                        </FrameLayout>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/grades"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                tools:listitem="@layout/layout_row" />
+
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_student"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add_24px"
+            app:fabSize="normal" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_done_24px"
+            android:visibility="invisible"
+            app:fabSize="normal" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationPanel"
+        android:layout_width="@dimen/navigation_panel_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:translationZ="8dp">
+
+        <include layout="@layout/layout_navigation_panel"/>
+
+    </com.google.android.material.navigation.NavigationView>
+
+</androidx.drawerlayout.widget.DrawerLayout>

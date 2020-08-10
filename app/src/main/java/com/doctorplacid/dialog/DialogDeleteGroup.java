@@ -10,13 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.doctorplacid.IMainActivityListener;
-import com.doctorplacid.ITableActivityListener;
+import com.doctorplacid.ITableListener;
 import com.doctorplacid.R;
 
 public class DialogDeleteGroup extends AppCompatDialogFragment {
 
-    IMainActivityListener listener;
+    ITableListener listener;
 
     private String name;
 
@@ -38,7 +37,7 @@ public class DialogDeleteGroup extends AppCompatDialogFragment {
                 .setNegativeButton("Cancel", (dialog, which) ->
                         DialogDeleteGroup.super.onDestroy())
                 .setPositiveButton("Delete", (dialog, which) ->
-                        listener.delete());
+                        listener.deleteGroup());
         return builder.create();
     }
 
@@ -46,7 +45,7 @@ public class DialogDeleteGroup extends AppCompatDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (IMainActivityListener) context;
+            listener = (ITableListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + "Must implement IMainActivityListener");
         }

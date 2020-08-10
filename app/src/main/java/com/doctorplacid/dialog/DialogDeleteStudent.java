@@ -10,12 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.doctorplacid.ITableActivityListener;
+import com.doctorplacid.ITableListener;
 import com.doctorplacid.R;
 
 public class DialogDeleteStudent extends AppCompatDialogFragment {
 
-    ITableActivityListener listener;
+    ITableListener listener;
 
     private String name;
 
@@ -45,7 +45,7 @@ public class DialogDeleteStudent extends AppCompatDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (ITableActivityListener) context;
+            listener = (ITableListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + "Must implement ITableActivityListener");
         }

@@ -2,19 +2,15 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp">
+    android:layout_height="@dimen/cell_dimens">
 
     <TextView
-        android:id="@+id/textViewGroup"
+        android:id="@+id/groupTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp"
-        android:gravity="start|center"
+        android:gravity="center|start"
+        android:paddingStart="16dp"
         android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"/>
+        android:clickable="true"/>
 
 </androidx.cardview.widget.CardView>

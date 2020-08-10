@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/row_height"
-    android:layout_height="@dimen/row_height">
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/cell_dimens"
+    android:layout_height="@dimen/cell_dimens">
 
 
     <HorizontalScrollView
@@ -20,21 +19,21 @@
 
             <TextView
                 android:id="@+id/gradeTextView"
-                android:layout_width="@dimen/row_height"
+                android:layout_width="@dimen/cell_dimens"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true"/>
+                android:focusable="true"
+                android:gravity="center" />
 
             <EditText
                 android:id="@+id/gradeEditText"
-                android:layout_width="@dimen/row_height"
+                android:layout_width="@dimen/cell_dimens"
                 android:layout_height="match_parent"
+                android:digits="1234567890"
                 android:gravity="center"
                 android:inputType="number"
-                android:digits="1234567890"
-                android:maxLength="2"/>
+                android:maxLength="2" />
 
         </LinearLayout>
 
@@ -43,7 +42,7 @@
     <View
         android:layout_width="2dp"
         android:layout_height="match_parent"
-        android:background="@color/colorTextReady"/>
+        android:background="@color/colorTextReady" />
 
 
 </androidx.cardview.widget.CardView>

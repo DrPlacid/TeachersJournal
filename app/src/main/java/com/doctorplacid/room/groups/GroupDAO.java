@@ -33,7 +33,7 @@ public abstract class GroupDAO {
             lessons.add(new Lesson(id));
         }
 
-        long[] ids = insertLessons(lessons);
+        insertLessons(lessons);
     }
 
     @Update

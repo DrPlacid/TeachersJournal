@@ -15,8 +15,6 @@ public class Group {
 
     private int lessons;
 
-    private int offset;
-
     public Group(String name) {
         this.name = name;
         this.lessons = 10;
@@ -46,11 +44,4 @@ public class Group {
         this.name = name;
     }
 
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
 }

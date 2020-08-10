@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.doctorplacid.activity.TableActivity;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +31,7 @@ public class TableManager {
                         int scrollRange = super.scrollHorizontallyBy(dx, recycler, state);
                         int overScroll = dx - scrollRange;
                         if (overScroll > 0) {
-                            ((TableActivity) context).expandButton();
+                            ((MainActivity) context).expandButton();
                         }
                         return scrollRange;
                     }
@@ -64,7 +62,7 @@ public class TableManager {
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             if (dx < 0) {
-                ((TableActivity) context).collapseButton();
+                ((MainActivity) context).collapseButton();
             }
             if (recyclerViews.indexOf(recyclerView) == mTouchedRvPosition) {
                 for (int i = 0; i < currentListSize; i++) {

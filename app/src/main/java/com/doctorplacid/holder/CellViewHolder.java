@@ -9,8 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.doctorplacid.ITableActivityListener;
-import com.doctorplacid.activity.TableActivity;
+import com.doctorplacid.ITableListener;
+import com.doctorplacid.MainActivity;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.R;
 
@@ -26,7 +26,7 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
 
     private Grade grade;
 
-    public CellViewHolder(@NonNull View itemView, ITableActivityListener listener) {
+    public CellViewHolder(@NonNull View itemView, ITableListener listener) {
         super(itemView);
 
         textView = itemView.findViewById(R.id.gradeTextView);
@@ -35,7 +35,7 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
         linearLayout = itemView.findViewById(R.id.linear);
 
         textView.setOnClickListener(view -> {
-            if (!TableActivity.currentlyEdited) {
+            if (!MainActivity.currentlyEdited) {
                 if (!grade.isPresent()) {
                     Grade newGrade = updateGradePresence();
                     listener.onGradePresenceEdited(newGrade, getAdapterPosition());
