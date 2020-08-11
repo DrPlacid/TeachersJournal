@@ -30,7 +30,7 @@ public class DialogAddStudent extends AppCompatDialogFragment {
         EditText nameEditText = view.findViewById(R.id.editTextGroupName);
 
         builder.setView(view)
-                .setTitle("Add new")
+                .setTitle("Add new student")
                 .setNegativeButton("Cancel", (dialog, which) ->
                         DialogAddStudent.super.onDestroy())
                 .setPositiveButton("Add", (dialog, which) -> {

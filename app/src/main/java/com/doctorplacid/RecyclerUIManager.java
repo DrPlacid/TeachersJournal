@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableManager {
+public class RecyclerUIManager {
 
     private Context context;
 
@@ -19,7 +19,7 @@ public class TableManager {
 
     private List<RecyclerView> recyclerViews = new ArrayList<>();
 
-    public TableManager(Context context) {
+    public RecyclerUIManager(Context context) {
         this.context = context;
     }
 
@@ -31,7 +31,7 @@ public class TableManager {
                         int scrollRange = super.scrollHorizontallyBy(dx, recycler, state);
                         int overScroll = dx - scrollRange;
                         if (overScroll > 0) {
-                            ((MainActivity) context).expandButton();
+                            ((MainActivity) context).expandAddColumnButton();
                         }
                         return scrollRange;
                     }
@@ -62,7 +62,7 @@ public class TableManager {
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             if (dx < 0) {
-                ((MainActivity) context).collapseButton();
+                ((MainActivity) context).collapseAddColumnButton();
             }
             if (recyclerViews.indexOf(recyclerView) == mTouchedRvPosition) {
                 for (int i = 0; i < currentListSize; i++) {
@@ -97,5 +97,6 @@ public class TableManager {
 
         }
     };
+
 
 }

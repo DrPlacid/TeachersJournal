@@ -30,7 +30,7 @@ public class DialogAddGroup extends AppCompatDialogFragment {
         EditText nameEditText = view.findViewById(R.id.editTextGroupName);
 
         builder.setView(view)
-                .setTitle("Add new")
+                .setTitle("Create new group")
                 .setNegativeButton("Cancel", (dialog, which) ->
                         DialogAddGroup.super.onDestroy())
                 .setPositiveButton("Add", (dialog, which) -> {

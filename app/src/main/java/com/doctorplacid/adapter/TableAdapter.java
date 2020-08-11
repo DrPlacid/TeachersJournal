@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.R;
-import com.doctorplacid.TableManager;
+import com.doctorplacid.RecyclerUIManager;
 import com.doctorplacid.holder.RowHeaderViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.StudentWithGrades;
@@ -21,12 +21,12 @@ import java.util.List;
 public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHolder> {
 
     private Context context;
-    private TableManager tableManager;
+    private RecyclerUIManager recyclerUIManager;
 
-    public TableAdapter(Context context, TableManager tableManager) {
+    public TableAdapter(Context context, RecyclerUIManager recyclerUIManager) {
         super(DIFF_CALLBACK);
         this.context = context;
-        this.tableManager = tableManager;
+        this.recyclerUIManager = recyclerUIManager;
     }
 
 
@@ -68,8 +68,8 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHo
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_row,parent, false);
         RowHeaderViewHolder holder = new RowHeaderViewHolder(itemView, context);
-        tableManager.addRow(holder.getRecycler());
-        tableManager.syncRowPosition(holder.getRecycler());
+        recyclerUIManager.addRow(holder.getRecycler());
+        recyclerUIManager.syncRowPosition(holder.getRecycler());
         return holder;
     }
 

@@ -17,7 +17,9 @@ import com.doctorplacid.room.students.StudentWithGrades;
 import com.doctorplacid.room.students.StudentsRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class TeachersViewModel extends AndroidViewModel {
@@ -27,9 +29,10 @@ public class TeachersViewModel extends AndroidViewModel {
     private LessonRepository lessonRepository;
     private GradeRepository gradeRepository;
 
-    private LiveData<List<StudentWithGrades>> studentsWithGradesList;
     private LiveData<List<Group>> groupsList;
-    private LiveData<List<Lesson>> lessonsList;
+
+    private Map<Integer, LiveData<List<StudentWithGrades>>> studentsWithGrades = new HashMap<>();
+    private Map<Integer, LiveData<List<Lesson>>> lessons = new HashMap<>();
 
     public TeachersViewModel(@NonNull Application application) {
         super(application);
@@ -41,9 +44,12 @@ public class TeachersViewModel extends AndroidViewModel {
         groupsList = groupsRepository.retrieveAll();
     }
 
-    public void initData(int groupId) {
-        studentsWithGradesList = studentsRepository.retrieveAll(groupId);
-        lessonsList = lessonRepository.retrieveAll(groupId);
+    public void initStudentsData(List<Group> groups) {
+        for (Group group : groups) {
+            int id = group.getId();
+            lessons.put(id, lessonRepository.retrieveAll(id));
+            studentsWithGrades.put(id, studentsRepository.retrieveAll(id));
+        }
     }
 
     public void insertColumn(int groupId) throws ExecutionException, InterruptedException {
@@ -86,8 +92,8 @@ public class TeachersViewModel extends AndroidViewModel {
         studentsRepository.delete(student);
     }
 
-    public LiveData<List<StudentWithGrades>> getAllStudents(){
-        return studentsWithGradesList;
+    public LiveData<List<StudentWithGrades>> getAllStudents(int groupId){
+        return studentsWithGrades.get(groupId);
     }
 
     public void updateLesson(Lesson lesson) {
@@ -98,8 +104,8 @@ public class TeachersViewModel extends AndroidViewModel {
         lessonRepository.delete(lesson);
     }
 
-    public LiveData<List<Lesson>> getAllLessons() {
-        return lessonsList;
+    public LiveData<List<Lesson>> getAllLessons(int groupId) {
+        return lessons.get(groupId);
     }
 
     public void updateGrade(Grade grade) {
