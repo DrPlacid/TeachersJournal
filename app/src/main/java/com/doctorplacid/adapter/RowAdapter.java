@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
-import com.doctorplacid.ITableListener;
+import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
 import com.doctorplacid.holder.CellViewHolder;
 import com.doctorplacid.room.grades.Grade;

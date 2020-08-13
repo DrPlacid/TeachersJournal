@@ -1,4 +1,4 @@
-package com.doctorplacid;
+package com.doctorplacid.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -20,10 +20,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.doctorplacid.adapter.GroupsAdapter;
+import com.doctorplacid.R;
+import com.doctorplacid.TableCalendar;
+import com.doctorplacid.dialog.DialogDeleteLesson;
+import com.doctorplacid.room.TeachersViewModel;
+import com.doctorplacid.adapter.GroupsNavigationAdapter;
 import com.doctorplacid.adapter.TableAdapter;
 import com.doctorplacid.dialog.DialogAddGroup;
 import com.doctorplacid.dialog.DialogAddStudent;
+import com.doctorplacid.dialog.DialogDeleteGroup;
 import com.doctorplacid.dialog.DialogDeleteStudent;
 import com.doctorplacid.holder.CellViewHolder;
 import com.doctorplacid.room.grades.Grade;
@@ -37,19 +42,22 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements ITableListener {
 
-    private static final int ADD_LESSON_BUTTON_ANIMATION_TIME = 400;
+    private static final int BUTTON_EXPAND_ANIMATION_TIME = 400;
 
     private static int currentGroupId;
     public static boolean anyCellCurrentlyEdited = false;
     public static boolean addLessonsButtonShown = false;
 
+
     private static Student tempStudent;
-    private static Group thisGroup;
+    private static Lesson tempLesson;
     private static Group tempGroup;
 
+    private static Group thisGroup;
     private ColumnHeadersAdapter columnHeadersAdapter;
     private TableAdapter tableAdapter;
     private TeachersViewModel teachersViewModel;
+    private RecyclerScrollManager recyclerScrollManager;
 
     private DrawerLayout drawer;
     private FrameLayout topRightCornerExpandableLayout;
@@ -82,11 +90,11 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
 
         RecyclerView groupsRecyclerView = findViewById(R.id.groupsRecyclerView);
         groupsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        GroupsAdapter groupsAdapter = new GroupsAdapter(this);
-        groupsRecyclerView.setAdapter(groupsAdapter);
+        GroupsNavigationAdapter groupsNavigationAdapter = new GroupsNavigationAdapter(this);
+        groupsRecyclerView.setAdapter(groupsNavigationAdapter);
 
         teachersViewModel.getAllGroups().observe(this, list -> {
-            groupsAdapter.submitList(list);
+            groupsNavigationAdapter.submitList(list);
             teachersViewModel.initStudentsData(list);
             getSharedPreferenceLastUsedGroupId();
             if (currentGroupId != -666) {
@@ -107,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         onClearTable();
         currentGroupId = groupId;
-        saveSharedPreferenceLastUsedGroupId();
+        saveSharedPreferenceLastUsedGroupId(currentGroupId);
         onInitTable();
         drawer.closeDrawer(GravityCompat.START);
     }
@@ -128,10 +136,10 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         columnHeadersAdapter = new ColumnHeadersAdapter(this);
         topRow.setAdapter(columnHeadersAdapter);
 
-        RecyclerUIManager recyclerUIManager = new RecyclerUIManager(this);
-        recyclerUIManager.addRow(topRow);
+        recyclerScrollManager = new RecyclerScrollManager(this, findViewById(R.id.coordinator));
+        recyclerScrollManager.addRow(topRow);
 
-        tableAdapter = new TableAdapter(this, recyclerUIManager);
+        tableAdapter = new TableAdapter(this, recyclerScrollManager);
         table.setAdapter(tableAdapter);
 
         teachersViewModel.getAllStudents(currentGroupId).observe(this, list -> tableAdapter.submitList(list));
@@ -152,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     @Override
     public void addStudent(String name) {
         Student student = new Student(name, currentGroupId);
-        teachersViewModel.insertStudent(student, teachersViewModel.retrieveGroup(currentGroupId));
+        teachersViewModel.insertStudent(student,thisGroup, teachersViewModel.getAllLessons(currentGroupId).getValue());
     }
 
     @Override
@@ -170,7 +178,20 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     @Override
     public void deleteGroup() {
         teachersViewModel.deleteGroup(tempGroup);
+        if (tempGroup.getId() == currentGroupId) {
+            saveSharedPreferenceLastUsedGroupId(-666);
+        }
         tempGroup = null;
+    }
+
+    @Override
+    public void deleteColumn() {
+        teachersViewModel.deleteLesson(tempLesson);
+        recyclerScrollManager.syncAllRows();
+        int lessons = thisGroup.getLessons() - 1;
+        thisGroup.setLessons(lessons);
+        teachersViewModel.updateGroup(thisGroup);
+        tempLesson = null;
     }
 
 
@@ -187,12 +208,13 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
             fabOk.setOnClickListener(view -> {
                 Grade temp = holder.updateGradeAmount();
                 collapseGradeOkButton();
-                if (getCurrentFocus() != null)
+                if (getCurrentFocus() != null) {
                     inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(), 0);
-                editText.clearFocus();
-                if (temp != null)
+                    editText.clearFocus();
+                }
+                if (temp != null) {
                     teachersViewModel.updateGrade(temp);
-
+                }
                 anyCellCurrentlyEdited = false;
             });
     }
@@ -213,7 +235,6 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     private void onNewColumnAdded() {
         try {
             teachersViewModel.insertColumn(currentGroupId);
-            onInitTable();
             collapseAddColumnButton();
             int lessons = thisGroup.getLessons() + 1;
             thisGroup.setLessons(lessons);
@@ -235,10 +256,24 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     }
 
     @Override
-    public void openDeleteDialog(int position) {
-        tempStudent = tableAdapter.getItemAt(position).getStudent();
+    public void openDeleteStudentDialog(Student student) {
+        tempStudent = student;
         DialogDeleteStudent dialogDelete = new DialogDeleteStudent(tempStudent.getName());
         dialogDelete.show(getSupportFragmentManager(), "Delete student dialog");
+    }
+
+    @Override
+    public void openDeleteGroupDialog(Group group) {
+        tempGroup = group;
+        DialogDeleteGroup dialogDelete = new DialogDeleteGroup(tempGroup.getName());
+        dialogDelete.show(getSupportFragmentManager(), "Delete group dialog");
+    }
+
+    @Override
+    public void openDeleteColumnDialog(Lesson lesson) {
+        tempLesson = lesson;
+        DialogDeleteLesson dialogDelete = new DialogDeleteLesson();
+        dialogDelete.show(getSupportFragmentManager(), "Delete column dialog");
     }
 
     /**
@@ -271,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         };
 
         // Expansion speed of 1dp/ms
-        a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
+        a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
         topRightCornerExpandableLayout.startAnimation(a);
         addLessonsButtonShown = true;
     }
@@ -302,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         };
 
         // Expansion speed of 1dp/ms
-        a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
+        a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
         bottomRightCornerExpandableLayout.startAnimation(a);
     }
 
@@ -329,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         };
 
         // Collapse speed of 1dp/ms
-        a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
+        a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
         topRightCornerExpandableLayout.startAnimation(a);
         addLessonsButtonShown = false;
     }
@@ -356,10 +391,9 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         };
 
         // Collapse speed of 1dp/ms
-        a.setDuration(ADD_LESSON_BUTTON_ANIMATION_TIME);
+        a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
         bottomRightCornerExpandableLayout.startAnimation(a);
     }
-
 
     /**
      * Methods to save data in shared preferences
@@ -369,12 +403,11 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         currentGroupId = sPref.getInt("LAST_USED", -666);
     }
 
-    void saveSharedPreferenceLastUsedGroupId() {
+    void saveSharedPreferenceLastUsedGroupId(int groupId) {
         SharedPreferences sPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
-        ed.putInt("LAST_USED", currentGroupId);
+        ed.putInt("LAST_USED", groupId);
         ed.apply();
     }
-
 
 }

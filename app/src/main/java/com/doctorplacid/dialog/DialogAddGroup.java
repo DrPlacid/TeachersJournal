@@ -11,8 +11,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.doctorplacid.ITableListener;
+import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
+
+import java.util.Objects;
 
 public class DialogAddGroup extends AppCompatDialogFragment {
 
@@ -21,11 +23,9 @@ public class DialogAddGroup extends AppCompatDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
 
-        View view = getActivity()
-                .getLayoutInflater()
-                .inflate(R.layout.dialog_add, null);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_dialog_add, null);
 
         EditText nameEditText = view.findViewById(R.id.editTextGroupName);
 
@@ -49,7 +49,7 @@ public class DialogAddGroup extends AppCompatDialogFragment {
         try {
             listener = (ITableListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "Must implement IMainActivityListener");
+            throw new ClassCastException(context.toString() + "Must implement ITableListener");
         }
     }
 }

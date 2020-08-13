@@ -6,7 +6,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.doctorplacid.ITableListener;
+import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.R;
 
@@ -19,11 +19,19 @@ public class GroupItemViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         textView = itemView.findViewById(R.id.groupTextView);
         textView.setOnClickListener(view -> listener.onPreInitTable(group.getId()));
+        textView.setOnLongClickListener(view -> {
+            listener.openDeleteGroupDialog(group);
+            return false;
+        });
     }
 
     public void setData(Group group) {
         this.group = group;
         textView.setText(group.getName());
+    }
+
+    public Group getGroup() {
+        return this.group;
     }
 
 }

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.R;
-import com.doctorplacid.RecyclerUIManager;
+import com.doctorplacid.activity.RecyclerScrollManager;
 import com.doctorplacid.holder.RowHeaderViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.StudentWithGrades;
@@ -21,12 +21,12 @@ import java.util.List;
 public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHolder> {
 
     private Context context;
-    private RecyclerUIManager recyclerUIManager;
+    private RecyclerScrollManager recyclerScrollManager;
 
-    public TableAdapter(Context context, RecyclerUIManager recyclerUIManager) {
+    public TableAdapter(Context context, RecyclerScrollManager recyclerScrollManager) {
         super(DIFF_CALLBACK);
         this.context = context;
-        this.recyclerUIManager = recyclerUIManager;
+        this.recyclerScrollManager = recyclerScrollManager;
     }
 
 
@@ -68,8 +68,8 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHo
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_row,parent, false);
         RowHeaderViewHolder holder = new RowHeaderViewHolder(itemView, context);
-        recyclerUIManager.addRow(holder.getRecycler());
-        recyclerUIManager.syncRowPosition(holder.getRecycler());
+        recyclerScrollManager.addRow(holder.getRecycler());
+        recyclerScrollManager.syncRowPosition(holder.getRecycler());
         return holder;
     }
 
@@ -97,11 +97,7 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHo
     @Override
     public void onBindViewHolder(@NonNull RowHeaderViewHolder holder, int position) {
         StudentWithGrades studentWithGrades = getItem(position);
-        holder.setList(studentWithGrades);
-    }
-
-    public StudentWithGrades getItemAt(int position) {
-        return getItem(position);
+        holder.setData(studentWithGrades);
     }
 
 }

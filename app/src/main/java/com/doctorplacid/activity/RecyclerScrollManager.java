@@ -1,16 +1,18 @@
-package com.doctorplacid;
+package com.doctorplacid.activity;
 
 import android.content.Context;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecyclerUIManager {
+public class RecyclerScrollManager {
 
     private Context context;
 
@@ -19,12 +21,18 @@ public class RecyclerUIManager {
 
     private List<RecyclerView> recyclerViews = new ArrayList<>();
 
-    public RecyclerUIManager(Context context) {
+    public RecyclerScrollManager(Context context, CoordinatorLayout coordinatorLayout) {
         this.context = context;
+        coordinatorLayout.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            int y = oldBottom - bottom;
+            if (y > 0) {
+                syncAllRows();
+            }
+        });
     }
 
     public void addRow(final RecyclerView recyclerView) {
-        RecyclerView.LayoutManager lm =
+        LinearLayoutManager lm =
                 new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
                     @Override
                     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -36,7 +44,7 @@ public class RecyclerUIManager {
                         return scrollRange;
                     }
                 };
-
+        
         recyclerView.setLayoutManager(lm);
         recyclerView.addOnScrollListener(syncScrollListener);
         recyclerView.addOnItemTouchListener(syncTouchListener);
@@ -45,14 +53,22 @@ public class RecyclerUIManager {
         currentListSize = recyclerViews.size();
     }
 
-    public int getTopRowHorizontalOffset() {
-        return recyclerViews.get(0).computeHorizontalScrollOffset();
-    }
-
     public void syncRowPosition(RecyclerView recyclerView) {
-        int offsetDiff = getTopRowHorizontalOffset() - recyclerView.computeHorizontalScrollOffset();
+        int offsetDiff = recyclerViews.get(0).computeHorizontalScrollOffset() - recyclerView.computeHorizontalScrollOffset();
         if (offsetDiff != 0) {
             recyclerView.smoothScrollBy(offsetDiff, 0);
+        }
+    }
+
+    public void syncAllRows() {
+        int masterOffset = recyclerViews.get(0).computeHorizontalScrollOffset();
+
+        List<RecyclerView> tempList =  recyclerViews.subList(1, currentListSize);
+        for (RecyclerView recyclerView : tempList) {
+            int diff = masterOffset - recyclerView.computeHorizontalScrollOffset();
+            if (diff != 0) {
+                recyclerView.scrollBy(diff, 0);
+            }
         }
     }
 
@@ -97,6 +113,5 @@ public class RecyclerUIManager {
 
         }
     };
-
 
 }

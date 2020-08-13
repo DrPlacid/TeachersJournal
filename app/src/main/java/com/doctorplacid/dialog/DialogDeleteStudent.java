@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.doctorplacid.ITableListener;
+import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
 
 public class DialogDeleteStudent extends AppCompatDialogFragment {
@@ -30,7 +30,7 @@ public class DialogDeleteStudent extends AppCompatDialogFragment {
 
         View view = getActivity()
                 .getLayoutInflater()
-                .inflate(R.layout.dialog_delete_group, null);
+                .inflate(R.layout.fragment_dialog_delete, null);
 
         builder.setView(view)
                 .setTitle("Delete " + name + "?")
@@ -47,7 +47,7 @@ public class DialogDeleteStudent extends AppCompatDialogFragment {
         try {
             listener = (ITableListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "Must implement ITableActivityListener");
+            throw new ClassCastException(context.toString() + "Must implement ITableListener");
         }
     }
 }

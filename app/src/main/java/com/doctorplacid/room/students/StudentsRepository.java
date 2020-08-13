@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import com.doctorplacid.room.TeachersDatabase;
 import com.doctorplacid.room.groups.Group;
+import com.doctorplacid.room.lessons.Lesson;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -20,8 +21,8 @@ public class StudentsRepository {
         studentDAO = database.studentDAO();
     }
 
-    public void insert(Student student, Group group) {
-        new StudentInsertAsyncTask(studentDAO, group).execute(student);
+    public void insert(Student student, Group group, List<Lesson> lessons) {
+        new StudentInsertAsyncTask(studentDAO, group, lessons).execute(student);
     }
 
     public List<Integer> getIds(int groupId) throws ExecutionException, InterruptedException {
@@ -39,16 +40,17 @@ public class StudentsRepository {
     private static class StudentInsertAsyncTask extends AsyncTask<Student, Void, Void> {
         private StudentDAO studentDAO;
         private Group group;
+        private List<Lesson> lessons;
 
-
-        public StudentInsertAsyncTask(StudentDAO studentDAO, Group group) {
+        public StudentInsertAsyncTask(StudentDAO studentDAO, Group group, List<Lesson> lessons) {
             this.studentDAO = studentDAO;
             this.group = group;
+            this.lessons = lessons;
         }
 
         @Override
         protected Void doInBackground(Student... students) {
-            studentDAO.insertNewStudentWithGrades(students[0], group);
+            studentDAO.insertNewStudentWithGrades(students[0], group, lessons);
             return null;
         }
 

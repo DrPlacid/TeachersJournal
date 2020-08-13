@@ -13,7 +13,7 @@ import java.util.List;
 public interface LessonDAO {
 
     @Insert
-    void insert(Lesson lesson);
+    long insert(Lesson lesson);
 
     @Update
     void update(Lesson lesson);

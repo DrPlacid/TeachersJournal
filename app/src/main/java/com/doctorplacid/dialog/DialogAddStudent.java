@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.doctorplacid.ITableListener;
+import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
 
 public class DialogAddStudent extends AppCompatDialogFragment {
@@ -25,7 +25,7 @@ public class DialogAddStudent extends AppCompatDialogFragment {
 
         View view = getActivity()
                 .getLayoutInflater()
-                .inflate(R.layout.dialog_add, null);
+                .inflate(R.layout.fragment_dialog_add, null);
 
         EditText nameEditText = view.findViewById(R.id.editTextGroupName);
 
@@ -49,7 +49,7 @@ public class DialogAddStudent extends AppCompatDialogFragment {
         try {
             listener = (ITableListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "Must implement ITableActivityListener");
+            throw new ClassCastException(context.toString() + "Must implement ITableListener");
         }
     }
 }

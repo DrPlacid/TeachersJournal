@@ -1,4 +1,4 @@
-package com.doctorplacid;
+package com.doctorplacid.room;
 
 import android.app.Application;
 
@@ -53,15 +53,18 @@ public class TeachersViewModel extends AndroidViewModel {
     }
 
     public void insertColumn(int groupId) throws ExecutionException, InterruptedException {
-
+        int lessonId = lessonRepository.insert(new Lesson(groupId));
         List<Grade> grades = new ArrayList<>();
 
+        if (lessonId == -666) {
+            return;
+        }
+
         for(int id : studentsRepository.getIds(groupId)) {
-            grades.add(new Grade(id));
+            grades.add(new Grade(id, lessonId));
         }
         gradeRepository.insert(grades);
 
-        lessonRepository.insert(new Lesson(groupId));
     }
 
     public Group retrieveGroup(int id) {
@@ -84,8 +87,8 @@ public class TeachersViewModel extends AndroidViewModel {
         return groupsList;
     }
 
-    public void insertStudent(Student student, Group group) {
-        studentsRepository.insert(student, group);
+    public void insertStudent(Student student, Group group, List<Lesson> lessons) {
+        studentsRepository.insert(student, group, lessons);
     }
 
     public void deleteStudent(Student student) {
@@ -100,7 +103,7 @@ public class TeachersViewModel extends AndroidViewModel {
         lessonRepository.update(lesson);
     }
 
-    public void deleteDate(Lesson lesson) {
+    public void deleteLesson(Lesson lesson) {
         lessonRepository.delete(lesson);
     }
 

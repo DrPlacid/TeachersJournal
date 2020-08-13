@@ -10,18 +10,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
+import com.doctorplacid.activity.ITableListener;
 
-public class DialogDeleteGroup extends AppCompatDialogFragment {
+public class DialogDeleteLesson extends AppCompatDialogFragment {
 
     ITableListener listener;
 
-    private String name;
-
-    public DialogDeleteGroup(String name) {
-        this.name = name;
-    }
 
     @NonNull
     @Override
@@ -33,11 +28,11 @@ public class DialogDeleteGroup extends AppCompatDialogFragment {
                 .inflate(R.layout.fragment_dialog_delete, null);
 
         builder.setView(view)
-                .setTitle("Delete " + name + "?")
+                .setTitle("Delete column ?")
                 .setNegativeButton("Cancel", (dialog, which) ->
-                        DialogDeleteGroup.super.onDestroy())
+                        DialogDeleteLesson.super.onDestroy())
                 .setPositiveButton("Delete", (dialog, which) ->
-                        listener.deleteGroup());
+                        listener.deleteColumn());
         return builder.create();
     }
 

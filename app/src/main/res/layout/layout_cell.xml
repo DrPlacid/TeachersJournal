@@ -3,17 +3,17 @@
     android:layout_width="@dimen/cell_dimens"
     android:layout_height="@dimen/cell_dimens">
 
-
     <EditText
         android:id="@+id/gradeEditText"
         android:layout_width="@dimen/cell_dimens"
         android:layout_height="match_parent"
-        android:digits="1234567890"
         android:gravity="center"
         android:clickable="false"
+        android:focusable="true"
         android:visibility="invisible"
         android:inputType="number"
-        android:maxLength="2" />
+        android:maxLength="2"
+        android:digits="1234567890"/>
 
     <TextView
         android:id="@+id/gradeTextView"

@@ -1,9 +1,10 @@
 package com.doctorplacid.holder;
 
-import com.doctorplacid.ITableListener;
+import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
 import com.doctorplacid.adapter.RowAdapter;
 import com.doctorplacid.room.grades.Grade;
+import com.doctorplacid.room.students.Student;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import android.content.Context;
@@ -24,6 +25,7 @@ public class RowHeaderViewHolder extends RecyclerView.ViewHolder {
 
     private ITableListener listener;
     private RowAdapter adapter;
+    private Student student;
 
     public RowHeaderViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
@@ -33,14 +35,15 @@ public class RowHeaderViewHolder extends RecyclerView.ViewHolder {
         recyclerView = itemView.findViewById(R.id.RecyclerViewRow);
 
         nameTextView.setOnLongClickListener(view -> {
-            listener.openDeleteDialog(getAdapterPosition());
+            listener.openDeleteStudentDialog((this.student));
             return false;
         });
     }
 
-    public void setList(StudentWithGrades studentWithGrades) {
+    public void setData(StudentWithGrades studentWithGrades) {
+        this.student = studentWithGrades.getStudent();
         List<Grade> grades = studentWithGrades.getGrades();
-        String nameText = studentWithGrades.getStudent().getName();
+        String nameText = student.getName();
         nameTextView.setText(nameText);
         adapter = new RowAdapter(listener);
         recyclerView.setAdapter(adapter);

@@ -1,7 +1,6 @@
 package com.doctorplacid.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,16 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
-import com.doctorplacid.ITableListener;
+import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
 import com.doctorplacid.holder.GroupItemViewHolder;
 import com.doctorplacid.room.groups.Group;
 
-public class GroupsAdapter extends ListAdapter<Group, GroupItemViewHolder> {
+public class GroupsNavigationAdapter extends ListAdapter<Group, GroupItemViewHolder> {
 
     ITableListener listener;
 
-    public GroupsAdapter(Context context) {
+    public GroupsNavigationAdapter(Context context) {
         super(DIFF_CALLBACK);
         this.listener = (ITableListener) context;
     }
@@ -48,6 +47,10 @@ public class GroupsAdapter extends ListAdapter<Group, GroupItemViewHolder> {
     public void onBindViewHolder(@NonNull GroupItemViewHolder holder, int position) {
         Group group = getItem(position);
         holder.setData(group);
+    }
+
+    public Group getItemAt(int position) {
+        return getItem(position);
     }
 
 }

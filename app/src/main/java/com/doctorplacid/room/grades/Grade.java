@@ -12,6 +12,8 @@ import com.doctorplacid.room.students.Student;
         foreignKeys = {
                 @ForeignKey(onDelete = ForeignKey.CASCADE,
                         entity = Student.class, parentColumns = "id", childColumns = "student_id"),
+                @ForeignKey(onDelete = ForeignKey.CASCADE,
+                        entity = Lesson.class, parentColumns = "id", childColumns = "lesson_id"),
         })
 public class Grade {
 
@@ -26,14 +28,19 @@ public class Grade {
     @ColumnInfo(name = "student_id")
     private int studentId;
 
-    public Grade(int studentId) {
+    @ColumnInfo(name = "lesson_id")
+    private int lessonId;
+
+    public Grade(int studentId, int lessonId) {
         this.studentId = studentId;
+        this.lessonId = lessonId;
         this.present = false;
     }
 
     // copy constructor
     public Grade(Grade other) {
         this.studentId = other.getStudentId();
+        this.lessonId = other.getLessonId();
         this.id = other.getId();
         this.present = other.isPresent();
         this.amount = other.getAmount();
@@ -67,4 +74,7 @@ public class Grade {
         return studentId;
     }
 
+    public int getLessonId() {
+        return lessonId;
+    }
 }

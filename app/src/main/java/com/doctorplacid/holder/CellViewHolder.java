@@ -7,15 +7,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.doctorplacid.ITableListener;
-import com.doctorplacid.MainActivity;
+import com.doctorplacid.activity.ITableListener;
+import com.doctorplacid.activity.MainActivity;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.R;
 
 public class CellViewHolder extends RecyclerView.ViewHolder {
-
-    private static final int MODE_DISPLAY = -1;
-    private static final int MODE_EDIT = 1;
 
     private TextView textView;
     private EditText editText;
@@ -24,7 +21,6 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
 
     public CellViewHolder(@NonNull View itemView, ITableListener listener) {
         super(itemView);
-
 
         textView = itemView.findViewById(R.id.gradeTextView);
         editText = itemView.findViewById(R.id.gradeEditText);

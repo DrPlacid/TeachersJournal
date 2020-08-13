@@ -1,6 +1,5 @@
 package com.doctorplacid.room.students;
 
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -26,13 +25,16 @@ public abstract class StudentDAO {
     @Insert
     abstract void insertGrades(List<Grade> grades);
 
-    public void insertNewStudentWithGrades(Student student, Group group) {
+    public void insertNewStudentWithGrades(Student student, Group group, List<Lesson> lessons) {
         List<Grade> grades = new ArrayList<>();
 
-        int id = (int) insertStudent(student);
+        int groupId = (int) insertStudent(student);
 
-        for (int i = 0; i < group.getLessons(); i++)
-            grades.add(new Grade(id));
+        for (int i = 0; i < group.getLessons(); i++) {
+            int lessonId = lessons.get(i).getId();
+            grades.add(new Grade(groupId, lessonId));
+        }
+
 
         insertGrades(grades);
     }
