@@ -8,6 +8,7 @@ import com.doctorplacid.room.students.Student;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 
-public class RowHeaderViewHolder extends RecyclerView.ViewHolder {
+public class RowViewHolder extends RecyclerView.ViewHolder {
 
     private TextView nameTextView;
     private TextView sumTextView;
@@ -27,7 +28,7 @@ public class RowHeaderViewHolder extends RecyclerView.ViewHolder {
     private RowAdapter adapter;
     private Student student;
 
-    public RowHeaderViewHolder(@NonNull View itemView, Context context) {
+    public RowViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
         listener = (ITableListener) context;
         nameTextView = itemView.findViewById(R.id.nameTextView);

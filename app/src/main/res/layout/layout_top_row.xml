@@ -50,7 +50,9 @@
                 android:id="@+id/textViewSum"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="E" />
+                android:gravity="center"
+                android:text="@string/sum_header_text"
+                android:textSize="30sp"/>
 
             <FrameLayout
                 android:id="@+id/addColumnButtonFrame"

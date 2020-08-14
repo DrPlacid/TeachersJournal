@@ -12,7 +12,7 @@ import com.doctorplacid.room.students.Student;
 
 public interface ITableListener {
 
-    void onPreInitTable(int groupId);
+    void onOpenTable(int groupId);
 
     void openDeleteStudentDialog(Student student);
     void openDeleteGroupDialog(Group group);

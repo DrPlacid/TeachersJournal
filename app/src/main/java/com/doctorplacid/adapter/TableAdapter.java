@@ -11,22 +11,22 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.R;
-import com.doctorplacid.activity.RecyclerScrollManager;
-import com.doctorplacid.holder.RowHeaderViewHolder;
+import com.doctorplacid.activity.RowsScrollManager;
+import com.doctorplacid.holder.RowViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import java.util.List;
 
-public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHolder> {
+public class TableAdapter extends ListAdapter<StudentWithGrades, RowViewHolder> {
 
     private Context context;
-    private RecyclerScrollManager recyclerScrollManager;
+    private RowsScrollManager rowsScrollManager;
 
-    public TableAdapter(Context context, RecyclerScrollManager recyclerScrollManager) {
+    public TableAdapter(Context context, RowsScrollManager rowsScrollManager) {
         super(DIFF_CALLBACK);
         this.context = context;
-        this.recyclerScrollManager = recyclerScrollManager;
+        this.rowsScrollManager = rowsScrollManager;
     }
 
 
@@ -64,17 +64,17 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHo
 
     @NonNull
     @Override
-    public RowHeaderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_row,parent, false);
-        RowHeaderViewHolder holder = new RowHeaderViewHolder(itemView, context);
-        recyclerScrollManager.addRow(holder.getRecycler());
-        recyclerScrollManager.syncRowPosition(holder.getRecycler());
+        RowViewHolder holder = new RowViewHolder(itemView, context);
+        rowsScrollManager.addRow(holder.getRecycler());
+        rowsScrollManager.syncRowPosition(holder.getRecycler());
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RowHeaderViewHolder holder, int position, @NonNull List<Object> payloads) {
+    public void onBindViewHolder(@NonNull RowViewHolder holder, int position, @NonNull List<Object> payloads) {
         if(payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
@@ -95,7 +95,7 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowHeaderViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RowHeaderViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RowViewHolder holder, int position) {
         StudentWithGrades studentWithGrades = getItem(position);
         holder.setData(studentWithGrades);
     }

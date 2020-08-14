@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData;
 import com.doctorplacid.room.TeachersDatabase;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class LessonRepository {
 
@@ -19,13 +18,8 @@ public class LessonRepository {
         lessonDAO = database.dateDAO();
     }
 
-    public int insert(Lesson lesson) {
-        try {
-            return new LessonInsertAsyncTask(lessonDAO).execute(lesson).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return -666;
+    public void insertColumn(Lesson lesson, List<Integer> studentIds) {
+         new ColumnInsertAsyncTask(lessonDAO, studentIds).execute(lesson);
     }
 
     public void update(Lesson lesson) {
@@ -51,6 +45,22 @@ public class LessonRepository {
         @Override
         protected Integer doInBackground(Lesson... lessons) {
             return (int) lessonDAO.insert(lessons[0]);
+        }
+    }
+
+    private static class ColumnInsertAsyncTask extends AsyncTask<Lesson, Void, Void> {
+        private LessonDAO lessonDAO;
+        private List<Integer> studentIds;
+
+        public ColumnInsertAsyncTask(LessonDAO lessonDAO, List<Integer> studentIds) {
+            this.lessonDAO = lessonDAO;
+            this.studentIds = studentIds;
+        }
+
+        @Override
+        protected Void doInBackground(Lesson... lessons) {
+            lessonDAO.insertColumn(lessons[0], studentIds);
+            return null;
         }
     }
 

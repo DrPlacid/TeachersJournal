@@ -25,6 +25,7 @@ public abstract class StudentDAO {
     @Insert
     abstract void insertGrades(List<Grade> grades);
 
+    @Transaction
     public void insertNewStudentWithGrades(Student student, Group group, List<Lesson> lessons) {
         List<Grade> grades = new ArrayList<>();
 
@@ -38,9 +39,6 @@ public abstract class StudentDAO {
 
         insertGrades(grades);
     }
-
-    @Update
-    abstract void update(Student student);
 
     @Delete
     abstract void delete(Student student);

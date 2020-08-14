@@ -1,5 +1,6 @@
 package com.doctorplacid.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
@@ -11,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -36,8 +39,11 @@ import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.adapter.ColumnHeadersAdapter;
+import com.doctorplacid.room.students.StudentWithGrades;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements ITableListener {
@@ -46,8 +52,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
 
     private static int currentGroupId;
     public static boolean anyCellCurrentlyEdited = false;
-    public static boolean addLessonsButtonShown = false;
-
+    public static boolean addColumnButtonShown = false;
 
     private static Student tempStudent;
     private static Lesson tempLesson;
@@ -57,11 +62,12 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     private ColumnHeadersAdapter columnHeadersAdapter;
     private TableAdapter tableAdapter;
     private TeachersViewModel teachersViewModel;
-    private RecyclerScrollManager recyclerScrollManager;
+    private RowsScrollManager rowsScrollManager;
 
     private DrawerLayout drawer;
     private FrameLayout topRightCornerExpandableLayout;
     private FrameLayout bottomRightCornerExpandableLayout;
+    private FrameLayout bottomLeftCornerExpandableLayout;
     private CardView topRowLayout;
 
     @Override
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        teachersViewModel = ViewModelProviders.of(this).get(TeachersViewModel.class);
+        teachersViewModel = ViewModelProviders.of(MainActivity.this).get(TeachersViewModel.class);
 
         onInitNavigationPanel();
 
@@ -93,38 +99,40 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         GroupsNavigationAdapter groupsNavigationAdapter = new GroupsNavigationAdapter(this);
         groupsRecyclerView.setAdapter(groupsNavigationAdapter);
 
-        teachersViewModel.getAllGroups().observe(this, list -> {
-            groupsNavigationAdapter.submitList(list);
-            teachersViewModel.initStudentsData(list);
-            getSharedPreferenceLastUsedGroupId();
-            if (currentGroupId != -666) {
-                onInitTable();
-            } else {
-                topRowLayout.setVisibility(View.INVISIBLE);
-                drawer.openDrawer(GravityCompat.START);
-                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
-            }
-        });
+        teachersViewModel.getAllGroups().observe(this, list -> groupsNavigationAdapter.submitList(list));
+
+        getSharedPreferenceLastUsedGroupId();
+        if (currentGroupId != -404) {
+            onInitTable();
+        } else {
+            topRowLayout.setVisibility(View.INVISIBLE);
+            drawer.openDrawer(GravityCompat.START);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+        }
 
         FloatingActionButton fabAddGroup = findViewById(R.id.buttonAddGroup);
         fabAddGroup.setOnClickListener(view -> openAddGroupDialog());
     }
 
     @Override
-    public void onPreInitTable(int groupId) {
+    public void onOpenTable(int groupId) {
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        onClearTable();
-        currentGroupId = groupId;
-        saveSharedPreferenceLastUsedGroupId(currentGroupId);
-        onInitTable();
-        drawer.closeDrawer(GravityCompat.START);
+        if (currentGroupId != groupId) {
+            onClearTable();
+            currentGroupId = groupId;
+            onInitTable();
+        }
+        new Handler().postDelayed(() -> drawer.closeDrawer(GravityCompat.START, true), 100);
     }
 
     public void onInitTable() {
+
+        teachersViewModel.initDataSet(currentGroupId);
         thisGroup = teachersViewModel.retrieveGroup(currentGroupId);
 
         topRightCornerExpandableLayout = findViewById(R.id.addColumnButtonFrame);
         bottomRightCornerExpandableLayout = findViewById(R.id.gradeOkButtonFrame);
+        bottomLeftCornerExpandableLayout = findViewById(R.id.addStudentButtonFrame);
 
         topRowLayout.setVisibility(View.VISIBLE);
 
@@ -136,23 +144,38 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         columnHeadersAdapter = new ColumnHeadersAdapter(this);
         topRow.setAdapter(columnHeadersAdapter);
 
-        recyclerScrollManager = new RecyclerScrollManager(this, findViewById(R.id.coordinator));
-        recyclerScrollManager.addRow(topRow);
+        rowsScrollManager = new RowsScrollManager(this, findViewById(R.id.coordinator));
+        rowsScrollManager.addRow(topRow);
 
-        tableAdapter = new TableAdapter(this, recyclerScrollManager);
+        tableAdapter = new TableAdapter(this, rowsScrollManager);
         table.setAdapter(tableAdapter);
 
-        teachersViewModel.getAllStudents(currentGroupId).observe(this, list -> tableAdapter.submitList(list));
-        teachersViewModel.getAllLessons(currentGroupId).observe(this, list -> columnHeadersAdapter.submitList(list));
+        teachersViewModel.getAllLessons().observe(MainActivity.this, list -> columnHeadersAdapter.submitList(list));
+        teachersViewModel.getAllStudents().observe(MainActivity.this, list -> tableAdapter.submitList(list));
+
+        table.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) {
+                    verticalCollapseFAB(bottomLeftCornerExpandableLayout);
+                }
+                if (dy < 0) {
+                    verticalExpandFAB(bottomLeftCornerExpandableLayout);
+                }
+            }
+        });
+
+        saveSharedPreferenceLastUsedGroupId(currentGroupId);
     }
 
     private void onClearTable(){
-        if(currentGroupId != -666) {
-            teachersViewModel.getAllStudents(currentGroupId).removeObservers(this);
-            teachersViewModel.getAllLessons(currentGroupId).removeObservers(this);
+        if(currentGroupId != -404) {
+            teachersViewModel.getAllStudents().removeObservers(MainActivity.this);
+            teachersViewModel.getAllLessons().removeObservers(MainActivity.this);
         }
-        if(addLessonsButtonShown) {
-            collapseAddColumnButton();
+        if(addColumnButtonShown) {
+            horizontalCollapseFAB();
         }
     }
 
@@ -160,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     @Override
     public void addStudent(String name) {
         Student student = new Student(name, currentGroupId);
-        teachersViewModel.insertStudent(student,thisGroup, teachersViewModel.getAllLessons(currentGroupId).getValue());
+        teachersViewModel.insertStudent(student,thisGroup, teachersViewModel.getAllLessons().getValue());
     }
 
     @Override
@@ -187,11 +210,11 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     @Override
     public void deleteColumn() {
         teachersViewModel.deleteLesson(tempLesson);
-        recyclerScrollManager.syncAllRows();
         int lessons = thisGroup.getLessons() - 1;
         thisGroup.setLessons(lessons);
         teachersViewModel.updateGroup(thisGroup);
         tempLesson = null;
+        new Handler().postDelayed(() -> rowsScrollManager.syncAllRows(), 100);
     }
 
 
@@ -204,10 +227,10 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
             inputMethodManager.showSoftInput(editText, 0);
 
             FloatingActionButton fabOk = findViewById(R.id.fab_ok);
-            expandGradeOkButton();
+            verticalExpandFAB(bottomRightCornerExpandableLayout);
             fabOk.setOnClickListener(view -> {
                 Grade temp = holder.updateGradeAmount();
-                collapseGradeOkButton();
+                verticalCollapseFAB(bottomRightCornerExpandableLayout);
                 if (getCurrentFocus() != null) {
                     inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(), 0);
                     editText.clearFocus();
@@ -235,11 +258,12 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     private void onNewColumnAdded() {
         try {
             teachersViewModel.insertColumn(currentGroupId);
-            collapseAddColumnButton();
+            horizontalCollapseFAB();
             int lessons = thisGroup.getLessons() + 1;
             thisGroup.setLessons(lessons);
             teachersViewModel.updateGroup(thisGroup);
-        } catch (ExecutionException | InterruptedException e){
+            new Handler().postDelayed(() -> rowsScrollManager.syncAllRows(), 100);
+        } catch (ExecutionException | InterruptedException e) {
             Toast.makeText(this, "New column not inserted", Toast.LENGTH_SHORT)
                     .show();
         }
@@ -279,8 +303,8 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     /**
      * Methods to animate expandable buttons
      */
-    public void expandAddColumnButton() {
-        if (addLessonsButtonShown) return;
+    public void horizontalExpandFAB() {
+        if (addColumnButtonShown) return;
         int parentWidth = View.MeasureSpec.makeMeasureSpec((topRightCornerExpandableLayout.getChildAt(0)).getWidth(), View.MeasureSpec.EXACTLY);
         int parentHeight = View.MeasureSpec.makeMeasureSpec((topRightCornerExpandableLayout.getChildAt(0)).getHeight(), View.MeasureSpec.EXACTLY);
         topRightCornerExpandableLayout.measure(parentWidth, parentHeight);
@@ -308,26 +332,26 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         // Expansion speed of 1dp/ms
         a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
         topRightCornerExpandableLayout.startAnimation(a);
-        addLessonsButtonShown = true;
+        addColumnButtonShown = true;
     }
 
-    public void expandGradeOkButton() {
-        int parentWidth = View.MeasureSpec.makeMeasureSpec(((View) bottomRightCornerExpandableLayout.getChildAt(0)).getWidth(), View.MeasureSpec.EXACTLY);
-        int parentHeight = View.MeasureSpec.makeMeasureSpec(((View) bottomRightCornerExpandableLayout.getChildAt(0)).getHeight(), View.MeasureSpec.EXACTLY);
-        bottomRightCornerExpandableLayout.measure(parentWidth, parentHeight);
-        final int targetHeight = bottomRightCornerExpandableLayout.getMeasuredHeight();
+    public static void verticalExpandFAB(final FrameLayout expandableLayout) {
+        int parentWidth = View.MeasureSpec.makeMeasureSpec((expandableLayout.getChildAt(0)).getWidth(), View.MeasureSpec.EXACTLY);
+        int parentHeight = View.MeasureSpec.makeMeasureSpec((expandableLayout.getChildAt(0)).getHeight(), View.MeasureSpec.EXACTLY);
+        expandableLayout.measure(parentWidth, parentHeight);
+        final int targetHeight = expandableLayout.getMeasuredHeight();
 
         // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-        bottomRightCornerExpandableLayout.getLayoutParams().height = 1;
-        bottomRightCornerExpandableLayout.setVisibility(View.VISIBLE);
+        expandableLayout.getLayoutParams().height = 1;
+        expandableLayout.setVisibility(View.VISIBLE);
         Animation a = new Animation()
         {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
-                bottomRightCornerExpandableLayout.getLayoutParams().height = interpolatedTime == 1
+                expandableLayout.getLayoutParams().height = interpolatedTime == 1
                         ? FrameLayout.LayoutParams.WRAP_CONTENT
                         : (int)(targetHeight * interpolatedTime);
-                bottomRightCornerExpandableLayout.requestLayout();
+                expandableLayout.requestLayout();
             }
 
             @Override
@@ -338,11 +362,11 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
 
         // Expansion speed of 1dp/ms
         a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
-        bottomRightCornerExpandableLayout.startAnimation(a);
+        expandableLayout.startAnimation(a);
     }
 
-    public void collapseAddColumnButton() {
-        if (!addLessonsButtonShown) return;
+    public void horizontalCollapseFAB() {
+        if (!addColumnButtonShown) return;
         final int initialWidth = topRightCornerExpandableLayout.getMeasuredWidth();
 
         Animation a = new Animation()
@@ -366,21 +390,21 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         // Collapse speed of 1dp/ms
         a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
         topRightCornerExpandableLayout.startAnimation(a);
-        addLessonsButtonShown = false;
+        addColumnButtonShown = false;
     }
 
-    public void collapseGradeOkButton() {
-        final int initialHeight = bottomRightCornerExpandableLayout.getMeasuredHeight();
+    public static void verticalCollapseFAB(final FrameLayout expandableLayout) {
+        final int initialHeight = expandableLayout.getMeasuredHeight();
 
         Animation a = new Animation()
         {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
                 if(interpolatedTime == 1) {
-                    bottomRightCornerExpandableLayout.setVisibility(View.GONE);
+                    expandableLayout.setVisibility(View.GONE);
                 } else {
-                    bottomRightCornerExpandableLayout.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
-                    bottomRightCornerExpandableLayout.requestLayout();
+                    expandableLayout.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
+                    expandableLayout.requestLayout();
                 }
             }
 
@@ -392,7 +416,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
 
         // Collapse speed of 1dp/ms
         a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
-        bottomRightCornerExpandableLayout.startAnimation(a);
+        expandableLayout.startAnimation(a);
     }
 
     /**
@@ -400,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
      */
     void getSharedPreferenceLastUsedGroupId() {
         SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        currentGroupId = sPref.getInt("LAST_USED", -666);
+        currentGroupId = sPref.getInt("LAST_USED", -404);
     }
 
     void saveSharedPreferenceLastUsedGroupId(int groupId) {

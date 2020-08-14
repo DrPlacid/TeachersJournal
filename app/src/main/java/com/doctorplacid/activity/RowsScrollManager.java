@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecyclerScrollManager {
+public class RowsScrollManager {
 
     private Context context;
 
@@ -21,7 +21,7 @@ public class RecyclerScrollManager {
 
     private List<RecyclerView> recyclerViews = new ArrayList<>();
 
-    public RecyclerScrollManager(Context context, CoordinatorLayout coordinatorLayout) {
+    public RowsScrollManager(Context context, CoordinatorLayout coordinatorLayout) {
         this.context = context;
         coordinatorLayout.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             int y = oldBottom - bottom;
@@ -39,7 +39,7 @@ public class RecyclerScrollManager {
                         int scrollRange = super.scrollHorizontallyBy(dx, recycler, state);
                         int overScroll = dx - scrollRange;
                         if (overScroll > 0) {
-                            ((MainActivity) context).expandAddColumnButton();
+                            ((MainActivity) context).horizontalExpandFAB();
                         }
                         return scrollRange;
                     }
@@ -78,7 +78,7 @@ public class RecyclerScrollManager {
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             if (dx < 0) {
-                ((MainActivity) context).collapseAddColumnButton();
+                ((MainActivity) context).horizontalCollapseFAB();
             }
             if (recyclerViews.indexOf(recyclerView) == mTouchedRvPosition) {
                 for (int i = 0; i < currentListSize; i++) {
