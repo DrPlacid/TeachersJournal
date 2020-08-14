@@ -21,14 +21,8 @@ public class RowsScrollManager {
 
     private List<RecyclerView> recyclerViews = new ArrayList<>();
 
-    public RowsScrollManager(Context context, CoordinatorLayout coordinatorLayout) {
+    public RowsScrollManager(Context context) {
         this.context = context;
-        coordinatorLayout.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-            int y = oldBottom - bottom;
-            if (y > 0) {
-                syncAllRows();
-            }
-        });
     }
 
     public void addRow(final RecyclerView recyclerView) {
