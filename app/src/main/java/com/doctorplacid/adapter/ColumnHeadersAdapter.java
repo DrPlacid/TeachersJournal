@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
-import com.doctorplacid.activity.ITableListener;
+import com.doctorplacid.activity.DialogManager;
 import com.doctorplacid.R;
 import com.doctorplacid.holder.ColumnHeaderViewHolder;
 import com.doctorplacid.room.lessons.Lesson;
@@ -17,11 +17,11 @@ import com.doctorplacid.room.lessons.Lesson;
 
 public class ColumnHeadersAdapter extends ListAdapter<Lesson, ColumnHeaderViewHolder> {
 
-    private ITableListener listener;
+    private Context context;
 
     public ColumnHeadersAdapter(Context context) {
         super(DIFF_CALLBACK);
-        this.listener = (ITableListener) context;
+        this.context = context;
     }
 
     public static final DiffUtil.ItemCallback<Lesson> DIFF_CALLBACK = new DiffUtil.ItemCallback<Lesson>() {
@@ -32,7 +32,7 @@ public class ColumnHeadersAdapter extends ListAdapter<Lesson, ColumnHeaderViewHo
 
         @Override
         public boolean areContentsTheSame(@NonNull Lesson oldItem, @NonNull Lesson newItem) {
-            return oldItem.getDate().equals(newItem.getDate());
+            return oldItem.getDay().equals(newItem.getDay()) && oldItem.getMonth().equals(newItem.getMonth());
         }
     };
 
@@ -42,13 +42,13 @@ public class ColumnHeadersAdapter extends ListAdapter<Lesson, ColumnHeaderViewHo
     public ColumnHeaderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_column_header, parent, false);
-        return new ColumnHeaderViewHolder(itemView, listener);
+        return new ColumnHeaderViewHolder(itemView, context);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ColumnHeaderViewHolder holder, int position) {
         Lesson lesson = getItem(position);
-        holder.setEntity(lesson);
+        holder.setData(lesson);
     }
 
 

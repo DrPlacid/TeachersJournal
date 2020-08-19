@@ -11,7 +11,11 @@ public class TableCalendar {
         mm = currentDate.toString().substring(3);
     }
 
-    public String getDateTwoLines() {
-        return dd + "\n" + mm;
+    public String getDay() {
+        return dd;
+    }
+
+    public String detMonth() {
+        return mm;
     }
 }

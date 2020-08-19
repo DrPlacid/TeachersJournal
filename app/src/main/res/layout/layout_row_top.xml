@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/topRow"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/top_row_height">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_row_height"
+        android:orientation="horizontal">
+
+        <include
+            android:id="@+id/include"
+            layout="@layout/layout_corner_header"
+            android:layout_width="@dimen/row_header_width"
+            android:layout_height="@dimen/top_row_height"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lessons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:layout_marginStart="@dimen/margin_row_header_overlap"
+            android:layout_marginEnd="@dimen/margin_cell_overlap"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:listitem="@layout/layout_column_header" />
+
+        <include
+            layout="@layout/layout_sum_header"
+            android:layout_width="@dimen/cell_dimens"
+            android:layout_height="@dimen/top_row_height"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

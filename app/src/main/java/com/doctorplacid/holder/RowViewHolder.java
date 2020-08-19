@@ -1,14 +1,15 @@
 package com.doctorplacid.holder;
 
+import com.doctorplacid.activity.DialogManager;
 import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
+import com.doctorplacid.activity.MainActivity;
 import com.doctorplacid.adapter.RowAdapter;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.room.students.StudentWithGrades;
 
 import android.content.Context;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -24,19 +25,20 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     private TextView sumTextView;
     private RecyclerView recyclerView;
 
-    private ITableListener listener;
+    private Context context;
     private RowAdapter adapter;
     private Student student;
 
     public RowViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
-        listener = (ITableListener) context;
+        this.context = context;
+
         nameTextView = itemView.findViewById(R.id.nameTextView);
         sumTextView = itemView.findViewById(R.id.sumTextView);
         recyclerView = itemView.findViewById(R.id.RecyclerViewRow);
 
         nameTextView.setOnLongClickListener(view -> {
-            listener.openDeleteStudentDialog((this.student));
+            DialogManager.openDeleteStudentDialog(student, context);
             return false;
         });
     }
@@ -46,7 +48,8 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
         List<Grade> grades = studentWithGrades.getGrades();
         String nameText = student.getName();
         nameTextView.setText(nameText);
-        adapter = new RowAdapter(listener);
+        nameTextView.setLetterSpacing(MainActivity.LETTER_SPACING_NARROW);
+        adapter = new RowAdapter(context);
         recyclerView.setAdapter(adapter);
         submitList(grades);
     }

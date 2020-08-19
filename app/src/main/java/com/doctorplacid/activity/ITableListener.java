@@ -14,20 +14,19 @@ public interface ITableListener {
 
     void onOpenTable(int groupId);
 
-    void openDeleteStudentDialog(Student student);
-    void openDeleteGroupDialog(Group group);
-    void openDeleteColumnDialog(Lesson lesson);
+    void onClearCell(Grade grade);
 
-    void addStudent(String name);
-    void deleteStudent();
+    void onAddStudent(String name);
+    void onAddGroup(String name);
 
-    void addGroup(String name);
-    void deleteGroup();
-
-    void deleteColumn();
+    void onDeleteStudent(Student student);
+    void onDeleteGroup(Group group);
+    void onDeleteColumn(Lesson lesson);
 
     void onGradeAmountEdited(CellViewHolder holder, EditText editText);
     void onGradePresenceEdited(Grade grade, int position);
+
+    void onChangeLanguage(String tag);
 
 }
 

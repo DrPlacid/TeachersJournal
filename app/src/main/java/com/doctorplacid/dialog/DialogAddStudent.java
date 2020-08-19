@@ -29,14 +29,18 @@ public class DialogAddStudent extends AppCompatDialogFragment {
 
         EditText nameEditText = view.findViewById(R.id.editTextGroupName);
 
+        String title = getString(R.string.dialog_titte_add_student);
+        String cancel = getString(R.string.dialog_cancel);
+        String add = getString(R.string.dialog_add);
+
         builder.setView(view)
-                .setTitle("Add new student")
-                .setNegativeButton("Cancel", (dialog, which) ->
+                .setTitle(title)
+                .setNegativeButton(cancel, (dialog, which) ->
                         DialogAddStudent.super.onDestroy())
-                .setPositiveButton("Add", (dialog, which) -> {
+                .setPositiveButton(add, (dialog, which) -> {
                     String name = nameEditText.getText().toString().toUpperCase().trim();
                     if (name.length() > 0) {
-                        listener.addStudent(name);
+                        listener.onAddStudent(name);
                     }
                 });
 

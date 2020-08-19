@@ -29,14 +29,18 @@ public class DialogAddGroup extends AppCompatDialogFragment {
 
         EditText nameEditText = view.findViewById(R.id.editTextGroupName);
 
+        String title = getString(R.string.dialog_title_create_group);
+        String cancel = getString(R.string.dialog_cancel);
+        String add = getString(R.string.dialog_add);
+
         builder.setView(view)
-                .setTitle("Create new group")
-                .setNegativeButton("Cancel", (dialog, which) ->
+                .setTitle(title)
+                .setNegativeButton(cancel, (dialog, which) ->
                         DialogAddGroup.super.onDestroy())
-                .setPositiveButton("Add", (dialog, which) -> {
+                .setPositiveButton(add, (dialog, which) -> {
                     String name = nameEditText.getText().toString().toUpperCase().trim();
                     if (name.length() > 0) {
-                        listener.addGroup(name);
+                        listener.onAddGroup(name);
                     }
                 });
 

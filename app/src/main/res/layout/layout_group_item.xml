@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/cell_dimens">
+    android:layout_height="@dimen/cell_dimens"
+    android:theme="@style/AppTheme"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/groupTextView"
@@ -10,7 +11,13 @@
         android:layout_height="match_parent"
         android:gravity="center|start"
         android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textSize="15sp"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:focusable="true" />
+
 
 </androidx.cardview.widget.CardView>

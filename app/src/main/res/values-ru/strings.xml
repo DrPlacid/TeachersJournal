@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Журнал Преподавателя</string>
+    <string name="sum_header_text">Σ</string>
+    <string name="navigation_header">Управление группами</string>
+
+    <string-array name="info_hints">
+        <item>Добавьте новую группу, студента, или колонку, используя кнопки (+)</item>
+        <item>Нажмите на пустую ячейку чтоб отметить присутствие</item>
+        <item>Когда присутстввие отмечено, нажмите на ячейку повторно, чтоб редактировать оценку</item>
+        <item>Используйте длительное нажатие для удаления данных</item>
+    </string-array>
+
+    <string name="dialog_title_create_group">Создать группу</string>
+    <string name="dialog_titte_add_student">Добавить студента</string>
+    <string name="dialog_title_delete_group">Удалить группу?</string>
+    <string name="dialog_title_delete_column">Удалить колонку?</string>
+    <string name="dialog_title_delete_student">Удалить студента?</string>
+    <string name="dialog_cancel">Отмена</string>
+    <string name="dialog_add">Добавить</string>
+    <string name="dialog_delete">Удалить</string>
+    <string name="dialog_set">Установить</string>
+    <string name="dialog_title_change_language">Изменить язык</string>
+</resources>

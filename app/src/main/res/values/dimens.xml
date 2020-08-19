@@ -4,4 +4,7 @@
     <dimen name="top_row_height">60dp</dimen>
     <dimen name="cell_dimens">50dp</dimen>
     <dimen name="navigation_panel_width">250dp</dimen>
+
+    <dimen name="margin_cell_overlap">49.5dp</dimen>
+    <dimen name="margin_row_header_overlap">149.5dp</dimen>
 </resources>

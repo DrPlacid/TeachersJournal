@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
+import com.doctorplacid.activity.DialogManager;
 import com.doctorplacid.activity.ITableListener;
 import com.doctorplacid.R;
 import com.doctorplacid.holder.GroupItemViewHolder;
@@ -16,11 +17,11 @@ import com.doctorplacid.room.groups.Group;
 
 public class GroupsNavigationAdapter extends ListAdapter<Group, GroupItemViewHolder> {
 
-    ITableListener listener;
+    Context context;
 
     public GroupsNavigationAdapter(Context context) {
         super(DIFF_CALLBACK);
-        this.listener = (ITableListener) context;
+        this.context = context;
     }
 
     public static final DiffUtil.ItemCallback<Group> DIFF_CALLBACK = new DiffUtil.ItemCallback<Group>() {
@@ -40,7 +41,7 @@ public class GroupsNavigationAdapter extends ListAdapter<Group, GroupItemViewHol
     public GroupItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_group_item, parent, false);
-        return new GroupItemViewHolder(itemView, listener);
+        return new GroupItemViewHolder(itemView, context);
     }
 
     @Override

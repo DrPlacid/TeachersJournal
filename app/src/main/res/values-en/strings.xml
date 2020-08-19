@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Teacher\'s Journal</string>
+    <string name="sum_header_text">Σ</string>
+    <string name="navigation_header">Manage groups</string>
+
+    <string-array name="info_hints">
+        <item>Add new group, student or column using the (+) buttons</item>
+        <item>Click on empty cell to set presence</item>
+        <item>Once presence is set, click on cell again to edit grade</item>
+        <item>Long-press on item to delete/clear it</item>
+    </string-array>
+    <string name="dialog_title_create_group">Create group</string>
+    <string name="dialog_titte_add_student">Add student</string>
+    <string name="dialog_title_delete_group">Delete group?</string>
+    <string name="dialog_title_delete_column">Delete column?</string>
+    <string name="dialog_title_delete_student">Delete student?</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_add">Add</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_set">Set</string>
+    <string name="dialog_title_change_language">Change language</string>
+</resources>

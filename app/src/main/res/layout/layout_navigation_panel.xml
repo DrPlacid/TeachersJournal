@@ -2,27 +2,45 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:id="@+id/navigationPanelLayout"
+    android:layout_width="@dimen/navigation_panel_width"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="176dp"
-        android:background="@color/colorAccentWeak"
-        android:padding="16dp"
+        android:background="@drawable/paper"
+        android:backgroundTint="@color/colorBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/navigation_header_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:text="Manage groups" />
+            android:paddingStart="16dp"
+            android:paddingBottom="36dp"
+            android:text="@string/navigation_header"
+            android:textAllCaps="true"
+            android:textSize="20sp" />
 
     </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/buttonAddGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:tint="@color/colorDarkGray"
+        android:src="@drawable/ic_add_24px"
+        android:outlineSpotShadowColor="@color/colorTransparentBackground"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/groupsRecyclerView"
@@ -34,17 +52,30 @@
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
         tools:listitem="@layout/layout_group_item" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cell_dimens"
+        android:background="@color/colorTransparentBackground"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/buttonAddGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_add_24px"
-        android:outlineSpotShadowColor="@color/colorTransparentBackground"
-        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+        <ImageButton
+            android:id="@+id/buttonInfo"
+            android:layout_width="@dimen/cell_dimens"
+            android:layout_height="@dimen/cell_dimens"
+            android:layout_alignParentEnd="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_info_24px" />
 
+        <ImageButton
+            android:id="@+id/buttonLanguage"
+            android:layout_width="@dimen/cell_dimens"
+            android:layout_height="@dimen/cell_dimens"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/cell_dimens"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_language_24px" />
+
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

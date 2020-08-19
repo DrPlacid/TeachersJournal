@@ -2,73 +2,71 @@ package com.doctorplacid.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.doctorplacid.R;
 import com.doctorplacid.TableCalendar;
-import com.doctorplacid.dialog.DialogDeleteLesson;
 import com.doctorplacid.room.TeachersViewModel;
 import com.doctorplacid.adapter.GroupsNavigationAdapter;
 import com.doctorplacid.adapter.TableAdapter;
-import com.doctorplacid.dialog.DialogAddGroup;
-import com.doctorplacid.dialog.DialogAddStudent;
-import com.doctorplacid.dialog.DialogDeleteGroup;
-import com.doctorplacid.dialog.DialogDeleteStudent;
 import com.doctorplacid.holder.CellViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.lessons.Lesson;
 import com.doctorplacid.room.students.Student;
 import com.doctorplacid.adapter.ColumnHeadersAdapter;
-import com.doctorplacid.room.students.StudentWithGrades;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements ITableListener {
 
-    private static final int BUTTON_EXPAND_ANIMATION_TIME = 400;
+    public static final float LETTER_SPACING_WIDE = .10f;
+    public static final float LETTER_SPACING_NARROW = .05f;
 
     private static int currentGroupId;
-    public static boolean anyCellCurrentlyEdited = false;
-    public static boolean addColumnButtonShown = false;
 
-    private static Student tempStudent;
-    private static Lesson tempLesson;
-    private static Group tempGroup;
+    public static boolean anyCellCurrentlyEdited = false;
+
+    public static boolean newColumnAdded = false;
+    public static boolean newStudentAdded = false;
 
     private static Group thisGroup;
     private ColumnHeadersAdapter columnHeadersAdapter;
     private TableAdapter tableAdapter;
     private TeachersViewModel teachersViewModel;
-    private RowsScrollManager rowsScrollManager;
+    private RowSyncManager rowSyncManager;
 
     private DrawerLayout drawer;
+    private CoordinatorLayout coordinator;
     private FrameLayout topRightCornerExpandableLayout;
     private FrameLayout bottomRightCornerExpandableLayout;
     private FrameLayout bottomLeftCornerExpandableLayout;
-    private CardView topRowLayout;
+    private FrameLayout navigationPanelExpandableLayout;
+    private RelativeLayout topRowLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,22 +75,49 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
 
         teachersViewModel = ViewModelProviders.of(MainActivity.this).get(TeachersViewModel.class);
 
+        coordinator = findViewById(R.id.coordinator);
+        topRowLayout = findViewById(R.id.topRow);
+        topRightCornerExpandableLayout = findViewById(R.id.addColumnButtonFrame);
+        bottomRightCornerExpandableLayout = findViewById(R.id.gradeOkButtonFrame);
+        bottomLeftCornerExpandableLayout = findViewById(R.id.addStudentButtonFrame);
+        navigationPanelExpandableLayout = findViewById(R.id.navigationPanelExpandableLayout);
+
         onInitNavigationPanel();
 
+        onInitClickListeners();
+    }
+
+    private void onInitClickListeners() {
         FloatingActionButton fabAddStudent = findViewById(R.id.fab_add_student);
-        fabAddStudent.setOnClickListener(view -> openAddStudentDialog());
+        fabAddStudent.setOnClickListener(view -> DialogManager.openAddStudentDialog(this));
 
         FloatingActionButton buttonAddColumn = findViewById(R.id.buttonAddLesson);
-        buttonAddColumn.setOnClickListener(view -> onNewColumnAdded());
+        buttonAddColumn.setOnClickListener(view -> addColumn());
 
         ImageButton menu = findViewById(R.id.buttonOpenNavigationMenu);
         menu.setOnClickListener(view -> drawer.openDrawer(GravityCompat.START));
+
+        FloatingActionButton fabAddGroup = findViewById(R.id.buttonAddGroup);
+        fabAddGroup.setOnClickListener(view -> DialogManager.openAddGroupDialog(this));
+
+        ImageButton localization = findViewById(R.id.buttonLanguage);
+        localization.setOnClickListener(view -> DialogManager.openChangeLanguageDialog(this));
+
+        ImageButton infoHints = findViewById(R.id.buttonInfo);
+        infoHints.setOnClickListener(view -> AnimationManager.verticalExpand(navigationPanelExpandableLayout));
+
+        ImageButton closeHints = findViewById(R.id.buttonCloseHints);
+        closeHints.setOnClickListener(view -> AnimationManager.verticalCollapse(navigationPanelExpandableLayout));
+
+        ConstraintLayout navigationPanel = findViewById(R.id.navigationPanelLayout);
+        navigationPanel.setOnClickListener(view -> AnimationManager.verticalCollapse(navigationPanelExpandableLayout));
     }
 
     private void onInitNavigationPanel() {
         drawer = findViewById(R.id.drawer);
 
-        topRowLayout = findViewById(R.id.topRow);
+        TextView navigationHeaderText = findViewById(R.id.navigation_header_text);
+        navigationHeaderText.setLetterSpacing(LETTER_SPACING_NARROW);
 
         RecyclerView groupsRecyclerView = findViewById(R.id.groupsRecyclerView);
         groupsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -109,9 +134,6 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
             drawer.openDrawer(GravityCompat.START);
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
         }
-
-        FloatingActionButton fabAddGroup = findViewById(R.id.buttonAddGroup);
-        fabAddGroup.setOnClickListener(view -> openAddGroupDialog());
     }
 
     @Override
@@ -126,44 +148,65 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     }
 
     public void onInitTable() {
-
         teachersViewModel.initDataSet(currentGroupId);
         thisGroup = teachersViewModel.retrieveGroup(currentGroupId);
 
-        topRightCornerExpandableLayout = findViewById(R.id.addColumnButtonFrame);
-        bottomRightCornerExpandableLayout = findViewById(R.id.gradeOkButtonFrame);
-        bottomLeftCornerExpandableLayout = findViewById(R.id.addStudentButtonFrame);
+        LayoutTransition layoutTransition = ((ViewGroup) findViewById(R.id.linear)).getLayoutTransition();
+        layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
 
         topRowLayout.setVisibility(View.VISIBLE);
+        TextView groupNameText = findViewById(R.id.textViewGroupName);
+        groupNameText.setText(thisGroup.getName());
+        groupNameText.setLetterSpacing(LETTER_SPACING_WIDE);
 
         RecyclerView table = findViewById(R.id.grades);
         RecyclerView topRow = findViewById(R.id.lessons);
+        table.setHasFixedSize(true);
 
         table.setLayoutManager(new LinearLayoutManager(this));
 
         columnHeadersAdapter = new ColumnHeadersAdapter(this);
         topRow.setAdapter(columnHeadersAdapter);
 
-        rowsScrollManager = new RowsScrollManager(this, findViewById(R.id.coordinator));
-        rowsScrollManager.addRow(topRow);
+        rowSyncManager = new RowSyncManager(this);
+        rowSyncManager.addRow(topRow);
 
-        tableAdapter = new TableAdapter(this, rowsScrollManager);
+        tableAdapter = new TableAdapter(this, rowSyncManager);
         table.setAdapter(tableAdapter);
 
         teachersViewModel.getAllLessons().observe(MainActivity.this, list -> columnHeadersAdapter.submitList(list));
-        teachersViewModel.getAllStudents().observe(MainActivity.this, list -> tableAdapter.submitList(list));
+        teachersViewModel.getAllStudents().observe(MainActivity.this, list -> {
+            tableAdapter.submitList(list);
+            if (newColumnAdded) {
+                rowSyncManager.scrollAllByOneCell();
+                newColumnAdded = false;
+            }
+            if (newStudentAdded) {
+                rowSyncManager.syncAllRowsByTop();
+                newStudentAdded = false;
+            }
+        });
 
         table.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    verticalCollapseFAB(bottomLeftCornerExpandableLayout);
-                }
                 if (dy < 0) {
-                    verticalExpandFAB(bottomLeftCornerExpandableLayout);
+                    AnimationManager.verticalExpand(bottomLeftCornerExpandableLayout);
+                }
+                if (dy > 0) {
+                    AnimationManager.verticalCollapse(bottomLeftCornerExpandableLayout);
                 }
             }
+        });
+        coordinator.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if(bottom < oldBottom) {
+                AnimationManager.verticalCollapse(bottomLeftCornerExpandableLayout);
+            }
+            if(bottom > oldBottom) {
+                AnimationManager.verticalExpand(bottomLeftCornerExpandableLayout);
+            }
+            rowSyncManager.syncAllRowsByTop();
         });
 
         saveSharedPreferenceLastUsedGroupId(currentGroupId);
@@ -174,49 +217,58 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
             teachersViewModel.getAllStudents().removeObservers(MainActivity.this);
             teachersViewModel.getAllLessons().removeObservers(MainActivity.this);
         }
-        if(addColumnButtonShown) {
-            horizontalCollapseFAB();
+        if(AnimationManager.addColumnButtonShown) {
+            collapseAddColumnFAB();
         }
     }
 
-
+    /**
+     * Methods to edit table
+     */
     @Override
-    public void addStudent(String name) {
+    public void onAddStudent(String name) {
         Student student = new Student(name, currentGroupId);
         teachersViewModel.insertStudent(student,thisGroup, teachersViewModel.getAllLessons().getValue());
+        newStudentAdded = true;
     }
 
     @Override
-    public void addGroup(String groupName) {
+    public void onAddGroup(String groupName) {
         Group group = new Group(groupName);
         teachersViewModel.insertGroup(group);
     }
 
-    @Override
-    public void deleteStudent() {
-        teachersViewModel.deleteStudent(tempStudent);
-        tempStudent = null;
-    }
-
-    @Override
-    public void deleteGroup() {
-        teachersViewModel.deleteGroup(tempGroup);
-        if (tempGroup.getId() == currentGroupId) {
-            saveSharedPreferenceLastUsedGroupId(-666);
+    private void addColumn() {
+        try {
+            newColumnAdded = true;
+            teachersViewModel.insertColumn(currentGroupId);
+            int lessons = thisGroup.getLessons() + 1;
+            thisGroup.setLessons(lessons);
+            teachersViewModel.updateGroup(thisGroup);
+        } catch (ExecutionException | InterruptedException ignored) {
         }
-        tempGroup = null;
     }
 
     @Override
-    public void deleteColumn() {
-        teachersViewModel.deleteLesson(tempLesson);
+    public void onDeleteStudent(Student student) {
+        teachersViewModel.deleteStudent(student);
+    }
+
+    @Override
+    public void onDeleteGroup(Group group) {
+        teachersViewModel.deleteGroup(group);
+        if (group.getId() == currentGroupId) {
+            saveSharedPreferenceLastUsedGroupId(-404);
+        }
+    }
+
+    @Override
+    public void onDeleteColumn(Lesson lesson) {
+        teachersViewModel.deleteLesson(lesson);
         int lessons = thisGroup.getLessons() - 1;
         thisGroup.setLessons(lessons);
         teachersViewModel.updateGroup(thisGroup);
-        tempLesson = null;
-        new Handler().postDelayed(() -> rowsScrollManager.syncAllRows(), 100);
     }
-
 
     @Override
     public void onGradeAmountEdited(CellViewHolder holder, EditText editText) {
@@ -225,12 +277,11 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
             editText.requestFocus();
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.showSoftInput(editText, 0);
+            AnimationManager.verticalExpand(bottomRightCornerExpandableLayout);
 
             FloatingActionButton fabOk = findViewById(R.id.fab_ok);
-            verticalExpandFAB(bottomRightCornerExpandableLayout);
             fabOk.setOnClickListener(view -> {
                 Grade temp = holder.updateGradeAmount();
-                verticalCollapseFAB(bottomRightCornerExpandableLayout);
                 if (getCurrentFocus() != null) {
                     inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(), 0);
                     editText.clearFocus();
@@ -239,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
                     teachersViewModel.updateGrade(temp);
                 }
                 anyCellCurrentlyEdited = false;
+                new Handler().postDelayed(() -> AnimationManager.verticalCollapse(bottomRightCornerExpandableLayout), 200);
             });
     }
 
@@ -246,188 +298,58 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     public void onGradePresenceEdited(Grade grade, int position) {
         teachersViewModel.updateGrade(grade);
         Lesson lesson = columnHeadersAdapter.getItemAt(position);
-        if (("").equals(lesson.getDate())) {
+        if (("").equals(lesson.getDay()) && ("").equals(lesson.getMonth())) {
             TableCalendar calendar = new TableCalendar();
-            String date = calendar.getDateTwoLines();
+            String day = calendar.getDay();
+            String month = calendar.detMonth();
             Lesson newLesson = new Lesson(lesson);
-            newLesson.setDate(date);
+            newLesson.setDay(day);
+            newLesson.setMonth(month);
             teachersViewModel.updateLesson(newLesson);
         }
     }
 
-    private void onNewColumnAdded() {
-        try {
-            teachersViewModel.insertColumn(currentGroupId);
-            horizontalCollapseFAB();
-            int lessons = thisGroup.getLessons() + 1;
-            thisGroup.setLessons(lessons);
-            teachersViewModel.updateGroup(thisGroup);
-            new Handler().postDelayed(() -> rowsScrollManager.syncAllRows(), 100);
-        } catch (ExecutionException | InterruptedException e) {
-            Toast.makeText(this, "New column not inserted", Toast.LENGTH_SHORT)
-                    .show();
-        }
-    }
-
-    public void openAddStudentDialog() {
-        DialogAddStudent dialogAddStudent = new DialogAddStudent();
-        dialogAddStudent.show(getSupportFragmentManager(), "Add student dialog");
-    }
-
-    public void openAddGroupDialog() {
-        DialogAddGroup dialogAddGroup = new DialogAddGroup();
-        dialogAddGroup.show(getSupportFragmentManager(), "Add group dialog");
+    @Override
+    public void onChangeLanguage(String tag) {
+        Log.i("LANGUAGE", "changed to " + tag);
+        Locale locale = new Locale(tag);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
     }
 
     @Override
-    public void openDeleteStudentDialog(Student student) {
-        tempStudent = student;
-        DialogDeleteStudent dialogDelete = new DialogDeleteStudent(tempStudent.getName());
-        dialogDelete.show(getSupportFragmentManager(), "Delete student dialog");
+    public void onClearCell(Grade grade) {
+        Grade temp = new Grade(grade);
+        temp.setAmount(0);
+        temp.setPresence(false);
+        teachersViewModel.updateGrade(temp);
     }
 
-    @Override
-    public void openDeleteGroupDialog(Group group) {
-        tempGroup = group;
-        DialogDeleteGroup dialogDelete = new DialogDeleteGroup(tempGroup.getName());
-        dialogDelete.show(getSupportFragmentManager(), "Delete group dialog");
+    public void expandAddColumnFAB() {
+        AnimationManager.horizontalExpand(topRightCornerExpandableLayout);
     }
 
-    @Override
-    public void openDeleteColumnDialog(Lesson lesson) {
-        tempLesson = lesson;
-        DialogDeleteLesson dialogDelete = new DialogDeleteLesson();
-        dialogDelete.show(getSupportFragmentManager(), "Delete column dialog");
-    }
-
-    /**
-     * Methods to animate expandable buttons
-     */
-    public void horizontalExpandFAB() {
-        if (addColumnButtonShown) return;
-        int parentWidth = View.MeasureSpec.makeMeasureSpec((topRightCornerExpandableLayout.getChildAt(0)).getWidth(), View.MeasureSpec.EXACTLY);
-        int parentHeight = View.MeasureSpec.makeMeasureSpec((topRightCornerExpandableLayout.getChildAt(0)).getHeight(), View.MeasureSpec.EXACTLY);
-        topRightCornerExpandableLayout.measure(parentWidth, parentHeight);
-        final int targetWidth = topRightCornerExpandableLayout.getMeasuredWidth();
-
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-        topRightCornerExpandableLayout.getLayoutParams().width = 1;
-        topRightCornerExpandableLayout.setVisibility(View.VISIBLE);
-        Animation a = new Animation()
-        {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                topRightCornerExpandableLayout.getLayoutParams().width = interpolatedTime == 1
-                        ? FrameLayout.LayoutParams.WRAP_CONTENT
-                        : (int)(targetWidth * interpolatedTime);
-                topRightCornerExpandableLayout.requestLayout();
-            }
-
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
-
-        // Expansion speed of 1dp/ms
-        a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
-        topRightCornerExpandableLayout.startAnimation(a);
-        addColumnButtonShown = true;
-    }
-
-    public static void verticalExpandFAB(final FrameLayout expandableLayout) {
-        int parentWidth = View.MeasureSpec.makeMeasureSpec((expandableLayout.getChildAt(0)).getWidth(), View.MeasureSpec.EXACTLY);
-        int parentHeight = View.MeasureSpec.makeMeasureSpec((expandableLayout.getChildAt(0)).getHeight(), View.MeasureSpec.EXACTLY);
-        expandableLayout.measure(parentWidth, parentHeight);
-        final int targetHeight = expandableLayout.getMeasuredHeight();
-
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-        expandableLayout.getLayoutParams().height = 1;
-        expandableLayout.setVisibility(View.VISIBLE);
-        Animation a = new Animation()
-        {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                expandableLayout.getLayoutParams().height = interpolatedTime == 1
-                        ? FrameLayout.LayoutParams.WRAP_CONTENT
-                        : (int)(targetHeight * interpolatedTime);
-                expandableLayout.requestLayout();
-            }
-
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
-
-        // Expansion speed of 1dp/ms
-        a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
-        expandableLayout.startAnimation(a);
-    }
-
-    public void horizontalCollapseFAB() {
-        if (!addColumnButtonShown) return;
-        final int initialWidth = topRightCornerExpandableLayout.getMeasuredWidth();
-
-        Animation a = new Animation()
-        {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if(interpolatedTime == 1) {
-                    topRightCornerExpandableLayout.setVisibility(View.GONE);
-                } else {
-                    topRightCornerExpandableLayout.getLayoutParams().width = initialWidth - (int)(initialWidth * interpolatedTime);
-                    topRightCornerExpandableLayout.requestLayout();
-                }
-            }
-
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
-
-        // Collapse speed of 1dp/ms
-        a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
-        topRightCornerExpandableLayout.startAnimation(a);
-        addColumnButtonShown = false;
-    }
-
-    public static void verticalCollapseFAB(final FrameLayout expandableLayout) {
-        final int initialHeight = expandableLayout.getMeasuredHeight();
-
-        Animation a = new Animation()
-        {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if(interpolatedTime == 1) {
-                    expandableLayout.setVisibility(View.GONE);
-                } else {
-                    expandableLayout.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
-                    expandableLayout.requestLayout();
-                }
-            }
-
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
-
-        // Collapse speed of 1dp/ms
-        a.setDuration(BUTTON_EXPAND_ANIMATION_TIME);
-        expandableLayout.startAnimation(a);
+    public void collapseAddColumnFAB() {
+        AnimationManager.horizontalCollapse(topRightCornerExpandableLayout);
     }
 
     /**
      * Methods to save data in shared preferences
      */
-    void getSharedPreferenceLastUsedGroupId() {
+    private void getSharedPreferenceLocale(){
+        SharedPreferences sPref = getSharedPreferences("Settings", MODE_PRIVATE);
+        String lang = sPref.getString("Lang", "");
+        onChangeLanguage(lang);
+    }
+
+    private void getSharedPreferenceLastUsedGroupId() {
         SharedPreferences sPref = getPreferences(MODE_PRIVATE);
         currentGroupId = sPref.getInt("LAST_USED", -404);
     }
 
-    void saveSharedPreferenceLastUsedGroupId(int groupId) {
+    private void saveSharedPreferenceLastUsedGroupId(int groupId) {
         SharedPreferences sPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putInt("LAST_USED", groupId);

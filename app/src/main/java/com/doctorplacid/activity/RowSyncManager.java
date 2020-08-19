@@ -1,18 +1,21 @@
 package com.doctorplacid.activity;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.doctorplacid.R;
+import com.doctorplacid.dialog.DialogAddStudent;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class RowsScrollManager {
+public class RowSyncManager {
 
     private Context context;
 
@@ -21,7 +24,7 @@ public class RowsScrollManager {
 
     private List<RecyclerView> recyclerViews = new ArrayList<>();
 
-    public RowsScrollManager(Context context) {
+    public RowSyncManager(Context context) {
         this.context = context;
     }
 
@@ -33,12 +36,13 @@ public class RowsScrollManager {
                         int scrollRange = super.scrollHorizontallyBy(dx, recycler, state);
                         int overScroll = dx - scrollRange;
                         if (overScroll > 0) {
-                            ((MainActivity) context).horizontalExpandFAB();
+                            ((MainActivity) context).expandAddColumnFAB();
                         }
                         return scrollRange;
                     }
                 };
-        
+
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(lm);
         recyclerView.addOnScrollListener(syncScrollListener);
         recyclerView.addOnItemTouchListener(syncTouchListener);
@@ -47,23 +51,28 @@ public class RowsScrollManager {
         currentListSize = recyclerViews.size();
     }
 
-    public void syncRowPosition(RecyclerView recyclerView) {
-        int offsetDiff = recyclerViews.get(0).computeHorizontalScrollOffset() - recyclerView.computeHorizontalScrollOffset();
-        if (offsetDiff != 0) {
-            recyclerView.smoothScrollBy(offsetDiff, 0);
-        }
-    }
 
-    public void syncAllRows() {
+    public void syncAllRowsByTop() {
         int masterOffset = recyclerViews.get(0).computeHorizontalScrollOffset();
 
         List<RecyclerView> tempList =  recyclerViews.subList(1, currentListSize);
         for (RecyclerView recyclerView : tempList) {
             int diff = masterOffset - recyclerView.computeHorizontalScrollOffset();
             if (diff != 0) {
-                recyclerView.scrollBy(diff, 0);
+                recyclerView.scrollBy(masterOffset, 0);
             }
         }
+    }
+
+    public void scrollAllByOneCell() {
+        int cellWidth = (int) context.getResources().getDimension(R.dimen.cell_dimens);
+        new Handler().postDelayed(() -> {
+            for (RecyclerView recyclerView : recyclerViews) {
+                recyclerView.smoothScrollBy(cellWidth, 0);
+
+            }
+        }, 100);
+
     }
 
 
@@ -72,7 +81,7 @@ public class RowsScrollManager {
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             if (dx < 0) {
-                ((MainActivity) context).horizontalCollapseFAB();
+                ((MainActivity) context).collapseAddColumnFAB();
             }
             if (recyclerViews.indexOf(recyclerView) == mTouchedRvPosition) {
                 for (int i = 0; i < currentListSize; i++) {

@@ -23,7 +23,7 @@ public class Grade {
 
     private int amount;
 
-    private boolean present;
+    private boolean presence;
 
     @ColumnInfo(name = "student_id")
     private int studentId;
@@ -34,7 +34,7 @@ public class Grade {
     public Grade(int studentId, int lessonId) {
         this.studentId = studentId;
         this.lessonId = lessonId;
-        this.present = false;
+        this.presence = false;
     }
 
     // copy constructor
@@ -42,7 +42,7 @@ public class Grade {
         this.studentId = other.getStudentId();
         this.lessonId = other.getLessonId();
         this.id = other.getId();
-        this.present = other.isPresent();
+        this.presence = other.isPresence();
         this.amount = other.getAmount();
     }
 
@@ -50,8 +50,8 @@ public class Grade {
         this.amount = amount;
     }
 
-    public void setPresent(boolean present) {
-        this.present = present;
+    public void setPresence(boolean presence) {
+        this.presence = presence;
     }
 
     public void setId(int id) {
@@ -66,8 +66,8 @@ public class Grade {
         return amount;
     }
 
-    public boolean isPresent() {
-        return present;
+    public boolean isPresence() {
+        return presence;
     }
 
     public int getStudentId() {

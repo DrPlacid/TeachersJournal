@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.doctorplacid.R;
-import com.doctorplacid.activity.RowsScrollManager;
+import com.doctorplacid.activity.RowSyncManager;
 import com.doctorplacid.holder.RowViewHolder;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.students.StudentWithGrades;
@@ -21,12 +21,12 @@ import java.util.List;
 public class TableAdapter extends ListAdapter<StudentWithGrades, RowViewHolder> {
 
     private Context context;
-    private RowsScrollManager rowsScrollManager;
+    private RowSyncManager rowSyncManager;
 
-    public TableAdapter(Context context, RowsScrollManager rowsScrollManager) {
+    public TableAdapter(Context context, RowSyncManager rowSyncManager) {
         super(DIFF_CALLBACK);
         this.context = context;
-        this.rowsScrollManager = rowsScrollManager;
+        this.rowSyncManager = rowSyncManager;
     }
 
 
@@ -45,14 +45,14 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowViewHolder> 
         @Override
         public Object getChangePayload(@NonNull StudentWithGrades oldItem, @NonNull StudentWithGrades newItem) {
             if (oldItem.getGrades().size() != newItem.getGrades().size()) {
-                return 2;
+                return 1;
             }
 
             for(int i = 0; i < oldItem.getGrades().size(); i++) {
                 int amountOld = oldItem.getGrades().get(i).getAmount();
                 int amountNew = newItem.getGrades().get(i).getAmount();
-                boolean presenceOld = oldItem.getGrades().get(i).isPresent();
-                boolean presenceNew = newItem.getGrades().get(i).isPresent();
+                boolean presenceOld = oldItem.getGrades().get(i).isPresence();
+                boolean presenceNew = newItem.getGrades().get(i).isPresence();
 
                 if (amountOld != amountNew || presenceOld != presenceNew) {
                     return 1;
@@ -66,10 +66,9 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowViewHolder> 
     @Override
     public RowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_row,parent, false);
+                .inflate(R.layout.layout_row, parent, false);
         RowViewHolder holder = new RowViewHolder(itemView, context);
-        rowsScrollManager.addRow(holder.getRecycler());
-        rowsScrollManager.syncRowPosition(holder.getRecycler());
+        rowSyncManager.addRow(holder.getRecycler());
         return holder;
     }
 
@@ -81,9 +80,6 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowViewHolder> 
             List<Grade> grades = getItem(position).getGrades();
             for (Object data : payloads) {
                 switch ((int) data) {
-                    case 2:
-                        onBindViewHolder(holder, position);
-                        break;
                     case 1:
                         holder.submitList(grades);
                         break;

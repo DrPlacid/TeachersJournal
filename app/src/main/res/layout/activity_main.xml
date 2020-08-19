@@ -12,12 +12,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <include layout="@layout/layout_background_main"/>
+
         <LinearLayout
+            android:id="@+id/linear"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@color/colorTransparentBackground"
+            android:animateLayoutChanges="true">
 
-            <include layout="@layout/layout_top_row"
+            <include layout="@layout/layout_row_top"
                 android:id="@+id/topRow"/>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -25,7 +30,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:overScrollMode="never"
-                tools:listitem="@layout/layout_row" />
+                android:background="@color/colorTransparentBackground"
+                tools:listitem="@layout/layout_row"/>
 
         </LinearLayout>
 
@@ -44,6 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|bottom"
+                    android:tint="@color/colorDarkGray"
                     android:layout_margin="16dp"
                     android:src="@drawable/ic_add_24px"
                     app:fabSize="normal" />
@@ -68,6 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|bottom"
+                    android:tint="@color/colorDarkGray"
                     android:layout_margin="16dp"
                     android:src="@drawable/ic_done_24px"
                     app:fabSize="normal" />
@@ -87,6 +95,18 @@
 
         <include layout="@layout/layout_navigation_panel"/>
 
+        <FrameLayout
+            android:id="@+id/navigationPanelExpandableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/colorWhite"
+            android:layout_gravity="bottom">
+
+            <include layout="@layout/layout_hints"/>
+
+        </FrameLayout>
+
     </com.google.android.material.navigation.NavigationView>
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

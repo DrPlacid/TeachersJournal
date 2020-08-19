@@ -1,49 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/cell_dimens"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/cell_dimens">
+
+    <include
+        android:id="@+id/include4"
+        layout="@layout/layout_row_header"
+        android:layout_width="@dimen/row_header_width"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/RecyclerViewRow"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_marginStart="@dimen/margin_row_header_overlap"
+        android:layout_marginEnd="@dimen/margin_cell_overlap"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/include4"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/layout_cell" />
 
-        <TextView
-            android:id="@+id/nameTextView"
-            android:layout_width="@dimen/row_header_width"
-            android:layout_height="match_parent"
-            android:background="@color/colorAccent"
-            android:elevation="15dp"
-            android:textSize="20sp"
-            android:paddingStart="16dp"
-            android:gravity="start|center"/>
+    <include
+        layout="@layout/layout_row_ender"
+        android:layout_width="@dimen/cell_dimens"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/RecyclerViewRow"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:overScrollMode="never"
-            tools:listitem="@layout/layout_cell"/>
-
-        <TextView
-            android:id="@+id/sumTextView"
-            android:layout_width="@dimen/cell_dimens"
-            android:layout_height="@dimen/cell_dimens"
-            android:clickable="false"
-            android:background="@color/colorAccent"
-            android:elevation="15dp"
-            android:gravity="center"
-            android:textSize="20sp"/>
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorTextReady"/>
-
-</androidx.cardview.widget.CardView>

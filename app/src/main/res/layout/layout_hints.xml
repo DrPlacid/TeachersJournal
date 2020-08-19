@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="220dp"
+    android:layout_width="@dimen/navigation_panel_width"
+    android:background="@drawable/paper">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorTransparentBackground"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/buttonCloseHints"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="5dp"
+                android:layout_alignParentEnd="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/ic_close_24px"/>
+
+        </RelativeLayout>
+
+
+        <ListView
+            android:clickable="false"
+            android:focusable="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/info_hints"
+            android:listSelector="@color/colorTransparentBackground"
+            android:background="@color/colorTransparentBackground"
+            android:scrollbarSize="0dp"/>
+
+    </LinearLayout>
+
+</FrameLayout>
+

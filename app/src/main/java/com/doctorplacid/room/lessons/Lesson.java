@@ -16,25 +16,33 @@ public class Lesson {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    private String date;
+    private String day;
+
+    private String month;
 
     @ColumnInfo(name = "group_id")
     private int groupId;
 
     public Lesson(int groupId) {
         this.groupId = groupId;
-        this.date = "";
+        this.day = "";
+        this.month = "";
     }
 
     //copy constructor
     public Lesson(Lesson lesson) {
         this.id = lesson.getId();
-        this.date = lesson.getDate();
+        this.day = lesson.getDay();
+        this.month = lesson.getMonth();
         this.groupId = lesson.getGroupId();
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setDay(String day) {
+        this.day = day;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
     }
 
     public void setId(int id) {
@@ -45,8 +53,12 @@ public class Lesson {
         return id;
     }
 
-    public String getDate() {
-        return date;
+    public String getDay() {
+        return day;
+    }
+
+    public String getMonth() {
+        return month;
     }
 
     public int getGroupId() {

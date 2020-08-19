@@ -1,5 +1,6 @@
 package com.doctorplacid.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,11 @@ import com.doctorplacid.room.grades.Grade;
 
 public class RowAdapter extends ListAdapter<Grade, CellViewHolder> {
 
-    private ITableListener listener;
+    private Context context;
 
-    public RowAdapter(ITableListener listener) {
+    public RowAdapter(Context context) {
         super(DIFF_CALLBACK);
-        this.listener = listener;
+        this.context = context;
     }
 
     public static final DiffUtil.ItemCallback<Grade> DIFF_CALLBACK = new DiffUtil.ItemCallback<Grade>() {
@@ -31,7 +32,7 @@ public class RowAdapter extends ListAdapter<Grade, CellViewHolder> {
 
         @Override
         public boolean areContentsTheSame(@NonNull Grade oldItem, @NonNull Grade newItem) {
-            return oldItem.getAmount() == newItem.getAmount() && oldItem.isPresent() == newItem.isPresent();
+            return oldItem.getAmount() == newItem.getAmount() && oldItem.isPresence() == newItem.isPresence();
         }
     };
 
@@ -40,13 +41,13 @@ public class RowAdapter extends ListAdapter<Grade, CellViewHolder> {
     public CellViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_cell, parent, false);
-        return new CellViewHolder(itemView, listener);
+        return new CellViewHolder(itemView, context);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CellViewHolder holder, int position) {
         Grade grade = getItem(position);
-        holder.setEntity(grade);
+        holder.setData(grade);
     }
 
 }

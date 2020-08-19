@@ -1,5 +1,7 @@
 package com.doctorplacid.holder;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,38 +20,56 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
     private EditText editText;
 
     private Grade grade;
+    private ITableListener listener;
 
-    public CellViewHolder(@NonNull View itemView, ITableListener listener) {
+    private int colorNotEdited;
+    private int colorEdited;
+
+    public CellViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
+        listener = (ITableListener) context;
 
         textView = itemView.findViewById(R.id.gradeTextView);
         editText = itemView.findViewById(R.id.gradeEditText);
 
+        textView.setOnLongClickListener(view -> {
+            if (grade != null) {
+                ((ITableListener) context).onClearCell(grade);
+            }
+            return false;
+        });
+
         textView.setOnClickListener(view -> {
             if (!MainActivity.anyCellCurrentlyEdited) {
-                if (!grade.isPresent()) {
+                if (!grade.isPresence()) {
                     Grade newGrade = updateGradePresence();
+                    Log.i("GRADEPRESENCE", listener.toString());
                     listener.onGradePresenceEdited(newGrade, getAdapterPosition());
                 } else {
                     int amount = grade.getAmount();
                     String text = (amount == 0) ? "" : String.valueOf(amount);
                     switchToEdit(text);
-                    listener.onGradeAmountEdited(this, editText);
+                    ((ITableListener) context).onGradeAmountEdited(this, editText);
                 }
             }
         });
+
+        colorNotEdited = itemView.getResources().getColor(R.color.colorGray);
+        colorEdited = itemView.getResources().getColor(R.color.colorDarkGray);
     }
 
-    public void setEntity(Grade grade) {
+    public void setData(Grade grade) {
         this.grade = grade;
-        String text = grade.isPresent() ? String.valueOf(grade.getAmount()) : "";
+        String text = grade.isPresence() ? String.valueOf(grade.getAmount()) : "";
+        int textColor = (grade.getAmount() == 0) ? colorNotEdited : colorEdited;
+        textView.setTextColor(textColor);
         textView.setText(text);
     }
 
 
     public Grade updateGradePresence() {
         Grade newGrade = new Grade(grade);
-        newGrade.setPresent(true);
+        newGrade.setPresence(true);
         return newGrade;
     }
 
