@@ -40,7 +40,7 @@ public class DialogAddGroup extends AppCompatDialogFragment {
                 .setPositiveButton(add, (dialog, which) -> {
                     String name = nameEditText.getText().toString().toUpperCase().trim();
                     if (name.length() > 0) {
-                        listener.onAddGroup(name);
+                        listener.addGroup(name);
                     }
                 });
 

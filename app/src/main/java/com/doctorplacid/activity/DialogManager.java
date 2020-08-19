@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.doctorplacid.dialog.DialogAddGroup;
 import com.doctorplacid.dialog.DialogAddStudent;
-import com.doctorplacid.dialog.DialogChangeLanguage;
 import com.doctorplacid.dialog.DialogDeleteGroup;
 import com.doctorplacid.dialog.DialogDeleteColumn;
 import com.doctorplacid.dialog.DialogDeleteStudent;
@@ -39,8 +38,4 @@ public class DialogManager {
         dialogDelete.show(((MainActivity) context).getSupportFragmentManager(), "Delete column dialog");
     }
 
-    public static void openChangeLanguageDialog(Context context){
-        DialogChangeLanguage dialogChange = new DialogChangeLanguage();
-        dialogChange.show(((MainActivity) context).getSupportFragmentManager(), "Change lang dialog");
-    }
 }

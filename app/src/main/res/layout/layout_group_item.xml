@@ -20,4 +20,11 @@
         android:focusable="true" />
 
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height=".5dp"
+        android:background="@color/colorDarkGray"
+        android:layout_gravity="bottom"/>
+
+
 </androidx.cardview.widget.CardView>

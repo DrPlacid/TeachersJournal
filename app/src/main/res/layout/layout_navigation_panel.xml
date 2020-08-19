@@ -66,16 +66,6 @@
             android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/ic_info_24px" />
 
-        <ImageButton
-            android:id="@+id/buttonLanguage"
-            android:layout_width="@dimen/cell_dimens"
-            android:layout_height="@dimen/cell_dimens"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/cell_dimens"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_language_24px" />
-
-
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

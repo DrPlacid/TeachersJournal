@@ -50,7 +50,7 @@ public class DialogDeleteGroup extends AppCompatDialogFragment {
                 .setNegativeButton(cancel, (dialog, which) ->
                         DialogDeleteGroup.super.onDestroy())
                 .setPositiveButton(delete, (dialog, which) ->
-                        listener.onDeleteGroup(group));
+                        listener.deleteGroup(group));
         return builder.create();
     }
 

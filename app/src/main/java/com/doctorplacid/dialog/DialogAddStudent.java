@@ -40,7 +40,7 @@ public class DialogAddStudent extends AppCompatDialogFragment {
                 .setPositiveButton(add, (dialog, which) -> {
                     String name = nameEditText.getText().toString().toUpperCase().trim();
                     if (name.length() > 0) {
-                        listener.onAddStudent(name);
+                        listener.addStudent(name);
                     }
                 });
 

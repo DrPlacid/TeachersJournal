@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.doctorplacid.R;
-import com.doctorplacid.dialog.DialogAddStudent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -53,7 +53,7 @@ public class DialogDeleteColumn extends AppCompatDialogFragment {
                 .setNegativeButton(cancel, (dialog, which) ->
                         DialogDeleteColumn.super.onDestroy())
                 .setPositiveButton(delete, (dialog, which) ->
-                        listener.onDeleteColumn(lesson));
+                        listener.deleteColumn(lesson));
         return builder.create();
     }
 

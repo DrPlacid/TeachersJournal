@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     public static boolean newColumnAdded = false;
     public static boolean newStudentAdded = false;
 
-    private static Group thisGroup;
+    private Group thisGroup;
     private ColumnHeadersAdapter columnHeadersAdapter;
     private TableAdapter tableAdapter;
     private TeachersViewModel teachersViewModel;
@@ -100,9 +100,6 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         FloatingActionButton fabAddGroup = findViewById(R.id.buttonAddGroup);
         fabAddGroup.setOnClickListener(view -> DialogManager.openAddGroupDialog(this));
 
-        ImageButton localization = findViewById(R.id.buttonLanguage);
-        localization.setOnClickListener(view -> DialogManager.openChangeLanguageDialog(this));
-
         ImageButton infoHints = findViewById(R.id.buttonInfo);
         infoHints.setOnClickListener(view -> AnimationManager.verticalExpand(navigationPanelExpandableLayout));
 
@@ -137,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     }
 
     @Override
-    public void onOpenTable(int groupId) {
+    public void openTable(int groupId) {
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         if (currentGroupId != groupId) {
             onClearTable();
@@ -226,14 +223,14 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
      * Methods to edit table
      */
     @Override
-    public void onAddStudent(String name) {
+    public void addStudent(String name) {
         Student student = new Student(name, currentGroupId);
         teachersViewModel.insertStudent(student,thisGroup, teachersViewModel.getAllLessons().getValue());
         newStudentAdded = true;
     }
 
     @Override
-    public void onAddGroup(String groupName) {
+    public void addGroup(String groupName) {
         Group group = new Group(groupName);
         teachersViewModel.insertGroup(group);
     }
@@ -250,20 +247,22 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     }
 
     @Override
-    public void onDeleteStudent(Student student) {
+    public void deleteStudent(Student student) {
         teachersViewModel.deleteStudent(student);
     }
 
     @Override
-    public void onDeleteGroup(Group group) {
+    public void deleteGroup(Group group) {
         teachersViewModel.deleteGroup(group);
         if (group.getId() == currentGroupId) {
             saveSharedPreferenceLastUsedGroupId(-404);
+            topRowLayout.setVisibility(View.INVISIBLE);
+            onInitNavigationPanel();
         }
     }
 
     @Override
-    public void onDeleteColumn(Lesson lesson) {
+    public void deleteColumn(Lesson lesson) {
         teachersViewModel.deleteLesson(lesson);
         int lessons = thisGroup.getLessons() - 1;
         thisGroup.setLessons(lessons);
@@ -271,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     }
 
     @Override
-    public void onGradeAmountEdited(CellViewHolder holder, EditText editText) {
+    public void gradeAmountEdited(CellViewHolder holder, EditText editText) {
             anyCellCurrentlyEdited = true;
 
             editText.requestFocus();
@@ -295,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     }
 
     @Override
-    public void onGradePresenceEdited(Grade grade, int position) {
+    public void gradePresenceEdited(Grade grade, int position) {
         teachersViewModel.updateGrade(grade);
         Lesson lesson = columnHeadersAdapter.getItemAt(position);
         if (("").equals(lesson.getDay()) && ("").equals(lesson.getMonth())) {
@@ -310,17 +309,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     }
 
     @Override
-    public void onChangeLanguage(String tag) {
-        Log.i("LANGUAGE", "changed to " + tag);
-        Locale locale = new Locale(tag);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
-    }
-
-    @Override
-    public void onClearCell(Grade grade) {
+    public void clearCell(Grade grade) {
         Grade temp = new Grade(grade);
         temp.setAmount(0);
         temp.setPresence(false);
@@ -333,15 +322,6 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
 
     public void collapseAddColumnFAB() {
         AnimationManager.horizontalCollapse(topRightCornerExpandableLayout);
-    }
-
-    /**
-     * Methods to save data in shared preferences
-     */
-    private void getSharedPreferenceLocale(){
-        SharedPreferences sPref = getSharedPreferences("Settings", MODE_PRIVATE);
-        String lang = sPref.getString("Lang", "");
-        onChangeLanguage(lang);
     }
 
     private void getSharedPreferenceLastUsedGroupId() {

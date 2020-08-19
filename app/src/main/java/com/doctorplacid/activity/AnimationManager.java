@@ -1,6 +1,5 @@
 package com.doctorplacid.activity;
 
-import android.content.Context;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -8,7 +7,7 @@ import android.widget.FrameLayout;
 
 public class AnimationManager {
 
-    private static final int BUTTON_ANIMATION_TIME = 400;
+    private static final int ANIMATION_TIME = 400;
 
     public static boolean addColumnButtonShown = false;
 
@@ -19,7 +18,6 @@ public class AnimationManager {
         expandableLayout.measure(parentWidth, parentHeight);
         final int targetWidth = expandableLayout.getMeasuredWidth();
 
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
         expandableLayout.getLayoutParams().width = 1;
         expandableLayout.setVisibility(View.VISIBLE);
         Animation a = new Animation()
@@ -39,7 +37,7 @@ public class AnimationManager {
         };
 
         // Expansion speed of 1dp/ms
-        a.setDuration(BUTTON_ANIMATION_TIME);
+        a.setDuration(ANIMATION_TIME);
         expandableLayout.startAnimation(a);
         addColumnButtonShown = true;
     }
@@ -50,7 +48,6 @@ public class AnimationManager {
         expandableLayout.measure(parentWidth, parentHeight);
         final int targetHeight = expandableLayout.getMeasuredHeight();
 
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
         expandableLayout.getLayoutParams().height = 1;
         expandableLayout.setVisibility(View.VISIBLE);
         Animation a = new Animation()
@@ -70,7 +67,7 @@ public class AnimationManager {
         };
 
         // Expansion speed of 1dp/ms
-        a.setDuration(BUTTON_ANIMATION_TIME);
+        a.setDuration(ANIMATION_TIME);
         expandableLayout.startAnimation(a);
     }
 
@@ -97,7 +94,7 @@ public class AnimationManager {
         };
 
         // Collapse speed of 1dp/ms
-        a.setDuration(BUTTON_ANIMATION_TIME);
+        a.setDuration(ANIMATION_TIME);
         expandableLayout.startAnimation(a);
         addColumnButtonShown = false;
     }
@@ -123,7 +120,7 @@ public class AnimationManager {
         };
 
         // Collapse speed of 1dp/ms
-        a.setDuration(BUTTON_ANIMATION_TIME);
+        a.setDuration(ANIMATION_TIME);
         expandableLayout.startAnimation(a);
     }
 }

@@ -50,7 +50,7 @@ public class DialogDeleteStudent extends AppCompatDialogFragment {
                 .setNegativeButton(cancel, (dialog, which) ->
                         DialogDeleteStudent.super.onDestroy())
                 .setPositiveButton(delete, (dialog, which) ->
-                        listener.onDeleteStudent(student));
+                        listener.deleteStudent(student));
         return builder.create();
     }
 
