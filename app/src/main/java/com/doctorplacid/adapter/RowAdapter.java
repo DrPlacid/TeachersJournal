@@ -1,6 +1,7 @@
 package com.doctorplacid.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ public class RowAdapter extends ListAdapter<Grade, CellViewHolder> {
 
         @Override
         public boolean areContentsTheSame(@NonNull Grade oldItem, @NonNull Grade newItem) {
-            return oldItem.getAmount() == newItem.getAmount() && oldItem.isPresence() == newItem.isPresence();
+            return false;
         }
     };
 

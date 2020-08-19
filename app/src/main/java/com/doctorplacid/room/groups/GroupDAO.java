@@ -23,14 +23,15 @@ public abstract class GroupDAO {
     abstract long insert(Group group);
 
     @Insert
-    abstract long[] insertLessons(List<Lesson> lessons);
+    abstract void insertLessons(List<Lesson> lessons);
 
     void insertNewGroup(Group group) {
         int id = (int) insert(group);
         List<Lesson> lessons = new ArrayList<>();
 
         for (int i = 0; i < group.getLessons(); i++) {
-            lessons.add(new Lesson(id));
+            Lesson lesson = new Lesson(id);
+            lessons.add(lesson);
         }
 
         insertLessons(lessons);

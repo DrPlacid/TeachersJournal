@@ -44,7 +44,6 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements ITableListener {
 
-    public static final float LETTER_SPACING_WIDE = .10f;
     public static final float LETTER_SPACING_NARROW = .05f;
 
     private static int currentGroupId;
@@ -153,8 +152,8 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
 
         topRowLayout.setVisibility(View.VISIBLE);
         TextView groupNameText = findViewById(R.id.textViewGroupName);
-        groupNameText.setText(thisGroup.getName());
-        groupNameText.setLetterSpacing(LETTER_SPACING_WIDE);
+        groupNameText.setText(thisGroup.getName().replaceAll(" ", ""));
+        groupNameText.setLetterSpacing(LETTER_SPACING_NARROW);
 
         RecyclerView table = findViewById(R.id.grades);
         RecyclerView topRow = findViewById(R.id.lessons);
@@ -288,13 +287,14 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
                 if (temp != null) {
                     teachersViewModel.updateGrade(temp);
                 }
-                anyCellCurrentlyEdited = false;
                 new Handler().postDelayed(() -> AnimationManager.verticalCollapse(bottomRightCornerExpandableLayout), 200);
+                anyCellCurrentlyEdited = false;
             });
     }
 
     @Override
     public void gradePresenceEdited(Grade grade, int position) {
+        anyCellCurrentlyEdited = true;
         teachersViewModel.updateGrade(grade);
         Lesson lesson = columnHeadersAdapter.getItemAt(position);
         if (("").equals(lesson.getDay()) && ("").equals(lesson.getMonth())) {
@@ -306,14 +306,17 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
             newLesson.setMonth(month);
             teachersViewModel.updateLesson(newLesson);
         }
+        anyCellCurrentlyEdited = false;
     }
 
     @Override
     public void clearCell(Grade grade) {
+        anyCellCurrentlyEdited = true;
         Grade temp = new Grade(grade);
         temp.setAmount(0);
         temp.setPresence(false);
         teachersViewModel.updateGrade(temp);
+        anyCellCurrentlyEdited = false;
     }
 
     public void expandAddColumnFAB() {

@@ -27,6 +27,7 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
 
     public CellViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
+        Log.i("LISTENERT", context.toString());
         listener = (ITableListener) context;
 
         textView = itemView.findViewById(R.id.gradeTextView);
@@ -34,22 +35,23 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
 
         textView.setOnLongClickListener(view -> {
             if (grade != null) {
-                ((ITableListener) context).clearCell(grade);
+                listener.clearCell(grade);
             }
             return false;
         });
 
         textView.setOnClickListener(view -> {
+            Log.i("PRESENTT", MainActivity.anyCellCurrentlyEdited + "");
             if (!MainActivity.anyCellCurrentlyEdited) {
                 if (!grade.isPresence()) {
                     Grade newGrade = updateGradePresence();
-                    Log.i("GRADEPRESENCE", listener.toString());
                     listener.gradePresenceEdited(newGrade, getAdapterPosition());
                 } else {
+
                     int amount = grade.getAmount();
                     String text = (amount == 0) ? "" : String.valueOf(amount);
                     switchToEdit(text);
-                    ((ITableListener) context).gradeAmountEdited(this, editText);
+                    listener.gradeAmountEdited(this, editText);
                 }
             }
         });
