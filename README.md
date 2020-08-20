@@ -3,6 +3,8 @@ Tescher's Journal is simple and efficient app, designed to deliver a functional 
 The app allows to manage a number of editable tables (groups), which contains both list of students, and an extendable range of lessons with auto-set date. 
 For more info on using Tescher's Journal see in-app hints.
 
+![alt text](https://www.dropbox.com/s/pzblla8dlfyymw6/photo_2020-08-20_02-05-22.jpg?dl=0)
+
 
 
 Tescher's Journal is designed around MVVM pattern, using Room Persistence Library & LiveData. 
