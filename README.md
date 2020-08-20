@@ -3,7 +3,7 @@ Tescher's Journal is simple and efficient app, designed to deliver a functional 
 The app allows to manage a number of editable tables (groups), which contains both list of students, and an extendable range of lessons with auto-set date. 
 For more info on using Tescher's Journal see in-app hints.
 
-![alt text](https://fex.net/ru/s/kxpodvr)
+![alt text](https://github.com/DrPlacid/TeachersJournal/blob/master/photo_2020-08-20_02-05-22.jpg?raw=true)
 
 
 
