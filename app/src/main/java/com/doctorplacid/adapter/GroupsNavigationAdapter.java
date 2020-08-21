@@ -17,7 +17,7 @@ import com.doctorplacid.room.groups.Group;
 
 public class GroupsNavigationAdapter extends ListAdapter<Group, GroupItemViewHolder> {
 
-    Context context;
+    private Context context;
 
     public GroupsNavigationAdapter(Context context) {
         super(DIFF_CALLBACK);

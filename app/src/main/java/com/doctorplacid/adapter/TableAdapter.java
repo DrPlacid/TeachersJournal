@@ -29,7 +29,6 @@ public class TableAdapter extends ListAdapter<StudentWithGrades, RowViewHolder> 
         this.rowSyncManager = rowSyncManager;
     }
 
-
     private static final DiffUtil.ItemCallback<StudentWithGrades> DIFF_CALLBACK = new DiffUtil.ItemCallback<StudentWithGrades>() {
 
         @Override

@@ -14,7 +14,6 @@
     <string name="dialog_set">Set</string>
     <string name="dialog_delete">Delete</string>
 
-
     <string-array name="info_hints">
         <item>Add new group, student or column using the (+) buttons</item>
         <item>Click on empty cell to set presence</item>

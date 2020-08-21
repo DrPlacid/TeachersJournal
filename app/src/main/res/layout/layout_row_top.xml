@@ -24,9 +24,9 @@
             android:id="@+id/lessons"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:overScrollMode="never"
             android:layout_marginStart="@dimen/margin_row_header_overlap"
             android:layout_marginEnd="@dimen/margin_cell_overlap"
+            android:overScrollMode="never"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:listitem="@layout/layout_column_header" />

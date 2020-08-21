@@ -104,5 +104,4 @@ public class TeachersViewModel extends AndroidViewModel {
         gradeRepository.update(grade);
     }
 
-
 }

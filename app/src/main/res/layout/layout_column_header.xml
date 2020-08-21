@@ -6,51 +6,50 @@
     android:layout_height="@dimen/top_row_height"
     android:background="@color/colorBackground">
 
-        <ImageView
-            android:id="@+id/slash"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp"
-            android:src="@drawable/slash"/>
+    <ImageView
+        android:id="@+id/slash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:src="@drawable/slash" />
 
-        <TextView
-            android:id="@+id/dayTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentTop="true"
-            android:textSize="15sp"
-            android:gravity="center"/>
+    <TextView
+        android:id="@+id/dayTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:textSize="15sp" />
 
-        <TextView
-            android:id="@+id/monthTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:textSize="15sp"
-            android:gravity="center"/>
+    <TextView
+        android:id="@+id/monthTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:textSize="15sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height=".5dp"
-        android:background="@color/colorDarkGray"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorDarkGray" />
 
     <View
         android:layout_width=".5dp"
         android:layout_height="match_parent"
-        android:background="@color/colorDarkGray"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:background="@color/colorDarkGray" />
 
     <View
         android:layout_width=".5dp"
         android:layout_height="match_parent"
-        android:background="@color/colorDarkGray"
-        android:layout_alignParentEnd="true"/>
-
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorDarkGray" />
 
 
 </RelativeLayout>

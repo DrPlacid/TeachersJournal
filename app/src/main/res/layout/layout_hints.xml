@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="220dp"
     android:layout_width="@dimen/navigation_panel_width"
-    android:background="@drawable/paper">
+    android:layout_height="220dp"
+    android:background="@drawable/paper_table_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,23 +19,23 @@
                 android:id="@+id/buttonCloseHints"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginEnd="5dp"
                 android:layout_alignParentEnd="true"
+                android:layout_marginEnd="5dp"
                 android:background="?android:attr/selectableItemBackground"
-                android:src="@drawable/ic_close_24px"/>
+                android:src="@drawable/ic_close" />
 
         </RelativeLayout>
 
 
         <ListView
-            android:clickable="false"
-            android:focusable="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/info_hints"
-            android:listSelector="@color/colorTransparentBackground"
             android:background="@color/colorTransparentBackground"
-            android:scrollbarSize="0dp"/>
+            android:clickable="false"
+            android:entries="@array/info_hints"
+            android:focusable="false"
+            android:listSelector="@color/colorTransparentBackground"
+            android:scrollbarSize="0dp" />
 
     </LinearLayout>
 

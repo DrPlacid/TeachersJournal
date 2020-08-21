@@ -36,7 +36,6 @@ public abstract class StudentDAO {
             grades.add(new Grade(groupId, lessonId));
         }
 
-
         insertGrades(grades);
     }
 

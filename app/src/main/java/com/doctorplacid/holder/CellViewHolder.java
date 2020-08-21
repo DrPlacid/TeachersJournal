@@ -68,7 +68,6 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
         textView.setText(text);
     }
 
-
     public Grade updateGradePresence() {
         Grade newGrade = new Grade(grade);
         newGrade.setPresence(true);

@@ -8,7 +8,6 @@ import android.widget.FrameLayout;
 public class AnimationManager {
 
     private static final int ANIMATION_TIME = 400;
-
     public static boolean addColumnButtonShown = false;
 
     public static void horizontalExpand(final FrameLayout expandableLayout) {

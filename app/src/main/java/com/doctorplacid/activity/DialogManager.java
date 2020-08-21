@@ -15,27 +15,27 @@ public class DialogManager {
 
     public static void openAddStudentDialog(Context context) {
         DialogAddStudent dialogAddStudent = new DialogAddStudent();
-        dialogAddStudent.show(((MainActivity) context).getSupportFragmentManager(), "Add student dialog");
+        dialogAddStudent.show(((MainActivity) context).getSupportFragmentManager(), "Add student");
     }
 
     public static void openAddGroupDialog(Context context) {
         DialogAddGroup dialogAddGroup = new DialogAddGroup();
-        dialogAddGroup.show(((MainActivity) context).getSupportFragmentManager(), "Add group dialog");
+        dialogAddGroup.show(((MainActivity) context).getSupportFragmentManager(), "Add group");
     }
 
     public static void openDeleteStudentDialog(Student student, Context context) {
         DialogDeleteStudent dialogDelete = new DialogDeleteStudent(student);
-        dialogDelete.show(((MainActivity) context).getSupportFragmentManager(), "Delete student dialog");
+        dialogDelete.show(((MainActivity) context).getSupportFragmentManager(), "Delete student");
     }
 
     public static void openDeleteGroupDialog(Group group, Context context) {
         DialogDeleteGroup dialogDelete = new DialogDeleteGroup(group);
-        dialogDelete.show(((MainActivity) context).getSupportFragmentManager(), "Delete group dialog");
+        dialogDelete.show(((MainActivity) context).getSupportFragmentManager(), "Delete group");
     }
 
     public static void openDeleteColumnDialog(Lesson lesson, Context context) {
         DialogDeleteColumn dialogDelete = new DialogDeleteColumn(lesson);
-        dialogDelete.show(((MainActivity) context).getSupportFragmentManager(), "Delete column dialog");
+        dialogDelete.show(((MainActivity) context).getSupportFragmentManager(), "Delete column");
     }
 
 }

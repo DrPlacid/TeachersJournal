@@ -18,7 +18,7 @@ import com.doctorplacid.room.students.Student;
 
 public class DialogDeleteStudent extends AppCompatDialogFragment {
 
-    ITableListener listener;
+    private ITableListener listener;
 
     private Student student;
     private String name;

@@ -1,6 +1,5 @@
 package com.doctorplacid.room.students;
 
-import androidx.annotation.Nullable;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 

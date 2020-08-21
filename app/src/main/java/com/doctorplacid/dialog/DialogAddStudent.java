@@ -16,7 +16,7 @@ import com.doctorplacid.R;
 
 public class DialogAddStudent extends AppCompatDialogFragment {
 
-    ITableListener listener;
+    private ITableListener listener;
 
     @NonNull
     @Override

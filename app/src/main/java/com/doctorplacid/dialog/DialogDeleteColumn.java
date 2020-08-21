@@ -18,7 +18,7 @@ import com.doctorplacid.room.lessons.Lesson;
 
 public class DialogDeleteColumn extends AppCompatDialogFragment {
 
-    ITableListener listener;
+    private ITableListener listener;
 
     private Lesson lesson;
     private String dd;

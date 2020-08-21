@@ -34,7 +34,6 @@ public class LessonRepository {
         return lessonDAO.retrieveAll(groupId);
     }
 
-
     private static class LessonInsertAsyncTask extends AsyncTask<Lesson, Void, Integer> {
         private LessonDAO lessonDAO;
 

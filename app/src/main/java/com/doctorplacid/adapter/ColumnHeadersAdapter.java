@@ -36,7 +36,6 @@ public class ColumnHeadersAdapter extends ListAdapter<Lesson, ColumnHeaderViewHo
         }
     };
 
-
     @NonNull
     @Override
     public ColumnHeaderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -50,7 +49,6 @@ public class ColumnHeadersAdapter extends ListAdapter<Lesson, ColumnHeaderViewHo
         Lesson lesson = getItem(position);
         holder.setData(lesson);
     }
-
 
     public Lesson getItemAt(int position) {
         return getItem(position);

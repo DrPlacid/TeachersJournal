@@ -77,4 +77,5 @@ public class Grade {
     public int getLessonId() {
         return lessonId;
     }
+
 }

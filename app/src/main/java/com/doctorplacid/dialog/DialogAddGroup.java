@@ -18,7 +18,7 @@ import java.util.Objects;
 
 public class DialogAddGroup extends AppCompatDialogFragment {
 
-    ITableListener listener;
+    private ITableListener listener;
 
     @NonNull
     @Override
