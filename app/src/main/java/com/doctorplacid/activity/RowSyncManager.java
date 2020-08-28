@@ -16,6 +16,7 @@ import java.util.List;
 
 public class RowSyncManager {
 
+    private MainActivity activity;
     private Context context;
 
     private int mTouchedRvPosition;
@@ -23,8 +24,9 @@ public class RowSyncManager {
 
     private List<RecyclerView> recyclerViews = new ArrayList<>();
 
-    public RowSyncManager(Context context) {
-        this.context = context;
+    public RowSyncManager(MainActivity activity) {
+        this.activity = activity;
+        this.context = activity.getBaseContext();
     }
 
     public void addRow(final RecyclerView recyclerView) {
@@ -35,7 +37,7 @@ public class RowSyncManager {
                         int scrollRange = super.scrollHorizontallyBy(dx, recycler, state);
                         int overScroll = dx - scrollRange;
                         if (overScroll > 0) {
-                            ((MainActivity) context).expandAddColumnFAB();
+                            activity.expandAddColumnFAB();
                         }
                         return scrollRange;
                     }
@@ -80,7 +82,7 @@ public class RowSyncManager {
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             if (dx < 0) {
-                ((MainActivity) context).collapseAddColumnFAB();
+                activity.collapseAddColumnFAB();
             }
             if (recyclerViews.indexOf(recyclerView) == mTouchedRvPosition) {
                 for (int i = 0; i < currentListSize; i++) {

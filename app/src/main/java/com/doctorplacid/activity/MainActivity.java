@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         columnHeadersAdapter = new ColumnHeadersAdapter(this);
         topRow.setAdapter(columnHeadersAdapter);
 
-        rowSyncManager = new RowSyncManager(this);
+        rowSyncManager = new RowSyncManager(MainActivity.this);
         rowSyncManager.addRow(topRow);
 
         tableAdapter = new TableAdapter(this, rowSyncManager);
