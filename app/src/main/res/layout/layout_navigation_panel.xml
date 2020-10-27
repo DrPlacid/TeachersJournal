@@ -5,14 +5,14 @@
     android:id="@+id/navigationPanelLayout"
     android:layout_width="@dimen/navigation_panel_width"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite">
+    android:background="@color/color2Background">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="176dp"
         android:background="@drawable/paper_table_background"
-        android:backgroundTint="@color/colorBackground"
+        android:backgroundTint="@color/color1Background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -37,7 +37,7 @@
         android:layout_marginEnd="16dp"
         android:outlineSpotShadowColor="@color/colorTransparentBackground"
         android:src="@drawable/ic_add"
-        android:tint="@color/colorDarkGray"
+        android:tint="@color/colorTextDivider"
         app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />

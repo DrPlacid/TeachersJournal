@@ -4,7 +4,7 @@
     android:id="@+id/columnHeaderContainer"
     android:layout_width="@dimen/cell_dimens"
     android:layout_height="@dimen/top_row_height"
-    android:background="@color/colorBackground">
+    android:background="@color/color1Background">
 
     <ImageView
         android:id="@+id/slash"
@@ -37,19 +37,19 @@
         android:layout_width="match_parent"
         android:layout_height=".5dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorDarkGray" />
+        android:background="@color/colorTextDivider" />
 
     <View
         android:layout_width=".5dp"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:background="@color/colorDarkGray" />
+        android:background="@color/colorTextDivider" />
 
     <View
         android:layout_width=".5dp"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:background="@color/colorDarkGray" />
+        android:background="@color/colorTextDivider" />
 
 
 </RelativeLayout>

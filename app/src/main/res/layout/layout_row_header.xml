@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/row_header_width"
     android:layout_height="@dimen/cell_dimens"
-    app:cardBackgroundColor="@color/colorBackground"
+    app:cardBackgroundColor="@color/color1Background"
     app:cardCornerRadius="0dp"
     app:cardElevation="20dp">
 
@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_gravity="bottom"
-        android:background="@color/colorDarkGray" />
+        android:background="@color/colorTextDivider" />
 
 </androidx.cardview.widget.CardView>
 

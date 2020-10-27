@@ -22,8 +22,8 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
     private Grade grade;
     private ITableListener listener;
 
-    private int colorNotEdited;
-    private int colorEdited;
+    private int colorWeakInfo;
+    private int colorInfo;
 
     public CellViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
@@ -56,14 +56,14 @@ public class CellViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        colorNotEdited = itemView.getResources().getColor(R.color.colorGray);
-        colorEdited = itemView.getResources().getColor(R.color.colorDarkGray);
+        colorWeakInfo = itemView.getResources().getColor(R.color.colorGray);
+        colorInfo = itemView.getResources().getColor(R.color.colorTextDivider);
     }
 
     public void setData(Grade grade) {
         this.grade = grade;
         String text = grade.isPresence() ? String.valueOf(grade.getAmount()) : "";
-        int textColor = (grade.getAmount() == 0) ? colorNotEdited : colorEdited;
+        int textColor = (grade.getAmount() == 0) ? colorWeakInfo : colorInfo;
         textView.setTextColor(textColor);
         textView.setText(text);
     }

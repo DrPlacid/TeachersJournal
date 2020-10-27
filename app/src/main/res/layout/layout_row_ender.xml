@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/cell_dimens"
     android:layout_height="@dimen/cell_dimens"
-    app:cardBackgroundColor="@color/colorBackground"
+    app:cardBackgroundColor="@color/color1Background"
     app:cardCornerRadius="0dp"
     app:cardElevation="20dp">
 
@@ -16,8 +16,6 @@
         android:clickable="false"
         android:focusable="false"
         android:gravity="center"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:textAllCaps="false"
         android:textSize="15sp" />
 
@@ -25,6 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_gravity="bottom"
-        android:background="@color/colorDarkGray" />
+        android:background="@color/colorTextDivider" />
 
 </androidx.cardview.widget.CardView>

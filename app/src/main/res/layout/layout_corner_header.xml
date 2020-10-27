@@ -15,16 +15,16 @@
             android:id="@+id/buttonOpenNavigationMenu"
             android:layout_width="@dimen/cell_dimens"
             android:layout_height="match_parent"
-            android:background="@color/colorBackground"
+            android:background="@color/color1Background"
             android:gravity="center"
             android:src="@drawable/ic_menu"
-            android:tint="@color/colorDarkGray" />
+            android:tint="@color/colorTextDivider" />
 
         <TextView
             android:id="@+id/textViewGroupName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorBackground"
+            android:background="@color/color1Background"
             android:gravity="center|start"
             android:lines="1"
             android:paddingStart="16dp"
@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_gravity="bottom"
-        android:background="@color/colorDarkGray" />
+        android:background="@color/colorTextDivider" />
 
 </androidx.cardview.widget.CardView>
 

@@ -5,7 +5,7 @@
     android:layout_width="@dimen/cell_dimens"
     android:layout_height="@dimen/top_row_height"
     android:elevation="20dp"
-    app:cardBackgroundColor="@color/colorBackground">
+    app:cardBackgroundColor="@color/color1Background">
 
     <TextView
         android:id="@+id/textViewSum"
@@ -33,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_add"
+                android:tint="@color/colorItemTint"
                 app:fabSize="mini" />
 
         </FrameLayout>
@@ -43,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_gravity="bottom"
-        android:background="@color/colorDarkGray" />
+        android:background="@color/colorTextDivider" />
 
 </androidx.cardview.widget.CardView>
 

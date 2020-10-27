@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height=".5dp"
         android:layout_gravity="bottom"
-        android:background="@color/colorDarkGray" />
+        android:background="@color/colorTextDivider" />
 
 
 </androidx.cardview.widget.CardView>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorAccent">#F44336</color>
+
+    <color name="colorTextDivider">#FFFFFF</color>
+    <color name="colorItemTint">#2E2E2E</color>
+    <color name="color1Background">#2E2E2E</color>
+    <color name="color2Background">#666666</color>
+    <color name="colorTransparentBackground">#0003DAC5</color>
+
+    <color name="colorGray">#A8A8A8</color>
+</resources>

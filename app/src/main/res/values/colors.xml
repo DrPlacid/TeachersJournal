@@ -3,11 +3,12 @@
     <color name="colorPrimary">#FFC107</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#FF9800</color>
-    <color name="colorBackground">#FFEB3B</color>
+
+    <color name="colorTextDivider">#2E2E2E</color>
+    <color name="colorItemTint">#2E2E2E</color>
+    <color name="color1Background">#FFEB3B</color>
+    <color name="color2Background">#ECECEC</color>
     <color name="colorTransparentBackground">#0003DAC5</color>
 
-    <color name="colorDarkGray">#2E2E2E</color>
-    <color name="colorGray">#A1A1A1</color>
-    <color name="colorLightGray">#EFEFEF</color>
-    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorGray">#AFAFAF</color>
 </resources>
