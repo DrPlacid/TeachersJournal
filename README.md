@@ -14,4 +14,4 @@ In order to prevent user from ill-considered moves, each unalterable action is f
 Furthermore, the app UI is prevented from sharp & unpleasable movements by using a number of smooth animations & delayed actions.
 
 ![alt text](https://github.com/DrPlacid/TeachersJournal/blob/master/photo_2020-08-20_02-05-22.jpg?raw=true)
-![alt text](https://github.com/DrPlacid/TeachersJournal/blob/master/photo_2020-08-20_02-05-31.jpg?raw=true)
+![alt text](https://github.com/DrPlacid/TeachersJournal/blob/master/photo_night.jpg?raw=true)
