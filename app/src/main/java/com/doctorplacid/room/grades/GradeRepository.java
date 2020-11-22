@@ -2,6 +2,7 @@ package com.doctorplacid.room.grades;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 
 import com.doctorplacid.room.TeachersDatabase;
@@ -11,65 +12,47 @@ import java.util.List;
 
 public class GradeRepository {
 
-    private GradeDAO gradeDAO;
+    private static GradeDAO gradeDAO;
+    private Handler handler;
 
-    public GradeRepository(Application application) {
+    public GradeRepository(Application application, Handler handler) {
         TeachersDatabase database = TeachersDatabase.getInstance(application);
         gradeDAO = database.gradeDAO();
+        this.handler = handler;
     }
 
     public void insert(List<Grade> grades) {
-        new GradesInsertAsyncTask(gradeDAO).execute(grades);
+        handler.post(new InsertRunnable(grades));
     }
 
     public void update(Grade grade) {
-        new GradeRepository.GradeUpdateAsyncTask(gradeDAO).execute(grade);
-    }
-
-    public void delete(Grade grade) {
-        new GradeRepository.GradeDeleteAsyncTask(gradeDAO).execute(grade);
+        handler.post(new UpdateRunnable(grade));
     }
 
 
-    private static class GradesInsertAsyncTask extends AsyncTask<List<Grade>, Void, Void> {
-        private GradeDAO gradeDAO;
+    private static class InsertRunnable implements Runnable {
+        List<Grade> grades;
 
-        public GradesInsertAsyncTask(GradeDAO gradeDAO) {
-            this.gradeDAO = gradeDAO;
+        public InsertRunnable(List<Grade> grades) {
+            this.grades = grades;
         }
 
         @Override
-        protected Void doInBackground(List<Grade>... grades) {
-            gradeDAO.insert(grades[0]);
-            return null;
+        public void run() {
+            gradeDAO.insert(grades);
         }
     }
 
-    private static class GradeUpdateAsyncTask extends AsyncTask<Grade, Void, Void> {
-        private GradeDAO gradeDAO;
+    private static class UpdateRunnable implements Runnable {
+        Grade grade;
 
-        public GradeUpdateAsyncTask(GradeDAO gradeDAO) {
-            this.gradeDAO = gradeDAO;
+        public UpdateRunnable(Grade grade) {
+            this.grade = grade;
         }
 
         @Override
-        protected Void doInBackground(Grade... grades) {
-            gradeDAO.update(grades[0]);
-            return null;
-        }
-    }
-
-    private static class GradeDeleteAsyncTask extends AsyncTask<Grade, Void, Void> {
-        private GradeDAO gradeDAO;
-
-        public GradeDeleteAsyncTask(GradeDAO gradeDAO) {
-            this.gradeDAO = gradeDAO;
-        }
-
-        @Override
-        protected Void doInBackground(Grade... grades) {
-            gradeDAO.delete(grades[0]);
-            return null;
+        public void run() {
+            gradeDAO.update(grade);
         }
     }
 

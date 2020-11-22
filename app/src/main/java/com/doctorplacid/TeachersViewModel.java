@@ -1,13 +1,13 @@
-package com.doctorplacid.room;
+package com.doctorplacid;
 
 import android.app.Application;
-import android.util.Log;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.doctorplacid.TableCalendar;
 import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.grades.GradeRepository;
 import com.doctorplacid.room.lessons.Lesson;
@@ -18,13 +18,13 @@ import com.doctorplacid.room.students.Student;
 import com.doctorplacid.room.students.StudentWithGrades;
 import com.doctorplacid.room.students.StudentsRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class TeachersViewModel extends AndroidViewModel {
+
+    private android.os.Handler handler;
+    private HandlerThread handlerThread;
 
     private GroupsRepository groupsRepository;
     private StudentsRepository studentsRepository;
@@ -39,12 +39,20 @@ public class TeachersViewModel extends AndroidViewModel {
 
     public TeachersViewModel(@NonNull Application application) {
         super(application);
-        groupsRepository = new GroupsRepository(application);
-        studentsRepository = new StudentsRepository(application);
-        lessonRepository = new LessonRepository(application);
-        gradeRepository = new GradeRepository(application);
+        startHandlerThread();
+
+        groupsRepository = new GroupsRepository(application, handler);
+        studentsRepository = new StudentsRepository(application, handler);
+        lessonRepository = new LessonRepository(application, handler);
+        gradeRepository = new GradeRepository(application, handler);
 
         groupsList = groupsRepository.retrieveAll();
+    }
+
+    private void startHandlerThread() {
+        handlerThread = new HandlerThread("HandlerThread");
+        handlerThread.start();
+        handler = new Handler(handlerThread.getLooper());
     }
 
     public void initDataSet(int groupId) {
@@ -63,7 +71,7 @@ public class TeachersViewModel extends AndroidViewModel {
 
         try {
             List<Integer> studentIds = studentsRepository.getIds(groupId);
-            lessonRepository.insertColumn(lesson, studentIds);
+            lessonRepository.insert(lesson, studentIds);
             int lessons = currentGroup.getLessons() + 1;
             currentGroup.setLessons(lessons);
             updateGroup(currentGroup);
@@ -134,4 +142,13 @@ public class TeachersViewModel extends AndroidViewModel {
         gradeRepository.update(temp);
     }
 
+    public void updateGrade(Grade grade) {
+        gradeRepository.update(grade);
+    }
+
+    @Override
+    protected void onCleared() {
+        handlerThread.quit();
+        super.onCleared();
+    }
 }

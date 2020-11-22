@@ -2,92 +2,91 @@ package com.doctorplacid.room.lessons;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.os.Handler;
 
 import androidx.lifecycle.LiveData;
 
 import com.doctorplacid.room.TeachersDatabase;
+import com.doctorplacid.room.grades.Grade;
+import com.doctorplacid.room.groups.Group;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LessonRepository {
 
-    private LessonDAO lessonDAO;
+    private static LessonDAO lessonDAO;
+    private Handler handler;
 
-    public LessonRepository(Application application) {
+    public LessonRepository(Application application, Handler handler) {
         TeachersDatabase database = TeachersDatabase.getInstance(application);
         lessonDAO = database.dateDAO();
+        this.handler = handler;
     }
 
-    public void insertColumn(Lesson lesson, List<Integer> studentIds) {
-         new ColumnInsertAsyncTask(lessonDAO, studentIds).execute(lesson);
+    public void insert(Lesson lesson, List<Integer> studentIds) {
+         handler.post(new InsertRunnable(lesson, studentIds));
     }
 
     public void update(Lesson lesson) {
-        new LessonUpdateAsyncTask(lessonDAO).execute(lesson);
+        handler.post(new UpdateRunnable(lesson));
     }
 
     public void delete(Lesson lesson) {
-        new LessonDeleteAsyncTask(lessonDAO).execute(lesson);
+        handler.post(new DeleteRunnable(lesson));
     }
 
     public LiveData<List<Lesson>> retrieveAll(int groupId) {
         return lessonDAO.retrieveAll(groupId);
     }
 
-    private static class LessonInsertAsyncTask extends AsyncTask<Lesson, Void, Integer> {
-        private LessonDAO lessonDAO;
+    private static class InsertRunnable implements Runnable {
+        Lesson lesson;
+        List<Integer> studentIds;
 
-        public LessonInsertAsyncTask(LessonDAO lessonDAO) {
-            this.lessonDAO = lessonDAO;
-        }
-
-        @Override
-        protected Integer doInBackground(Lesson... lessons) {
-            return (int) lessonDAO.insert(lessons[0]);
-        }
-    }
-
-    private static class ColumnInsertAsyncTask extends AsyncTask<Lesson, Void, Void> {
-        private LessonDAO lessonDAO;
-        private List<Integer> studentIds;
-
-        public ColumnInsertAsyncTask(LessonDAO lessonDAO, List<Integer> studentIds) {
-            this.lessonDAO = lessonDAO;
+        public InsertRunnable(Lesson lesson, List<Integer> studentIds) {
+            this.lesson = lesson;
             this.studentIds = studentIds;
         }
 
         @Override
-        protected Void doInBackground(Lesson... lessons) {
-            lessonDAO.insertColumn(lessons[0], studentIds);
-            return null;
+        public void run() {
+            int lessonId = (int) lessonDAO.insert(lesson);
+
+            List<Grade> grades = new ArrayList<>();
+
+            for(int studentId : studentIds) {
+                grades.add(new Grade(studentId, lessonId));
+            }
+
+            lessonDAO.insertGrades(grades);
         }
     }
 
-    private static class LessonUpdateAsyncTask extends AsyncTask<Lesson, Void, Void> {
-        private LessonDAO lessonDAO;
+    private static class UpdateRunnable implements Runnable {
+        Lesson lesson;
 
-        public LessonUpdateAsyncTask(LessonDAO lessonDAO) {
-            this.lessonDAO = lessonDAO;
+        public UpdateRunnable(Lesson lesson) {
+            this.lesson = lesson;
         }
 
         @Override
-        protected Void doInBackground(Lesson... lessons) {
-            lessonDAO.update(lessons[0]);
-            return null;
+        public void run() {
+            lessonDAO.update(lesson);
         }
     }
 
-    private static class LessonDeleteAsyncTask extends AsyncTask<Lesson, Void, Void> {
-        private LessonDAO lessonDAO;
+    private static class DeleteRunnable implements Runnable {
+        Lesson lesson;
 
-        public LessonDeleteAsyncTask(LessonDAO lessonDAO) {
-            this.lessonDAO = lessonDAO;
+        public DeleteRunnable(Lesson lesson) {
+            this.lesson = lesson;
         }
 
+
         @Override
-        protected Void doInBackground(Lesson... lessons) {
-            lessonDAO.delete(lessons[0]);
-            return null;
+        public void run() {
+            lessonDAO.delete(lesson);
         }
     }
 }

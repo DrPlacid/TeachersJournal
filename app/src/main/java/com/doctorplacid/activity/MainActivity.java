@@ -12,10 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.LayoutTransition;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -26,7 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.doctorplacid.R;
-import com.doctorplacid.room.TeachersViewModel;
+import com.doctorplacid.TeachersViewModel;
 import com.doctorplacid.adapter.GroupsNavigationAdapter;
 import com.doctorplacid.adapter.TableAdapter;
 import com.doctorplacid.holder.CellViewHolder;
@@ -44,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     private static int currentGroupId;
 
     public static boolean anyCellCurrentlyEdited = false;
-
     public static boolean newColumnAdded = false;
     public static boolean newStudentAdded = false;
 
@@ -68,23 +65,20 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
 
         teachersViewModel = ViewModelProviders.of(MainActivity.this).get(TeachersViewModel.class);
 
-        findViews();
-
+        onInitViews();
         onInitNavigationPanel();
 
-        int currentGroupId = getPreferences(MODE_PRIVATE).getInt("LAST_USED", -404);
+        currentGroupId = getPreferences(MODE_PRIVATE).getInt("LAST_USED", -404);
         if (currentGroupId != -404) {
             onInitTable();
         } else {
-            topRowLayout.setVisibility(View.INVISIBLE);
-            drawer.openDrawer(GravityCompat.START);
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            openAndFixNavigationPanel();
         }
 
         onInitClickListeners();
     }
 
-    private void findViews() {
+    private void onInitViews() {
         drawer = findViewById(R.id.drawer);
         coordinator = findViewById(R.id.coordinator);
         topRowLayout = findViewById(R.id.topRow);
@@ -147,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         LayoutTransition layoutTransition = ((ViewGroup) findViewById(R.id.linear)).getLayoutTransition();
         layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
 
-
         topRowLayout.setVisibility(View.VISIBLE);
         RecyclerView table = findViewById(R.id.grades);
         RecyclerView topRow = findViewById(R.id.lessons);
@@ -193,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
                 }
             }
         });
+
         coordinator.addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             if (bottom < oldBottom) {
@@ -215,6 +209,12 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         if (AnimationManager.addColumnButtonShown) {
             collapseAddColumnFAB();
         }
+    }
+
+    private void saveSharedPreferenceLastUsedGroupId(int groupId) {
+        getPreferences(MODE_PRIVATE).edit()
+                .putInt("LAST_USED", groupId)
+                .apply();
     }
 
     /**
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         if (group.getId() == currentGroupId) {
             saveSharedPreferenceLastUsedGroupId(-404);
             topRowLayout.setVisibility(View.INVISIBLE);
-            onInitNavigationPanel();
+            openAndFixNavigationPanel();
         }
     }
 
@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
                 editText.clearFocus();
             }
             if (temp != null) {
-                teachersViewModel.clearCell(temp);
+                teachersViewModel.updateGrade(temp);
             }
             new Handler().postDelayed(() -> AnimationManager.verticalCollapse(bottomRightCornerExpandableLayout), 200);
             anyCellCurrentlyEdited = false;
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
     @Override
     public void gradePresenceEdited(Grade grade, int position) {
         anyCellCurrentlyEdited = true;
-        teachersViewModel.clearCell(grade);
+        teachersViewModel.updateGrade(grade);
         Lesson lesson = columnHeadersAdapter.getItemAt(position);
         if (("").equals(lesson.getDay()) && ("").equals(lesson.getMonth())) {
             teachersViewModel.updateLesson(lesson);
@@ -297,19 +297,21 @@ public class MainActivity extends AppCompatActivity implements ITableListener {
         anyCellCurrentlyEdited = false;
     }
 
+    /**
+     * UI - specific methods
+     */
+    private void openAndFixNavigationPanel() {
+        topRowLayout.setVisibility(View.INVISIBLE);
+        drawer.openDrawer(GravityCompat.START);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+    }
+
     public void expandAddColumnFAB() {
         AnimationManager.horizontalExpand(topRightCornerExpandableLayout);
     }
 
     public void collapseAddColumnFAB() {
         AnimationManager.horizontalCollapse(topRightCornerExpandableLayout);
-    }
-
-
-    private void saveSharedPreferenceLastUsedGroupId(int groupId) {
-        getPreferences(MODE_PRIVATE).edit()
-                .putInt("LAST_USED", groupId)
-                .apply();
     }
 
 }

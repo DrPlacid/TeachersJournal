@@ -18,7 +18,4 @@ public interface GradeDAO {
     @Update
     void update(Grade grade);
 
-    @Delete
-    void delete(Grade grade);
-
 }

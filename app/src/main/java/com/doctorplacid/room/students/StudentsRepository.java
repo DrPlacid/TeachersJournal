@@ -2,27 +2,32 @@ package com.doctorplacid.room.students;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.os.Handler;
 
 import androidx.lifecycle.LiveData;
 
 import com.doctorplacid.room.TeachersDatabase;
+import com.doctorplacid.room.grades.Grade;
 import com.doctorplacid.room.groups.Group;
 import com.doctorplacid.room.lessons.Lesson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class StudentsRepository {
 
-    private StudentDAO studentDAO;
+    private static StudentDAO studentDAO;
+    private Handler handler;
 
-    public StudentsRepository(Application application) {
+    public StudentsRepository(Application application, Handler handler) {
         TeachersDatabase database = TeachersDatabase.getInstance(application);
         studentDAO = database.studentDAO();
+        this.handler = handler;
     }
 
     public void insert(Student student, Group group, List<Lesson> lessons) {
-        new StudentInsertAsyncTask(studentDAO, group, lessons).execute(student);
+        handler.post(new InsertRunnable(student, group, lessons));
     }
 
     public List<Integer> getIds(int groupId) throws ExecutionException, InterruptedException {
@@ -30,31 +35,53 @@ public class StudentsRepository {
     }
 
     public void delete(Student student) {
-        new StudentsRepository.StudentDeleteAsyncTask(studentDAO).execute(student);
+        handler.post(new DeleteRunnable(student));
     }
 
     public LiveData<List<StudentWithGrades>> retrieveAll(int groupId) {
         return studentDAO.getStudentsWithGrades(groupId);
     }
 
-    private static class StudentInsertAsyncTask extends AsyncTask<Student, Void, Void> {
-        private StudentDAO studentDAO;
-        private Group group;
-        private List<Lesson> lessons;
+    private static class InsertRunnable implements Runnable {
+        Student student;
+        Group group;
+        List<Lesson> lessons;
 
-        public StudentInsertAsyncTask(StudentDAO studentDAO, Group group, List<Lesson> lessons) {
-            this.studentDAO = studentDAO;
+        public InsertRunnable(Student student, Group group, List<Lesson> lessons) {
+            this.student = student;
             this.group = group;
             this.lessons = lessons;
         }
 
         @Override
-        protected Void doInBackground(Student... students) {
-            studentDAO.insertNewStudentWithGrades(students[0], group, lessons);
-            return null;
+        public void run() {
+            List<Grade> grades = new ArrayList<>();
+
+            int groupId = (int) studentDAO.insertStudent(student);
+
+            for (int i = 0; i < group.getLessons(); i++) {
+                int lessonId = lessons.get(i).getId();
+                grades.add(new Grade(groupId, lessonId));
+            }
+
+            studentDAO.insertGrades(grades);
+        }
+    }
+
+    private static class DeleteRunnable implements Runnable {
+        Student student;
+
+        public DeleteRunnable(Student student) {
+            this.student = student;
         }
 
+
+        @Override
+        public void run() {
+            studentDAO.delete(student);
+        }
     }
+
 
     private static class StudentGetIdsAsyncTask extends AsyncTask<Integer, Void, List<Integer>> {
         private StudentDAO studentDAO;
@@ -66,20 +93,6 @@ public class StudentsRepository {
         @Override
         protected List<Integer> doInBackground(Integer... integers) {
             return studentDAO.getIds(integers[0]);
-        }
-    }
-
-    private static class StudentDeleteAsyncTask extends AsyncTask<Student, Void, Void> {
-        private StudentDAO studentDAO;
-
-        public StudentDeleteAsyncTask(StudentDAO studentDAO) {
-            this.studentDAO = studentDAO;
-        }
-
-        @Override
-        protected Void doInBackground(Student... students) {
-            studentDAO.delete(students[0]);
-            return null;
         }
     }
 

@@ -2,30 +2,33 @@ package com.doctorplacid.room.groups;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.doctorplacid.room.TeachersDatabase;
+import com.doctorplacid.room.grades.Grade;
+import com.doctorplacid.room.lessons.Lesson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class GroupsRepository {
 
-    private GroupDAO groupDAO;
-    private LiveData<List<Group>> groupsLiveData;
+    private static GroupDAO groupDAO;
+    private Handler handler;
 
-    public GroupsRepository(Application application) {
+    public GroupsRepository(Application application, Handler handler) {
         TeachersDatabase database = TeachersDatabase.getInstance(application);
         groupDAO = database.groupDAO();
-        groupsLiveData = groupDAO.retrieveAll();
+        this.handler = handler;
     }
 
     public Group retrieve(int id) {
         try {
-            Group group = new GroupRetrieveAsyncTask(groupDAO).execute(id).get();
-            return group;
+            return new GroupRetrieveAsyncTask(groupDAO).execute(id).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             return null;
@@ -33,20 +36,21 @@ public class GroupsRepository {
     }
 
     public void insert(Group group) {
-        new GroupInsertAsyncTask(groupDAO).execute(group);
+        handler.post(new InsertRunnable(group));
     }
 
     public void update(Group group) {
-        new GroupUpdateAsyncTask(groupDAO).execute(group);
+        handler.post(new UpdateRunnable(group));
     }
 
     public void delete(Group group) {
-        new GroupDeleteAsyncTask(groupDAO).execute(group);
+        handler.post(new DeleteRunnable(group));
     }
 
     public LiveData<List<Group>> retrieveAll() {
-        return groupsLiveData;
+        return groupDAO.retrieveAll();
     }
+
 
     private static class GroupRetrieveAsyncTask extends AsyncTask<Integer, Void, Group> {
         private GroupDAO groupDAO;
@@ -61,45 +65,51 @@ public class GroupsRepository {
         }
     }
 
-    private static class GroupInsertAsyncTask extends AsyncTask<Group, Void, Void> {
-        private GroupDAO groupDAO;
+    private static class InsertRunnable implements Runnable {
+        Group group;
 
-        public GroupInsertAsyncTask(GroupDAO groupDAO) {
-            this.groupDAO = groupDAO;
+        public InsertRunnable(Group group) {
+            this.group = group;
         }
 
         @Override
-        protected Void doInBackground(Group... groups) {
-            groupDAO.insertNewGroup(groups[0]);
-            return null;
+        public void run() {
+            int id = (int) groupDAO.insert(group);
+            List<Lesson> lessons = new ArrayList<>();
+
+            for (int i = 0; i < group.getLessons(); i++) {
+                Lesson lesson = new Lesson(id);
+                lessons.add(lesson);
+            }
+
+            groupDAO.insertLessons(lessons);
         }
     }
 
-    private static class GroupUpdateAsyncTask extends AsyncTask<Group, Void, Void> {
-        private GroupDAO groupDAO;
+    private static class UpdateRunnable implements Runnable {
+        Group group;
 
-        public GroupUpdateAsyncTask(GroupDAO groupDAO) {
-            this.groupDAO = groupDAO;
+        public UpdateRunnable(Group group) {
+            this.group = group;
         }
 
         @Override
-        protected Void doInBackground(Group... groups) {
-            groupDAO.update(groups[0]);
-            return null;
+        public void run() {
+            groupDAO.update(group);
         }
     }
 
-    private static class GroupDeleteAsyncTask extends AsyncTask<Group, Void, Void> {
-        private GroupDAO groupDAO;
+    private static class DeleteRunnable implements Runnable {
+        Group group;
 
-        public GroupDeleteAsyncTask(GroupDAO groupDAO) {
-            this.groupDAO = groupDAO;
+        public DeleteRunnable(Group group) {
+            this.group = group;
         }
 
         @Override
-        protected Void doInBackground(Group... groups) {
-            groupDAO.delete(groups[0]);
-            return null;
+        public void run() {
+            groupDAO.delete(group);
         }
     }
+
 }

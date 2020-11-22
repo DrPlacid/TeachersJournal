@@ -17,35 +17,23 @@ import java.util.Arrays;
 import java.util.List;
 
 @Dao
-public abstract class GroupDAO {
+public interface GroupDAO {
 
     @Insert
-    abstract long insert(Group group);
+    long insert(Group group);
 
     @Insert
-    abstract void insertLessons(List<Lesson> lessons);
-
-    void insertNewGroup(Group group) {
-        int id = (int) insert(group);
-        List<Lesson> lessons = new ArrayList<>();
-
-        for (int i = 0; i < group.getLessons(); i++) {
-            Lesson lesson = new Lesson(id);
-            lessons.add(lesson);
-        }
-
-        insertLessons(lessons);
-    }
+    void insertLessons(List<Lesson> lessons);
 
     @Update
-    abstract void update(Group group);
+    void update(Group group);
 
     @Delete
-    abstract void delete(Group group);
+    void delete(Group group);
 
     @Query("SELECT * FROM group_table WHERE id = :id")
-    abstract Group retrieve(int id);
+    Group retrieve(int id);
 
     @Query("SELECT * FROM group_table ORDER BY id")
-    abstract LiveData<List<Group>> retrieveAll();
+    LiveData<List<Group>> retrieveAll();
 }
