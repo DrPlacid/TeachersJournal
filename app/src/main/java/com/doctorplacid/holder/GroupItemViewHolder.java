@@ -21,7 +21,7 @@ public class GroupItemViewHolder extends RecyclerView.ViewHolder {
     public GroupItemViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
         textView = itemView.findViewById(R.id.groupTextView);
-        textView.setOnClickListener(view -> ((ITableListener) context).openTable(group.getId()));
+        textView.setOnClickListener(view -> ((ITableListener) context).openTableFromNavigationPanel(group.getId()));
         textView.setOnLongClickListener(view -> {
             DialogManager.openDeleteGroupDialog(group, context);
             return false;

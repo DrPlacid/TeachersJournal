@@ -1,5 +1,6 @@
 package com.doctorplacid.room.groups;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -44,4 +45,9 @@ public class Group {
         this.name = name;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return this.getName();
+    }
 }

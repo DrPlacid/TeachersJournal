@@ -2,6 +2,7 @@ package com.doctorplacid.room.groups;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -23,7 +24,8 @@ public class GroupsRepository {
 
     public Group retrieve(int id) {
         try {
-            return new GroupRetrieveAsyncTask(groupDAO).execute(id).get();
+            Group group = new GroupRetrieveAsyncTask(groupDAO).execute(id).get();
+            return group;
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             return null;
@@ -56,11 +58,6 @@ public class GroupsRepository {
         @Override
         protected Group doInBackground(Integer... ids) {
             return groupDAO.retrieve(ids[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Group group) {
-            super.onPostExecute(group);
         }
     }
 

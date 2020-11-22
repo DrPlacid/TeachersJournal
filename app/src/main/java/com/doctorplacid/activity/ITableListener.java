@@ -10,7 +10,7 @@ import com.doctorplacid.room.students.Student;
 
 public interface ITableListener {
 
-    void openTable(int groupId);
+    void openTableFromNavigationPanel(int groupId);
 
     void addStudent(String name);
     void addGroup(String name);
